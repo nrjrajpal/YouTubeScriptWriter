@@ -7,8 +7,8 @@ load_dotenv()
 class SyntheticAgent:
     def __init__(self, projectID):
         self.projectID = projectID
-        self.ideaTitle = None
-        self.ideaDescription = None
+        self.ideaTitle = "Master Time Management: 5 Simple Strategies for Productivity"
+        self.ideaDescription = "This video explores five actionable time management strategies that can significantly boost your productivity. These strategies focus on breaking down tasks, prioritizing your day, and overcoming procrastination. The video will also dive into the psychological principles behind why these techniques work and how you can apply them to both your personal and professional life. Whether you're a student, professional, or entrepreneur, these tips will help you make the most of your time and achieve your goals."
         self.videoTitle = None
         self.groqAPIKey = None
         self.serperAPIKey = None
@@ -109,12 +109,14 @@ class SyntheticAgent:
             return []
 
         print("Generating video titles based on idea...")
-        videoTitles = [
-            f"{self.ideaTitle} - Explained",
-            f"The Future of {self.ideaTitle}",
-            f"{self.ideaTitle}: What You Need to Know",
-            f"{self.ideaTitle} and Beyond",
-            f"How {self.ideaDescription} Will Change the World"
-        ]
+        # videoTitles = [
+        #     f"{self.ideaTitle} - Explained",
+        #     f"The Future of {self.ideaTitle}",
+        #     f"{self.ideaTitle}: What You Need to Know",
+        #     f"{self.ideaTitle} and Beyond",
+        #     f"How {self.ideaDescription} Will Change the World"
+        # ]
+        # response=self.getLLMresponse()
+        # videoTitles = ast.literal_eval(response)
         #LLM CAll
-        return videoTitles
+        # return videoTitles
