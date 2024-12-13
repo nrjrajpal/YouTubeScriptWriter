@@ -7,11 +7,17 @@ temp_blueprint = Blueprint('temp', __name__)
 def temp():
     researcher = ResearcherAgent(projectID=1234)
     # Set an idea title and generate a search query
-    researcher.setIdeaTitle("Quantum Computing in Cryptography")
-    researcher.generateSearchQuery()
+    # researcher.setIdeaTitle("Quantum Computing in Cryptography")
+    # researcher.generateSearchQuery()
+    # response=researcher.getLLMResponse("You are a helpful Ai Assistant", "Hello", model="llama-3.1-70b-versatile")
+    # print("1"+response)
+    # response=researcher.getLLMResponse("You are a helpful Ai Assistant", "Hello", model="llama-3.1-70b-versatile")
+    # print("2"+response)
+    researcher.generateVideoTitles()
+    
 
     # Retrieve and print the generated search query
-    search_query = researcher.getSearchQuery()
-    print(f"Search Query: {search_query}")
+    # search_query = researcher.getSearchQuery()
+    # print(f"Search Query: {search_query}")
 
-    return jsonify({"message": "temp endpoint" +search_query})
+    return jsonify({"message": "LLM response: " +response})

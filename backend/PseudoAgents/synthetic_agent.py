@@ -1,3 +1,9 @@
+from groq import Groq
+from config import Config               
+import os
+from dotenv import load_dotenv
+load_dotenv()  
+
 class SyntheticAgent:
     def __init__(self, projectID):
         self.projectID = projectID
@@ -9,66 +15,92 @@ class SyntheticAgent:
         self.tavilyAPIKey = None
 
     # Placeholder database operations
-    def _fetch_from_db(self, field):
-        print(f"Fetching {field} for projectID {self.projectID} from DB...")
-        return "Sample Data"
+    # def _fetch_from_db(self, field):
+    #     print(f"Fetching {field} for projectID {self.projectID} from DB...")
+    #     return "Sample Data"
 
-    def _update_to_db(self, field, value):
-        print(f"Updating {field} to '{value}' for projectID {self.projectID} in DB...")
+    # def _update_to_db(self, field, value):
+    #     print(f"Updating {field} to '{value}' for projectID {self.projectID} in DB...")
 
     # LLM Response Function
-    def getLLMResponse(self, prompt):
-        print(f"Generating response for prompt: {prompt}")
-        return f"Generated response for: {prompt}"
+    def getLLMResponse(self, system_query, user_query, model="llama-3.1-70b-versatile"):
+        # print(f"Generating response for prompt: {prompt}")
+        # return f"Generated response for: {prompt}"
+
+        client = Groq(api_key=self.getGroqAPIKey())
+        
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_query
+                },
+                {
+                    "role": "user",
+                    "content": user_query,
+                }
+            ],
+            model=model,
+        )
+
+        return chat_completion.choices[0].message.content
 
     # Idea Title Functions
     def getIdeaTitle(self):
-        self.ideaTitle = self._fetch_from_db("ideaTitle")
+        if not self.ideaTitle:
+            print("If called")
+            self.ideaTitle = self._fetch_from_db("ideaTitle") #Fetch this from DB later
+        
         return self.ideaTitle
 
-    def setIdeaTitle(self, newTitle):
-        self.ideaTitle = newTitle
-        self._update_to_db("ideaTitle", newTitle)
-
+    def setIdeaTitle(self,newIdeaTitle):
+        self.ideaTitle = newIdeaTitle   #Set this on DB later
+        
     # Idea Description Functions
     def getIdeaDescription(self):
-        self.ideaDescription = self._fetch_from_db("ideaDescription")
+        if not self.ideaDescription:
+            print("If Called")
+            self.ideaDescription = self._fetch_from_db("ideaDescription") #Fetch this from DB later
+        
+        
         return self.ideaDescription
 
     def setIdeaDescription(self, newDescription):
-        self.ideaDescription = newDescription
-        self._update_to_db("ideaDescription", newDescription)
+        self.ideaDescription = newDescription #Set this on DB later
 
     # Video Title Functions
     def getVideoTitle(self):
-        self.videoTitle = self._fetch_from_db("videoTitle")
+        if not self.videoTitle:
+            print("If called")
+            self.videoTitle = self._fetch_from_db("videoTitle") 
+        
         return self.videoTitle
 
     def setVideoTitle(self, newVideoTitle):
-        self.videoTitle = newVideoTitle
-        self._update_to_db("videoTitle", newVideoTitle)
+        self.videoTitle = newVideoTitle #Set this on DB later
 
     # API Key Functions
     def getGroqAPIKey(self):
+        if not self.groqAPIKey:
+            print("If called")
+            self.groqAPIKey = os.getenv("GROQAPIKEY")  #Fetch this from DB later
+        
         return self.groqAPIKey
-
-    def setGroqAPIKey(self, apiKey):
-        self.groqAPIKey = apiKey
-        print("Groq API Key updated.")
-
+        
     def getSerperAPIKey(self):
+        # return self.serperAPIKey
+        if not self.serperAPIKey:
+            print("If called")
+            self.serperAPIKey = os.getenv("SERPAPIKey")  #Fetch this from DB later
+        
         return self.serperAPIKey
 
-    def setSerperAPIKey(self, apiKey):
-        self.serperAPIKey = apiKey
-        print("Serper API Key updated.")
-
     def getTavilyAPIKey(self):
+        if not self.tavilyAPIKey:
+            print("If called")
+            self.tavilyAPIKey = os.getenv("TAVILYAPIKEY")  #Fetch this from DB later
+        
         return self.tavilyAPIKey
-
-    def setTavilyAPIKey(self, apiKey):
-        self.tavilyAPIKey = apiKey
-        print("Tavily API Key updated.")
 
     # Generate Video Titles
     def generateVideoTitles(self):
@@ -84,4 +116,5 @@ class SyntheticAgent:
             f"{self.ideaTitle} and Beyond",
             f"How {self.ideaDescription} Will Change the World"
         ]
+        #LLM CAll
         return videoTitles
