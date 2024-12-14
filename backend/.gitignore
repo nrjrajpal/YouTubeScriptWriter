@@ -1,2 +1,7 @@
 .venv_yt_project/
-.env
+
+__pycache__/
+*.pyc
+*.pyo
+*.log
+*.env

@@ -4,84 +4,107 @@ class ResearcherAgent(SyntheticAgent):
     def __init__(self, projectID):
         super().__init__(projectID)
         self.searchQuery = None
-        self.customData = None
-        self.masterSummary = None
-        self.masterYTSummary = None
-        self.masterWebpageSummary = None
-        self.masterResearchPaperSummary = None
-        self.masterCustomDataSummary = None
+        self.__masterSummary = None
+        self.__masterYTSummary = None
+        self.__masterWebpageSummary = None
+        self.__masterResearchPaperSummary = None
+        self.__customDataSummary = None
 
     # Search Query Functions
     def getSearchQuery(self):
+        if not self.searchQuery:
+            print("If called")
+            self.searchQuery = self._fetch_from_db("searchQuery")  # Fetch from DB later
         return self.searchQuery
 
-    def setSearchQuery(self, query):
-        self.searchQuery = query
+    def __setSearchQuery(self, query):
+        self.searchQuery = query  # Update in DB later
 
-    # Custom Data Functions
-    def getCustomData(self):
-        return self.customData
+    def __generateSearchQuery(self):
+        self.getVideoTitle()
+        self.getIdeaDescription()
+        
+        
+        print("Generating SearchQuery based on idea...")
+        sys_prompt="You are a professional assistant skilled at generating precise and comprehensive search queries to gather information for YouTube script creation. Your search queries must be highly relevant, concise, and optimized for retrieving information from YouTube videos, web pages, and research papers."
+        user_prompt=f"""
+            Analyze the following video title and idea description to generate a single, precise search query. The query will be used to gather information for creating a YouTube script. Ensure the search query:
+            - Covers the main topic comprehensively.
+            - Uses carefully chosen keywords in a single, straightforward query (avoid complex OR statements).
+            - Is well-suited to retrieving diverse and relevant resources.
+            - Avoids any additional text or explanation and only outputs the search query.
 
-    def setCustomData(self, data):
-        self.customData = data
+            Video title: {self.videoTitle}  
+            Idea description: {self.ideaDescription}
 
-    # Generate Search Query
-    def generateSearchQuery(self):
-        if self.ideaTitle:
-            self.searchQuery = f"Research about {self.ideaTitle}"
-            print(f"Generated search query: {self.searchQuery}")
-        else:
-            print("Idea title is required to generate a search query.")
+            Output format: A single, well-constructed search query as plain text. Generate only one query and nothing else.
+        """
+        response=self.getLLMResponse(sys_prompt,user_prompt)
+        return response
 
     # Summary Functions
-    def getMasterSummary(self):
+    def generateSummary(self):
+        pass
+
+    def __getMasterSummary(self):
+        if not self.masterSummary:
+            print("If called")
+            self.masterSummary = "Consolidated summary of all data."
         return self.masterSummary
 
-    def generateMasterSummary(self):
+    def __generateMasterSummary(self):
         self.masterSummary = "Consolidated summary of all data."
         print("Master summary generated.")
 
-    def getMasterYTSummary(self):
+    def __getMasterYTSummary(self):
+        if not self.masterYTSummary:
+            print("If called")
+            self.masterYTSummary = "Summary of relevant YouTube content."
         return self.masterYTSummary
 
-    def generateMasterYTSummary(self):
+    def __generateMasterYTSummary(self):
         self.masterYTSummary = "Summary of relevant YouTube content."
         print("YouTube summary generated.")
 
-    def getMasterWebpageSummary(self):
+    def __getMasterWebpageSummary(self):
+        if not self.masterWebpageSummary:
+            print("If called")
+            self.masterWebpageSummary = "Summary of relevant webpages."
         return self.masterWebpageSummary
 
-    def generateMasterWebpageSummary(self):
+    def __generateMasterWebpageSummary(self):
         self.masterWebpageSummary = "Summary of relevant webpages."
         print("Webpage summary generated.")
 
-    def getMasterResearchPaperSummary(self):
+    def __getMasterResearchPaperSummary(self):
+        if not self.masterResearchPaperSummary:
+            print("If called")
+            self.masterResearchPaperSummary = "Summary of relevant research papers."
         return self.masterResearchPaperSummary
 
-    def generateMasterResearchPaperSummary(self):
+    def __generateMasterResearchPaperSummary(self):
         self.masterResearchPaperSummary = "Summary of relevant research papers."
         print("Research paper summary generated.")
 
-    def getCustomDataSummary(self):
-        return self.masterCustomDataSummary
+    def __getCustomDataSummary(self):
+        if not self.customDataSummary:
+            print("If called")
+            self.customDataSummary = "Summary of custom data provided by the user."
+        return self.customDataSummary
 
-    def generateCustomDataSummary(self):
-        self.masterCustomDataSummary = "Summary of custom data provided by the user."
+    def __generateCustomDataSummary(self):
+        self.customDataSummary = "Summary of custom data provided by the user."
         print("Custom data summary generated.")
 
-# Example usage
-if __name__ == "__main__":
-    researcher = ResearcherAgent(projectID=5678)
-    researcher.setIdeaTitle("Artificial Intelligence")
-    researcher.generateSearchQuery()
-    print(researcher.getSearchQuery())
-    researcher.generateMasterSummary()
-    print(researcher.getMasterSummary())
-    researcher.generateMasterYTSummary()
-    print(researcher.getMasterYTSummary())
-    researcher.generateMasterWebpageSummary()
-    print(researcher.getMasterWebpageSummary())
-    researcher.generateMasterResearchPaperSummary()
-    print(researcher.getMasterResearchPaperSummary())
-    researcher.generateCustomDataSummary()
-    print(researcher.getCustomDataSummary())
+    # Fetch all summaries based on the content type
+    def __getAllSummaries(self, type):
+        if type == "youtube":
+            return self.getMasterYTSummary()
+        elif type == "webpage":
+            return self.getMasterWebpageSummary()
+        elif type == "researchpaper":
+            return self.getMasterResearchPaperSummary()
+        elif type == "customdata":
+            return self.getCustomDataSummary()
+        else:
+            raise ValueError("Invalid content type. Valid types: 'youtube', 'webpage', 'researchpaper', 'customdata'.")

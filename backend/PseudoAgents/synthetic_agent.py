@@ -7,26 +7,15 @@ load_dotenv()
 class SyntheticAgent:
     def __init__(self, projectID):
         self.projectID = projectID
-        self.ideaTitle = "Master Time Management: 5 Simple Strategies for Productivity"
-        self.ideaDescription = "This video explores five actionable time management strategies that can significantly boost your productivity. These strategies focus on breaking down tasks, prioritizing your day, and overcoming procrastination. The video will also dive into the psychological principles behind why these techniques work and how you can apply them to both your personal and professional life. Whether you're a student, professional, or entrepreneur, these tips will help you make the most of your time and achieve your goals."
+        self.ideaTitle = None
+        self.ideaDescription = None
         self.videoTitle = None
         self.groqAPIKey = None
         self.serperAPIKey = None
         self.tavilyAPIKey = None
 
-    # Placeholder database operations
-    # def _fetch_from_db(self, field):
-    #     print(f"Fetching {field} for projectID {self.projectID} from DB...")
-    #     return "Sample Data"
-
-    # def _update_to_db(self, field, value):
-    #     print(f"Updating {field} to '{value}' for projectID {self.projectID} in DB...")
-
     # LLM Response Function
     def getLLMResponse(self, system_query, user_query, model="llama-3.1-70b-versatile"):
-        # print(f"Generating response for prompt: {prompt}")
-        # return f"Generated response for: {prompt}"
-
         client = Groq(api_key=self.getGroqAPIKey())
         
         chat_completion = client.chat.completions.create(
@@ -53,7 +42,7 @@ class SyntheticAgent:
         
         return self.ideaTitle
 
-    def setIdeaTitle(self,newIdeaTitle):
+    def __setIdeaTitle(self,newIdeaTitle):
         self.ideaTitle = newIdeaTitle   #Set this on DB later
         
     # Idea Description Functions
@@ -65,7 +54,7 @@ class SyntheticAgent:
         
         return self.ideaDescription
 
-    def setIdeaDescription(self, newDescription):
+    def __setIdeaDescription(self, newDescription):
         self.ideaDescription = newDescription #Set this on DB later
 
     # Video Title Functions
@@ -76,7 +65,7 @@ class SyntheticAgent:
         
         return self.videoTitle
 
-    def setVideoTitle(self, newVideoTitle):
+    def __setVideoTitle(self, newVideoTitle):
         self.videoTitle = newVideoTitle #Set this on DB later
 
     # API Key Functions
@@ -102,21 +91,13 @@ class SyntheticAgent:
         
         return self.tavilyAPIKey
 
-    # Generate Video Titles
-    def generateVideoTitles(self):
+    def __generateVideoTitles(self):
         if not self.ideaTitle or not self.ideaDescription:
             print("Idea title and description are required to generate video titles.")
             return []
 
         print("Generating video titles based on idea...")
-        # videoTitles = [
-        #     f"{self.ideaTitle} - Explained",
-        #     f"The Future of {self.ideaTitle}",
-        #     f"{self.ideaTitle}: What You Need to Know",
-        #     f"{self.ideaTitle} and Beyond",
-        #     f"How {self.ideaDescription} Will Change the World"
-        # ]
-        # response=self.getLLMresponse()
-        # videoTitles = ast.literal_eval(response)
-        #LLM CAll
-        # return videoTitles
+        sys_prompt="You are a professional youtube title generator who generates a youtube title that can get maximum audience attention, from the idea title and idea description that is provided."
+        user_prompt=f"""Generate a YouTube video title based on the following video idea title and description:Video Idea Title: {self.ideaTitle} Video Idea Description: {self.ideaDescription} The title should meet the following criteria:Be accurate and clearly represent the video's content to ensure viewers do not stop watching mid-video.Preferably be 50-60 characters, and no more than 100 characters.Highlight the key benefit or value viewers will gain from the video.Include major keywords or search terms that are frequently searched by users related to this content.Use CAPS to emphasize one or two key words for impact, but avoid excessive use of all caps.Keep the title brief, direct, and to the point, as viewers may only see part of it on YouTube.Consider using brackets or parentheses to add additional context or perceived value, but don’t force it unless it adds clarity.Address challenges or pain points that the target audience has, and create a title that speaks directly to solving those issues.If the content relates to lists or rankings, create a listicle-style title (e.g., '5 Tips for Boosting Productivity').Add a sense of urgency to encourage immediate clicks, if appropriate.Know the target audience and tailor the title to appeal to them.Include a hook or special element to capture attention and distinguish the video from competing content.Clearly communicate what viewers can expect from the video and why it is special or unique. Output format:Return the titles as an array of strings that can be type casted using the python list function Output: Only generate 3 titles in the form of an array of strings in a single line and nothing else."""
+        response=self.getLLMResponse(sys_prompt,user_prompt)
+        return response
