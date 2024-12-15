@@ -21,69 +21,6 @@ class YouTubeAgent(ResearcherAgent):
 
     def setVideoIDs(self, videoIDs):
         self.videoIDs = videoIDs  # Update video IDs in DB later
-
-    # Video Transcript Functions
-    # def fetchVideoTranscript(self, videoID):
-    #     # Simulate fetching a transcript for a given video ID
-    #     print(f"Fetching transcript for video ID: {videoID}")
-    #     # # Placeholder logic to fetch transcript (API call or library function can be implemented here)
-    #     # transcript = f"Transcript for video {videoID}"
-    #     # self.videoTranscripts.append(transcript)  # Add to videoTranscripts list
-    #     # return transcript
-    #     try:
-    #         avail_lang = YouTubeTranscriptApi.list_transcripts(videoID)
-    #         manual_langs = ['en'] + list(avail_lang._manually_created_transcripts)
-    #         generated_langs =list(avail_lang._generated_transcripts)
-
-    #         # print(f"Video ID: {video_id}")
-    #         # print(f"Manually created transcript languages: {manual_langs}")
-    #         # print(f"Auto-generated transcript languages: {generated_langs}")
-
-    #     except TranscriptsDisabled:
-    #         return "Transcript not available"
-
-    #     transcript = None
-
-    #     # Try to fetch manually created transcript
-    #     for lang in manual_langs:
-    #         try:
-    #             transcript = avail_lang.find_manually_created_transcript([lang])
-    #             break
-    #         except (TranscriptsDisabled, NoTranscriptFound):
-    #             continue
-
-    #     # Fallback to auto-generated transcripts
-    #     if not transcript:
-    #         for lang in generated_langs:
-    #             try:
-    #                 transcript = avail_lang.find_generated_transcript([lang])
-    #                 break
-    #             except (TranscriptsDisabled, NoTranscriptFound):
-    #                 continue
-
-    #     # Fallback to native language transcript
-    #     if not transcript:
-    #         try:
-    #             transcript = YouTubeTranscriptApi.get_transcript(videoID)
-    #         except (TranscriptsDisabled, NoTranscriptFound):
-    #             return "Transcript not available"
-
-    #     formatter = TextFormatter()
-    #     formatted_transcript = formatter.format_transcript(transcript.fetch())
-
-    #     if isinstance(formatted_transcript, str):
-    #         print("YoutubeAgent class string transcript"+formatted_transcript)
-    #         return jsonify({"Transcript": formatted_transcript})
-
-    #     # elif isinstance(formatted_transcript, list):
-    #     # If it's a list of strings, you can return it as a JSON array
-    #     #     print("YoutubeAgent class list transcript"+formatted_transcript)
-    #     #     Lst=[line['text'] for line in formatted_transcript]
-    #     #     return jsonify({"Transcript list": Lst})
-
-    #     else:
-    #     # If it's an object or unexpected structure, raise an error
-    #         return jsonify({"error": "Failed to format transcript properly"})
     
     def fetchVideoTranscript(self, videoID):
         # Simulate fetching a transcript for a given video ID

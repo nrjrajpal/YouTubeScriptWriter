@@ -100,7 +100,6 @@ def YtIds():
             # print(f"Transcript: {transcript}")
             
             Data.append({
-            "ID": i,
             "Metadata": metadata,
             "Transcript": transcript if isinstance(transcript, str) else "Transcript not available"
             }) 
@@ -112,7 +111,7 @@ def YtIds():
         # In case of error, return None or a proper error message
         return None
     
-    return {"MetaData": Data}
+    return {"Data": Data}
 
 @temp_blueprint.route('/getYTmetadata', methods=['POST'])
 def Ytmetadata():
