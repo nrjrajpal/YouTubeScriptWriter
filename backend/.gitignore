@@ -1,7 +1,9 @@
-.venv_yt_project/
+**/.venv*/
 
 __pycache__/
 *.pyc
 *.pyo
 *.log
 *.env
+
+**/scriptwriter-firebase-adminsdk.json
