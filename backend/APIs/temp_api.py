@@ -1,6 +1,8 @@
 from flask import Blueprint, jsonify
 from PseudoAgents import SyntheticAgent,ResearcherAgent,YouTubeAgent
 import ast
+import json
+import os
 
 temp_blueprint = Blueprint('temp', __name__)
 
@@ -77,7 +79,7 @@ def getSearchQuery():
 def YtIds():
     researcher = YouTubeAgent(projectID=1234)
     try:
-        researcher.setSearchQuery("हिंदी कविता")
+        researcher.setSearchQuery("productivity hacks based on time management psychology")
         print(researcher.getSearchQuery())
         temp = researcher.fetchVideosFromYT()
         Data = []
@@ -92,6 +94,7 @@ def YtIds():
         #     Data.append({"ID": i, "Metadata": metadata, "Transcript": transcript})
         for i in temp:
             # Fetch transcript and process the Response object
+            
             metadata = researcher.fetchVideoMetadata(i)
             transcript_response = researcher.fetchVideoTranscript(i)
             transcript = (
@@ -109,6 +112,10 @@ def YtIds():
             }) 
 
         print(Data)
+        current_directory = os.path.dirname(os.path.abspath(__file__))  # Get script's directory
+        output_file = os.path.join(current_directory, "api_response.json")  # Specify file path
+        with open(output_file, "w") as file:
+            json.dump(Data, file)
 
     except Exception as e:
         print(f"Error: {e}")
