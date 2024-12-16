@@ -47,7 +47,7 @@ def temp():
 @temp_blueprint.route('/getSearchQuery', methods=['POST'])
 def getSearchQuery():
     try:
-        researcher = ResearcherAgent(projectID="12345")
+        researcher = ResearcherAgent(projectID="11223")
         # Set an idea title and generate a search query
         # researcher.setIdeaTitle("Quantum Computing in Cryptography")
         # researcher.generateSearchQuery()
@@ -72,7 +72,7 @@ def getSearchQuery():
         # Retrieve and print the generated search query
         # search_query = researcher.getSearchQuery()
         # print(f"Search Query: {search_query}")
-    except:
+    except Exception as e:
         return jsonify({"error": "An error occurred: " + e.message or e})
     
 @temp_blueprint.route('/getYTids', methods=['POST'])

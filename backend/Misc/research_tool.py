@@ -6,14 +6,15 @@ from groq import Groq
 from tavily import TavilyClient
 from colorama import Fore, Style, init
 import asyncio
+from dotenv import load_dotenv
+load_dotenv()
 
 # Initialize colorama
 init()
 
 # Set up environment variables and API clients
-os.environ["GROQ_API_KEY"] = "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"
-client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
-tavily_client = TavilyClient(api_key="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")
+client = Groq(api_key=os.getenv("GROQAPIKEY"))
+tavily_client = TavilyClient(api_key=os.getenv("TAVILYAPIKEY"))
 
 # Global variables to store paper URLs and formatted content
 paper_urls = []
@@ -24,7 +25,7 @@ def get_links(query: str):
     url = "https://google.serper.dev/scholar"
     payload = json.dumps({"q": query})
     headers = {
-        'X-API-KEY': 'c00f4f87570fe4a8bc6621d348db27ab370186cf',
+        'X-API-KEY': os.getenv("SERPAPIKEY"),
         'Content-Type': 'application/json'
     }
     response = requests.request("POST", url, headers=headers, data=payload)
