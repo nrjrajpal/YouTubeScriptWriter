@@ -20,7 +20,7 @@ class ResearcherAgent(SyntheticAgent):
     def setSearchQuery(self, query):
         self.searchQuery = query  # Update in DB later
 
-    def __generateSearchQuery(self):
+    def generateSearchQuery(self):
         self.getVideoTitle()
         self.getIdeaDescription()
         

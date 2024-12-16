@@ -73,6 +73,7 @@ class YouTubeAgent(ResearcherAgent):
             transcript_data = transcript.fetch()
             formatter = TextFormatter()
             formatted_transcript = formatter.format_transcript(transcript_data)
+            formatted_transcript=formatted_transcript.replace("\n", " ")
 
             if isinstance(formatted_transcript, str):
                 return formatted_transcript
@@ -149,25 +150,6 @@ class YouTubeAgent(ResearcherAgent):
                 fetched_videos += len(result['entries'])
 
         return filtered_video_ids
-
-    # Override generateSummary (inherited from ResearcherAgent)
-    def generateSummary(self):
-        if not self.videoIDs:
-            print("No video IDs available to generate summaries.")
-            return []
-
-        summaries = []
-        for videoID in self.videoIDs:
-            print(f"Generating summary for video ID: {videoID}")
-            transcript = self.fetchVideoTranscript(videoID)  # Fetch the transcript
-            # Placeholder for summary generation logic using LLM
-            sys_prompt = "You are an expert summarizer for YouTube video transcripts."
-            user_prompt = f"Summarize the following transcript for video {videoID}: {transcript}"
-            summary = self.getLLMResponse(sys_prompt, user_prompt)
-            summaries.append(summary)
-
-        print("Summaries generated for all videos.")
-        return summaries
     
     @staticmethod
     def format_count(count):

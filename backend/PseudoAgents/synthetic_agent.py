@@ -42,7 +42,7 @@ class SyntheticAgent:
         
         return self.ideaTitle
 
-    def __setIdeaTitle(self,newIdeaTitle):
+    def setIdeaTitle(self,newIdeaTitle):
         self.ideaTitle = newIdeaTitle   #Set this on DB later
         
     # Idea Description Functions
@@ -54,7 +54,7 @@ class SyntheticAgent:
         
         return self.ideaDescription
 
-    def __setIdeaDescription(self, newDescription):
+    def setIdeaDescription(self, newDescription):
         self.ideaDescription = newDescription #Set this on DB later
 
     # Video Title Functions
@@ -65,7 +65,7 @@ class SyntheticAgent:
         
         return self.videoTitle
 
-    def __setVideoTitle(self, newVideoTitle):
+    def setVideoTitle(self, newVideoTitle):
         self.videoTitle = newVideoTitle #Set this on DB later
 
     # API Key Functions
@@ -91,7 +91,7 @@ class SyntheticAgent:
         
         return self.tavilyAPIKey
 
-    def __generateVideoTitles(self):
+    def generateVideoTitles(self):
         if not self.ideaTitle or not self.ideaDescription:
             print("Idea title and description are required to generate video titles.")
             return []
