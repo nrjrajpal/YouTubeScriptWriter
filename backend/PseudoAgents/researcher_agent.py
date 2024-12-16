@@ -17,7 +17,7 @@ class ResearcherAgent(SyntheticAgent):
             self.searchQuery = self._fetch_from_db("searchQuery")  # Fetch from DB later
         return self.searchQuery
 
-    def __setSearchQuery(self, query):
+    def setSearchQuery(self, query):
         self.searchQuery = query  # Update in DB later
 
     def __generateSearchQuery(self):

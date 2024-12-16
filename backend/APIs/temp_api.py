@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from PseudoAgents import SyntheticAgent,ResearcherAgent
+from PseudoAgents import SyntheticAgent,ResearcherAgent,YouTubeAgent
 import ast
 
 temp_blueprint = Blueprint('temp', __name__)
@@ -68,3 +68,61 @@ def getSearchQuery():
     # Retrieve and print the generated search query
     # search_query = researcher.getSearchQuery()
     # print(f"Search Query: {search_query}")
+    
+@temp_blueprint.route('/getYTids', methods=['POST'])
+def YtIds():
+    researcher = YouTubeAgent(projectID=1234)
+    try:
+        researcher.setSearchQuery("हिंदी कविता")
+        print(researcher.getSearchQuery())
+        temp = researcher.fetchVideosFromYT()
+        Data = []
+        # for i in temp:
+        #     # Fetch metadata
+        #     # metadata = researcher.fetchVideoMetadata(i)
+
+        #     # Fetch transcript and make sure to extract data if it's a Response object
+        #     transcript = researcher.fetchVideoTranscript(i)
+        #     print("Done transcript")
+        #     print("transcript"+transcript)
+        #     Data.append({"ID": i, "Metadata": metadata, "Transcript": transcript})
+        for i in temp:
+            # Fetch transcript and process the Response object
+            metadata = researcher.fetchVideoMetadata(i)
+            transcript_response = researcher.fetchVideoTranscript(i)
+            transcript = (
+                transcript_response.get('formatted_transcript') 
+                if isinstance(transcript_response, dict) and 'formatted_transcript' in transcript_response 
+                else str(transcript_response)
+            )
+            
+            print("Done transcript")
+            # print(f"Transcript: {transcript}")
+            
+            Data.append({
+            "Metadata": metadata,
+            "Transcript": transcript if isinstance(transcript, str) else "Transcript not available"
+            }) 
+
+        print(Data)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        # In case of error, return None or a proper error message
+        return None
+    
+    return {"Data": Data}
+
+@temp_blueprint.route('/getYTmetadata', methods=['POST'])
+def Ytmetadata():
+    researcher = YouTubeAgent(projectID=1234)
+    try:
+        
+        temp=researcher.fetchVideoMetadata()
+        for i in temp:
+            x=researcher.fetch
+            
+    except:
+        return jsonify({"message":"error"})
+    
+    return jsonify({"Videos_Ids":temp})
