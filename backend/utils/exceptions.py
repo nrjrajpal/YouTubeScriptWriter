@@ -4,6 +4,18 @@ class ProjectNotFoundError(Exception):
         self.message = message
         super().__init__(self.message)
 
+class UserNotFoundError(Exception):
+    """Exception raised when a user is not found in the database."""
+    def __init__(self, message="User not found"):
+        self.message = message
+        super().__init__(self.message)
+
+class NoProjectsExistError(Exception):
+    """Exception raised when a user doesn't have any projects in the database."""
+    def __init__(self, message="No projecsts found for the given user"):
+        self.message = message
+        super().__init__(self.message)
+
 class KeyNotFoundError(Exception):
     """Exception raised when a specific key is not found in a database record."""
     def __init__(self, message="Key not found in the database record."):
@@ -28,8 +40,3 @@ class SerperAPIKeyNotFoundError(Exception):
         self.message = message
         super().__init__(self.message)
         
-class UserNotFoundError(Exception):
-    """Exception raised when a user is not found in the database."""
-    def __init__(self, message="User not found"):
-        self.message = message
-        super().__init__(self.message)

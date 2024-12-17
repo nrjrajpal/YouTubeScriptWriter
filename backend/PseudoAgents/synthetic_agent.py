@@ -1,12 +1,15 @@
 from groq import Groq
-import os
-from dotenv import load_dotenv
+# import os
+# from dotenv import load_dotenv
 from utils.firebase import db
-from utils.exceptions import ProjectNotFoundError, KeyNotFoundError
+from utils.exceptions import ProjectNotFoundError, KeyNotFoundError, UserNotFoundError
 
-COLLECTION_NAME = "TrialProject"
+PROJECT_COLLECTION_NAME = "TrialProject"
+USER_COLLECTION_NAME = "TrialUser"
 
-load_dotenv()
+# load_dotenv()
+# os.getenv("SERPAPIKey")
+
 
 class SyntheticAgent:
     def __init__(self, projectID, userEmail):
@@ -40,7 +43,7 @@ class SyntheticAgent:
     def getIdeaTitle(self):
         try: 
             if not self.ideaTitle:
-                collection_ref = db.collection(COLLECTION_NAME)
+                collection_ref = db.collection(PROJECT_COLLECTION_NAME)
                 docs = collection_ref.where("ID", "==", self.projectID).get()
                 if not docs:
                     raise ProjectNotFoundError("No project found with this ID.")
@@ -60,7 +63,7 @@ class SyntheticAgent:
     def getIdeaDescription(self):
         try:
             if not self.ideaDescription:
-                collection_ref = db.collection(COLLECTION_NAME)
+                collection_ref = db.collection(PROJECT_COLLECTION_NAME)
                 docs = collection_ref.where("ID", "==", self.projectID).get()
                 if not docs:
                     raise ProjectNotFoundError("No project found with this ID.")
@@ -80,7 +83,7 @@ class SyntheticAgent:
     def getVideoTitle(self):
         try:
             if not self.videoTitle:
-                collection_ref = db.collection(COLLECTION_NAME)
+                collection_ref = db.collection(PROJECT_COLLECTION_NAME)
                 docs = collection_ref.where("ID", "==", self.projectID).get()
                 if not docs:
                     raise ProjectNotFoundError("No project found with this ID.")
@@ -96,34 +99,62 @@ class SyntheticAgent:
         except:
             raise
 
-    # API Key Functions
     def getGroqAPIKey(self):
-        try:
+        try: 
             if not self.groqAPIKey:
-                print("If called")
-                self.groqAPIKey = os.getenv("GROQAPIKEY")  #Fetch this from DB later
-            
-            return self.groqAPIKey
+                collection_ref = db.collection(USER_COLLECTION_NAME)
+                docs = collection_ref.where("userEmail", "==", self.userEmail).get()
+                if not docs:
+                    raise UserNotFoundError("No user found with this email.")
+
+                record = docs[0].to_dict()
+
+                if "groqAPIKey" not in record:
+                    raise KeyNotFoundError("Groq API Key is not set in the database.")
+
+                self.groqAPIKey = record["groqAPIKey"]
+
+            return self.groqAPIKey 
         except:
             raise
         
     def getSerperAPIKey(self):
-        try:
-            # return self.serperAPIKey
+        try: 
             if not self.serperAPIKey:
-                print("If called")
-                self.serperAPIKey = os.getenv("SERPAPIKey")  #Fetch this from DB later
-            
-            return self.serperAPIKey
+                collection_ref = db.collection(USER_COLLECTION_NAME)
+                docs = collection_ref.where("userEmail", "==", self.userEmail).get()
+                if not docs:
+                    raise UserNotFoundError("No user found with this email.")
+
+                record = docs[0].to_dict()
+
+                if "serperAPIKey" not in record:
+                    raise KeyNotFoundError("Serper API Key is not set in the database.")
+
+                self.serperAPIKey = record["serperAPIKey"]
+
+            return self.serperAPIKey 
         except:
             raise
 
     def getTavilyAPIKey(self):
-        if not self.tavilyAPIKey:
-            print("If called")
-            self.tavilyAPIKey = os.getenv("TAVILYAPIKEY")  #Fetch this from DB later
-        
-        return self.tavilyAPIKey
+        try: 
+            if not self.tavilyAPIKey:
+                collection_ref = db.collection(USER_COLLECTION_NAME)
+                docs = collection_ref.where("userEmail", "==", self.userEmail).get()
+                if not docs:
+                    raise UserNotFoundError("No user found with this email.")
+
+                record = docs[0].to_dict()
+
+                if "tavilyAPIKey" not in record:
+                    raise KeyNotFoundError("Tavily API Key is not set in the database.")
+
+                self.tavilyAPIKey = record["tavilyAPIKey"]
+
+            return self.tavilyAPIKey 
+        except:
+            raise
 
     def generateVideoTitles(self):
         try:
