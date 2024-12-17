@@ -47,29 +47,12 @@ class SyntheticAgent:
 
                 record = docs[0].to_dict()
 
-                # print(record)
                 if "ideaTitle" not in record:
                     raise KeyNotFoundError("Idea title is not set in the database.")
 
                 self.ideaTitle = record["ideaTitle"]
 
             return self.ideaTitle 
-        except:
-            raise
-
-    def setIdeaTitle(self, ideaTitle):
-        try:
-            collection_ref = db.collection(COLLECTION_NAME)
-            docs = collection_ref.where("ID", "==", self.projectID).get()
-            if not docs:
-                print("No project found with this ID.")
-                raise ProjectNotFoundError("No project found with this ID.")
-            
-            doc_ref = docs[0].reference
-            doc_ref.update({"ideaTitle": ideaTitle})
-            self.ideaTitle = ideaTitle
-            
-            return "Idea title set successfully"
         except:
             raise
         
@@ -88,23 +71,8 @@ class SyntheticAgent:
                     raise KeyNotFoundError("Idea description is not set in the database.")
 
                 self.ideaDescription = record["ideaDescription"]
+
             return self.ideaDescription
-        except:
-            raise
-
-
-    def setIdeaDescription(self, ideaDescription):
-        try:
-            collection_ref = db.collection(COLLECTION_NAME)
-            docs = collection_ref.where("ID", "==", self.projectID).get()
-            if not docs:
-                raise ProjectNotFoundError("No project found with this ID.")
-            
-            doc_ref = docs[0].reference
-            doc_ref.update({"ideaDescription": ideaDescription})
-            self.ideaDescription = ideaDescription
-            
-            return "Idea title set successfully"
         except:
             raise
 
@@ -125,21 +93,6 @@ class SyntheticAgent:
                 self.videoTitle = record["videoTitle"]
 
             return self.videoTitle
-        except:
-            raise
-    
-    def setVideoTitle(self, videoTitle):
-        try:
-            collection_ref = db.collection(COLLECTION_NAME)
-            docs = collection_ref.where("ID", "==", self.projectID).get()
-            if not docs:
-                raise ProjectNotFoundError("No project found with this ID.")
-            
-            doc_ref = docs[0].reference
-            doc_ref.update({"videoTitle": videoTitle})
-            self.videoTitle = videoTitle
-            
-            return "Idea title set successfully"
         except:
             raise
 
