@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from utils.firebase import db
 from utils.exceptions import ProjectNotFoundError, KeyNotFoundError
 
-COLLECTION_NAME = "TrialProject"
+PROJECT_COLLECTION_NAME = "TrialProject"
 
 load_dotenv()
 
@@ -39,7 +39,7 @@ class SyntheticAgent:
     def getIdeaTitle(self):
         try: 
             if not self.ideaTitle:
-                collection_ref = db.collection(COLLECTION_NAME)
+                collection_ref = db.collection(PROJECT_COLLECTION_NAME)
                 docs = collection_ref.where("ID", "==", self.projectID).get()
                 if not docs:
                     raise ProjectNotFoundError("No project found with this ID.")
@@ -59,7 +59,7 @@ class SyntheticAgent:
     def getIdeaDescription(self):
         try:
             if not self.ideaDescription:
-                collection_ref = db.collection(COLLECTION_NAME)
+                collection_ref = db.collection(PROJECT_COLLECTION_NAME)
                 docs = collection_ref.where("ID", "==", self.projectID).get()
                 if not docs:
                     raise ProjectNotFoundError("No project found with this ID.")
@@ -79,7 +79,7 @@ class SyntheticAgent:
     def getVideoTitle(self):
         try:
             if not self.videoTitle:
-                collection_ref = db.collection(COLLECTION_NAME)
+                collection_ref = db.collection(PROJECT_COLLECTION_NAME)
                 docs = collection_ref.where("ID", "==", self.projectID).get()
                 if not docs:
                     raise ProjectNotFoundError("No project found with this ID.")
@@ -92,6 +92,21 @@ class SyntheticAgent:
                 self.videoTitle = record["videoTitle"]
 
             return self.videoTitle
+        except:
+            raise
+        
+    def setVideoTitle(self, videoTitle):
+        try:
+            collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+            docs = collection_ref.where("ID", "==", self.projectID).get()
+            if not docs:
+                raise ProjectNotFoundError("No project found with this ID.")
+
+            doc_ref = docs[0].reference
+            doc_ref.update({"videoTitle": videoTitle})
+            self.videoTitle = videoTitle
+
+            return "Idea title set successfully"
         except:
             raise
 
