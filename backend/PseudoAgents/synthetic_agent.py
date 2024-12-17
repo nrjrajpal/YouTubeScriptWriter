@@ -9,7 +9,8 @@ COLLECTION_NAME = "TrialProject"
 load_dotenv()
 
 class SyntheticAgent:
-    def __init__(self, projectID):
+    def __init__(self, projectID, userEmail):
+        self.userEmail=userEmail
         self.projectID = projectID
         self.ideaTitle = None
         self.ideaDescription = None
