@@ -9,3 +9,21 @@ class KeyNotFoundError(Exception):
     def __init__(self, message="Key not found in the database record."):
         self.message = message
         super().__init__(self.message)
+
+class ProjectExistsError(Exception):
+    """Exception raised when a project is not found in the database."""
+    def __init__(self, message="Project with this ID already exists"):
+        self.message = message
+        super().__init__(self.message)
+
+class UserNotFoundError(Exception):
+    """Exception raised when a user is not found in the database."""
+    def __init__(self, message="User not found"):
+        self.message = message
+        super().__init__(self.message)
+
+class EmailMismatchError(Exception):
+    """Exception raised when user email doesnt match with the project owner email while fetching project details."""
+    def __init__(self, message="Email not matching the project owner's email"):
+        self.message = message
+        super().__init__(self.message)
