@@ -9,6 +9,7 @@ import json
 import time
 from groq import Groq
 from tavily import TavilyClient
+from utils.exceptions import ProjectNotFoundError, KeyNotFoundError,ContentNotFoundError
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -23,28 +24,27 @@ class ResearchPaperAgent(ResearcherAgent):
 
     # Getter for research paper URLs and metadata
     def getResearchPaperUrlsAndMetadata(self):
-        pass
+        try: 
+            print("self.researchPaperData: ", self.researchPaperData)
+            if not self.researchPaperData:
+                collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+                docs = collection_ref.where("ID", "==", self.projectID).get()
+                if not docs:
+                    raise ProjectNotFoundError("Project with the given id doesn't exist.")
 
-    # Setter for research paper URLs and metadata
-    # def setResearchPaperUrlsAndMetadata(self, urls_and_metadata):
-    #     collection_name = "TrialProjects"
+                record = docs[0].to_dict()
+                print("RECORD ", record)
 
-    #     self.researchPaperUrlsAndMetadata = urls_and_metadata
+                if "researchPaperData" not in record:
+                    raise KeyNotFoundError("researchPaperData is not set in the database.")
 
-    #     try:
-    #         collection_ref = db.collection(TrialUser)
-    #         docs = collection_ref.where("userEmail", "==", self.userEmail).get()
-    #         if not docs:
-    #             raise UserNotFoundError("No user found with this email.")
-    #         for paper in urls_and_metadata:
-    #             docs.set({
-    #                 "paper_url": paper["paper_url"],
-    #                 "paper_title": paper["paper_title"]
-    #             })
-    #             print(f"Saved to Firestore: {paper['paper_title']} ({paper['paper_url']})")
-    #     except Exception as e:
-    #         print("Error saving to Firestore: " + str(e))
-            
+                self.researchPaperData = record["researchPaperData"]
+                print(record["researchPaperData"])
+
+            return self.researchPaperData 
+        except:
+            raise
+
     def setResearchPaperUrlsAndMetadata(self, researchPaperData):
         try:
             collection_ref = db.collection(PROJECT_COLLECTION_NAME)
@@ -69,6 +69,8 @@ class ResearchPaperAgent(ResearcherAgent):
             # final_research_formatted_content = []
             # Fetch raw data from Tavily
             response = tavily_client.extract(urls=[url])
+            if not response["results"]:
+                raise ContentNotFoundError("Web content for the given URL not available")
             return response["results"][0]["raw_content"]
         # [0]["raw_content"]
             # for output in response["results"]:
@@ -96,8 +98,8 @@ class ResearchPaperAgent(ResearcherAgent):
             #     for paper in final_research_formatted_content
             # ]
 
-        except Exception as e:
-            print("Error during research paper content fetching: " + str(e))
+        except:
+            raise
 
     def fetchResearchPaperFromWeb(self):
 
