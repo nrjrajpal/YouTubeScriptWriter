@@ -1,6 +1,11 @@
-import { NextResponse } from 'next/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function middleware(request: Request) {
+const isOnboardingRoute = createRouteMatcher(['/onboarding'])
+const isPublicRoute = createRouteMatcher(['/sign-in', '/sign-up'])
+
+async function handleProjectMiddleware(request: Request) {
+  console.log("The project middleware")
   const url = new URL(request.url);
   const projectId = url.pathname.split('/')[3];
 
@@ -9,13 +14,11 @@ export async function middleware(request: Request) {
       // Check if the project exists
       const checkProjectUrl = `${process.env.API_BASE_URL}/api/checkProject/${projectId}`;
       const checkProjectResponse = await fetch(checkProjectUrl);
-
       if (checkProjectResponse.status === 404) {
         console.error(`Project ${projectId} does not exist. Redirecting to dashboard.`);
         url.pathname = '/dashboard';
         return NextResponse.redirect(url);
       }
-
       if (!checkProjectResponse.ok) {
         console.error("API Error (Check Project):", await checkProjectResponse.text());
         return NextResponse.next();
@@ -24,7 +27,6 @@ export async function middleware(request: Request) {
       // Get the next stage for the project
       const getNextStageUrl = `${process.env.API_BASE_URL}/api/getNextStage/${projectId}`;
       const getNextStageResponse = await fetch(getNextStageUrl);
-
       if (!getNextStageResponse.ok) {
         console.error("API Error (Get Next Stage):", await getNextStageResponse.text());
         return NextResponse.next();
@@ -42,11 +44,62 @@ export async function middleware(request: Request) {
       console.error("Middleware Error:", error);
     }
   }
-
   return NextResponse.next();
 }
 
-// Configuration to apply middleware only to /project routes
+export default clerkMiddleware(async (auth, req: NextRequest) => {
+  console.log("The clerk middleware")
+
+  // First check project middleware if it's a project route
+  if (req.nextUrl.pathname.startsWith('/project/')) {
+    const projectMiddlewareResponse = await handleProjectMiddleware(req);
+    if (projectMiddlewareResponse.status !== 200) {
+      return projectMiddlewareResponse;
+    }
+  }
+
+  const { userId, sessionClaims, redirectToSignIn } = await auth()
+
+  // For users visiting /onboarding, don't try to redirect
+  if (userId && isOnboardingRoute(req)) {
+    return NextResponse.next()
+  }
+
+  // If the user isn't signed in and the route is private, redirect to sign-in
+  if (!userId && !isPublicRoute(req)) {
+    return redirectToSignIn({ returnBackUrl: req.url })
+  }
+
+  // Catch users who do not have `onboardingComplete: true` in their publicMetadata
+  // Redirect them to the /onboading route to complete onboarding
+  if (userId && !sessionClaims?.metadata?.onboardingComplete) {
+    const onboardingUrl = new URL('/onboarding', req.url)
+    return NextResponse.redirect(onboardingUrl)
+  }
+
+  // If the user is logged in and the route is protected, let them view.
+  if (userId && !isPublicRoute(req)) {
+    return NextResponse.next()
+  }
+
+  if (userId && isPublicRoute(req)) {
+    const dashboardUrl = new URL('/dashboard', req.url)
+    return NextResponse.redirect(dashboardUrl)
+    // return NextResponse.next()
+  }
+
+  return NextResponse.next()
+})
+
 export const config = {
-  matcher: ['/project/:path*'],
-};
+  matcher: [
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+    // Include project routes
+    '/project/:path*',
+  ],
+}
+
+
