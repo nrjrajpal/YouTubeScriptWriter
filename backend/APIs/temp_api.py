@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from PseudoAgents import SyntheticAgent,ResearcherAgent,YouTubeAgent
+from PseudoAgents import SyntheticAgent,ResearcherAgent,YouTubeAgent,User
 import ast
 import json
 import os
@@ -124,16 +124,15 @@ def YtIds():
     
     return {"Data": Data}
 
-@temp_blueprint.route('/getYTmetadata', methods=['POST'])
-def Ytmetadata():
-    researcher = YouTubeAgent(projectID=1234)
+@temp_blueprint.route('/user', methods=['POST'])
+def user():
     try:
+        usr=User(userEmail="temp@email.com")
+        print(usr.userEmail)
+        temp=usr.getChannelDetails()
+        return jsonify({"Message":temp})
         
-        temp=researcher.fetchVideoMetadata()
-        for i in temp:
-            x=researcher.fetch
-            
-    except:
-        return jsonify({"message":"error"})
-    
-    return jsonify({"Videos_Ids":temp})
+    except Exception as e:
+        print(f"Error: {e}")
+        # In case of error, return None or a proper error message
+        return None
