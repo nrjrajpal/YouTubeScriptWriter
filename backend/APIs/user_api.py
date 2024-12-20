@@ -1,7 +1,7 @@
 #THIS IS A TEMP FILE!
 from flask import Blueprint, request, jsonify
 from PseudoAgents import User
-from utils.exceptions import KeyNotFoundError, UserNotFoundError
+from utils.exceptions import KeyNotFoundError, UserNotFoundError,NoProjectsExistError
 
 user_blueprint = Blueprint('user', __name__)
 
@@ -67,3 +67,23 @@ def setGroqAPIKey():
         return jsonify({"error": e.message, "success": False}), 404
     except Exception as e:
         return jsonify({"error": "An error occurred: " + e.message or e, "success": False}), 500
+    
+@user_blueprint.route('/getUserProjects', methods=['POST'])
+def getOwnedProjects():
+    try:
+        data = request.get_json()
+        print(data)
+        userEmail = data.get('userEmail')
+        # userEmail = "temp@gmail.com"
+        if not userEmail:
+            return jsonify({"error": "Missing required field: userEmail", "success": False}), 400
+        
+        user = User(userEmail)
+        projects = user.getOwnedProjects()
+        return jsonify({"allUserProjects": projects, "success": True}), 200
+    except UserNotFoundError as e:
+        return jsonify({"error": e.message, "success": False}), 404
+    except NoProjectsExistError as e:
+        return jsonify({"error": e.message, "success": False}), 404
+    except Exception as e:
+        return jsonify({"error": e, "success": False}), 500

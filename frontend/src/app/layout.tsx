@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider, SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
+import { dark } from '@clerk/themes'
 // import { Button } from "@/components/ui/button";
 
 const geistSans = Geist({
@@ -25,20 +26,37 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en">
+    <ClerkProvider appearance={{
+      baseTheme: dark,
+      layout: {
+        unsafe_disableDevelopmentModeWarnings: true,
+      }
+    }}>
+      <html lang="en" className="dark">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
-            {/* <header className="flex justify-end w-screen p-2"> */}
-            <header>
+          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}
+        >
+          {/* <header className="flex justify-end w-screen p-2"> */}
+          <header className="absolute end-0 p-4">
             {/* <SignedOut>
               <SignInButton >
                 <Button>Log In</Button>
-              </SignInButton>
-            </SignedOut> */}
+                </SignInButton>
+                </SignedOut> */}
             <SignedIn>
-              <UserButton />
+              <UserButton appearance={{
+                elements: {
+                  userButtonAvatarBox: {
+                    height: 40,
+                    width: 40,
+                  },
+                  userButtonAvatarImage: {
+                    height: 40,
+                    width: 40,
+                  }
+                }
+              }} />
+              {/* <p className="text-white pl-4">Profile</p> */}
             </SignedIn>
           </header>
           {children}

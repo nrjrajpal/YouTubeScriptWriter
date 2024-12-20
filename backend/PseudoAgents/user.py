@@ -1,5 +1,6 @@
 from utils.firebase import db
 from utils.exceptions import KeyNotFoundError, UserNotFoundError, NoProjectsExistError
+from .project import Project
 
 # from youtubesearchpython import Channel
 
@@ -8,45 +9,59 @@ USER_COLLECTION_NAME = "TrialUser"
 class User:
     def __init__(self,userEmail):
         self.userEmail = userEmail
+        self.userID = None
         self.channelID = None
         self.groqAPIKey = None
         self.serperAPIKey = None
         self.tavilyAPIKey = None
         self.ownedProjects = []
 
-    def getChannelID(self):
-        try: 
-            if not self.channelID:
-                collection_ref = db.collection(USER_COLLECTION_NAME)
-                docs = collection_ref.where("userEmail", "==", self.userEmail).get()
-                if not docs:
-                    raise UserNotFoundError("No user found with this email.")
-
-                record = docs[0].to_dict()
-
-                if "channelID" not in record:
-                    raise KeyNotFoundError("Channel ID is not set in the database.")
-
-                self.channelID = record["channelID"]
-
-            return self.channelID 
-        except:
-            raise
-
-    def setChannelID(self, channelID):
+    def createUser(self, userID):
         try:
             collection_ref = db.collection(USER_COLLECTION_NAME)
             docs = collection_ref.where("userEmail", "==", self.userEmail).get()
-            if not docs:
-                raise UserNotFoundError("No user found with this email.")
+            if docs:
+                raise UserNotFoundError("User already exists with this email.")
             
-            doc_ref = docs[0].reference
-            doc_ref.update({"channelID": channelID})
-            self.channelID = channelID
-            
-            return "Channel ID set successfully"
+            doc_ref = collection_ref.document()
+            doc_ref.set({"userEmail": self.userEmail, "userID": userID})
+
+            return "User created successfully"
         except:
             raise
+    # def getChannelID(self):
+    #     try: 
+    #         if not self.channelID:
+    #             collection_ref = db.collection(USER_COLLECTION_NAME)
+    #             docs = collection_ref.where("userEmail", "==", self.userEmail).get()
+    #             if not docs:
+    #                 raise UserNotFoundError("No user found with this email.")
+
+    #             record = docs[0].to_dict()
+
+    #             if "channelID" not in record:
+    #                 raise KeyNotFoundError("Channel ID is not set in the database.")
+
+    #             self.channelID = record["channelID"]
+
+    #         return self.channelID 
+    #     except:
+    #         raise
+
+    # def setChannelID(self, channelID):
+    #     try:
+    #         collection_ref = db.collection(USER_COLLECTION_NAME)
+    #         docs = collection_ref.where("userEmail", "==", self.userEmail).get()
+    #         if not docs:
+    #             raise UserNotFoundError("No user found with this email.")
+            
+    #         doc_ref = docs[0].reference
+    #         doc_ref.update({"channelID": channelID})
+    #         self.channelID = channelID
+            
+    #         return "Channel ID set successfully"
+    #     except:
+    #         raise
 
     def getGroqAPIKey(self):
         try: 
@@ -160,14 +175,23 @@ class User:
             record = docs[0].to_dict()
 
             if "ownedProjects" not in record or not record["ownedProjects"]:
-                raise NoProjectsExistError("No projecsts found for the given user.")
+                raise NoProjectsExistError("No projects found for the given user.")
 
             self.ownedProjects = record["ownedProjects"]
+            print("ownedProjects user:", self.ownedProjects, type(self.ownedProjects))
+            projectDetails = []
+            for ownedProject in self.ownedProjects:
+                project = Project(ownedProject)
+                details=project.getProjectDetails(self.userEmail)
+                projectDetails.append(details)
+                # print("Project:", project)
 
-            return self.ownedProjects 
+            return projectDetails
         except:
             raise
-
+    
+    
+    
     # Channel Details
     # def getChannelDetails(self):
     #     try:

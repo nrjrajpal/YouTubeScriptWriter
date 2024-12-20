@@ -3,115 +3,202 @@
 import * as React from 'react'
 import { useSignUp } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
+import { isClerkAPIResponseError } from '@clerk/nextjs/errors'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { TriangleIcon as ExclamationTriangle, Eye, EyeOff } from 'lucide-react'
+import Link from 'next/link'
+import { OTPInput } from '@/components/OTPInput'
 
-export default function Page() {
+export default function SignUpForm() {
     const { isLoaded, signUp, setActive } = useSignUp()
     const [emailAddress, setEmailAddress] = React.useState('')
     const [password, setPassword] = React.useState('')
     const [verifying, setVerifying] = React.useState(false)
     const [code, setCode] = React.useState('')
+    const [error, setError] = React.useState<string | null>(null)
+    const [isEmailValid, setIsEmailValid] = React.useState(true)
+    const [isEmailTouched, setIsEmailTouched] = React.useState(false)
+    const [showPassword, setShowPassword] = React.useState(false)
     const router = useRouter()
 
-    // Handle submission of the sign-up form
+    const validateEmail = (email: string) => {
+        const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+        return re.test(email)
+    }
+
+    React.useEffect(() => {
+        if (isEmailTouched) {
+            setIsEmailValid(validateEmail(emailAddress))
+        }
+    }, [emailAddress, isEmailTouched])
+
+    const handleEmailBlur = () => {
+        setIsEmailTouched(true)
+        setIsEmailValid(validateEmail(emailAddress))
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        setError(null)
 
         if (!isLoaded) return
 
-        // Start the sign-up process using the email and password provided
         try {
             await signUp.create({
                 emailAddress,
                 password,
             })
 
-            // Send the user an email with the verification code
             await signUp.prepareEmailAddressVerification({
                 strategy: 'email_code',
             })
 
-            // Set 'verifying' true to display second form
-            // and capture the OTP code
             setVerifying(true)
-        } catch (err: any) {
-            // See https://clerk.com/docs/custom-flows/error-handling
-            // for more info on error handling
-            console.error(JSON.stringify(err, null, 2))
+        } catch (err) {
+            if (isClerkAPIResponseError(err)) {
+                setError(err.errors[0].longMessage || 'An error occurred during sign-up. Please try again.')
+            } else {
+                setError('An unexpected error occurred. Please try again later.')
+            }
         }
     }
 
-    // Handle the submission of the verification form
     const handleVerify = async (e: React.FormEvent) => {
         e.preventDefault()
+        setError(null)
 
         if (!isLoaded) return
 
         try {
-            // Use the code the user provided to attempt verification
             const signUpAttempt = await signUp.attemptEmailAddressVerification({
                 code,
             })
 
-            // If verification was completed, set the session to active
-            // and redirect the user
             if (signUpAttempt.status === 'complete') {
                 await setActive({ session: signUpAttempt.createdSessionId })
                 router.push('/')
             } else {
-                // If the status is not complete, check why. User may need to
-                // complete further steps.
-                console.error(JSON.stringify(signUpAttempt, null, 2))
+                setError('Verification incomplete. Please try again.')
             }
-        } catch (err: any) {
-            // See https://clerk.com/docs/custom-flows/error-handling
-            // for more info on error handling
-            console.error('Error:', JSON.stringify(err, null, 2))
+        } catch (err) {
+            if (isClerkAPIResponseError(err)) {
+                setError(err.errors[0].longMessage || 'An error occurred during verification. Please try again.')
+            } else {
+                setError('An unexpected error occurred. Please try again later.')
+            }
         }
     }
 
-    // Display the verification form to capture the OTP code
-    if (verifying) {
-        return (
-            <>
-                <h1>Verify your email</h1>
-                <form onSubmit={handleVerify}>
-                    <label id="code">Enter your verification code</label>
-                    <input value={code} id="code" name="code" onChange={(e) => setCode(e.target.value)} />
-                    <button type="submit">Verify</button>
+    const renderForm = () => {
+        if (verifying) {
+            return (
+                <form onSubmit={handleVerify} className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="code">Enter your verification code</Label>
+                        <OTPInput
+                            value={code}
+                            valueLength={6}
+                            onChange={(value) => setCode(value)}
+                        />
+                    </div>
+                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">Verify</Button>
                 </form>
-            </>
+            )
+        }
+
+        return (
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                    <Label htmlFor="email">Email address</Label>
+                    <Input
+                        id="email"
+                        type="email"
+                        value={emailAddress}
+                        onChange={(e) => setEmailAddress(e.target.value)}
+                        onBlur={handleEmailBlur}
+                        placeholder="you@example.com"
+                        className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
+                    />
+                    {isEmailTouched && !isEmailValid && (
+                        <p className="text-sm text-red-500">Please enter a valid email address.</p>
+                    )}
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <div className="relative">
+                        <Input
+                            id="password"
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 pr-10"
+                            placeholder="Enter your password"
+                        />
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-0 top-0 h-full px-3 text-gray-400 hover:text-white"
+                            onClick={() => setShowPassword(!showPassword)}
+                        >
+                            {showPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                            ) : (
+                                <Eye className="h-4 w-4" />
+                            )}
+                        </Button>
+                    </div>
+                </div>
+                <Button
+                    type="submit"
+                    disabled={!isEmailValid || !password}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                    Sign up
+                </Button>
+                {/* <Button type="submit" className="w-full">Sign up</Button> */}
+            </form>
         )
     }
 
-    // Display the initial sign-up form to capture the email and password
     return (
-        <>
-            <h1>Sign up</h1>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="email">Enter email address</label>
-                    <input
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={emailAddress}
-                        onChange={(e) => setEmailAddress(e.target.value)}
-                    />
-                </div>
-                <div>
-                    <label htmlFor="password">Enter password</label>
-                    <input
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                </div>
-                <div>
-                    <button type="submit">Continue</button>
-                </div>
-            </form>
-        </>
+        <div className="min-h-screen flex items-center justify-center bg-gray-950 p-4">
+            <Card className="w-full max-w-md bg-gray-900 text-gray-100">
+                <CardHeader>
+                    <CardTitle className="text-2xl font-bold text-center">
+                        {verifying ? 'Verify your email' : 'Sign up'}
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    {renderForm()}
+                    {error && (
+                        <Alert variant="destructive" className="mt-4 bg-red-900/50 border border-red-600 text-red-100">
+                            <ExclamationTriangle className="h-4 w-4 mr-2" />
+                            <AlertDescription>{error}</AlertDescription>
+                        </Alert>
+                    )}
+                </CardContent>
+                <CardFooter className="flex justify-center">
+                    <p className="text-sm text-gray-400">
+                        {verifying ? (
+                            // "Didn't receive the code? " 
+                            ""
+                        ) : (
+                            <>
+                                Already have an account?{' '}
+                                <Link href="/sign-in" className="text-blue-400 hover:underline">
+                                    Sign in
+                                </Link>
+                            </>
+                        )}
+                    </p>
+                </CardFooter>
+            </Card>
+        </div>
     )
 }
+

@@ -4,9 +4,9 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
+    DialogFooter,
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -14,10 +14,11 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
 interface CreateProjectDialogProps {
-    onProjectCreated: (projectId: string) => void
+    onProjectCreated: (projectID: string) => void
+    userEmail: string
 }
 
-export function CreateProjectDialog({ onProjectCreated }: CreateProjectDialogProps) {
+export function CreateProjectDialog({ onProjectCreated, userEmail }: CreateProjectDialogProps) {
     const [open, setOpen] = React.useState(false)
     const [ideaTitle, setIdeaTitle] = React.useState("")
     const [ideaDescription, setIdeaDescription] = React.useState("")
@@ -34,12 +35,12 @@ export function CreateProjectDialog({ onProjectCreated }: CreateProjectDialogPro
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ ideaTitle, ideaDescription }),
+                body: JSON.stringify({ ideaTitle, ideaDescription, userEmail }),
             })
             const result = await response.json()
             if (result.success) {
                 setMessage("Project created successfully!")
-                onProjectCreated(result.project.id)
+                onProjectCreated(result.project.projectID)
                 setTimeout(() => {
                     setOpen(false)
                     setIdeaTitle("")
@@ -61,7 +62,7 @@ export function CreateProjectDialog({ onProjectCreated }: CreateProjectDialogPro
             <DialogTrigger asChild>
                 <Button variant="outline">Create Project</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] bg-gray-800 text-gray-100">
+            <DialogContent className="sm:max-w-[425px] bg-gray-900 text-gray-100">
                 <DialogHeader>
                     <DialogTitle>Create Project</DialogTitle>
                     <DialogDescription className="text-gray-400">
@@ -117,3 +118,4 @@ export function CreateProjectDialog({ onProjectCreated }: CreateProjectDialogPro
         </Dialog>
     )
 }
+
