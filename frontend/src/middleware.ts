@@ -16,7 +16,7 @@ async function handleProjectMiddleware(request: Request, userEmail: string) {
       const requestBody = JSON.stringify({ userEmail });
 
       // Check if the project exists
-      const checkProjectUrl = `${process.env.API_BASE_URL}/api/checkProject/${projectId}`;
+      const checkProjectUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/checkProject/${projectId}`;
       const checkProjectResponse = await fetch(checkProjectUrl, {
         method: 'POST',
         headers: {
@@ -36,7 +36,7 @@ async function handleProjectMiddleware(request: Request, userEmail: string) {
       }
 
       // Get the next stage for the project
-      const getNextStageUrl = `${process.env.API_BASE_URL}/api/getNextStage/${projectId}`;
+      const getNextStageUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/getNextStage/${projectId}`;
       const getNextStageResponse = await fetch(getNextStageUrl);
       if (!getNextStageResponse.ok) {
         console.error("API Error (Get Next Stage):", await getNextStageResponse.text());

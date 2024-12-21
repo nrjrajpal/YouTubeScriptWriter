@@ -7,8 +7,8 @@ from youtube_transcript_api.formatters import TextFormatter
 from flask import jsonify
 
 class YouTubeAgent(ResearcherAgent):
-    def __init__(self, projectID):
-        super().__init__(projectID)
+    def __init__(self,  projectID, userEmail):
+        super().__init__( projectID, userEmail)
         self.videoIDs = []  # Initialize video IDs as an empty list
         self.videoTranscripts = []  # Initialize video transcripts as an empty list (not stored in DB)
 
