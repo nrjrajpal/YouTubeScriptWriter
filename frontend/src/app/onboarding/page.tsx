@@ -48,7 +48,7 @@ export default function OnboardingComponent() {
 
         try {
             // First, set the API keys
-            const response = await fetch('http://localhost:5000/setAPIKeys', {
+            const response = await fetch(`${process.env.API_BASE_URL}/setAPIKeys`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

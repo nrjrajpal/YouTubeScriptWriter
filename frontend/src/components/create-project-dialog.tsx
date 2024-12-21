@@ -30,7 +30,7 @@ export function CreateProjectDialog({ onProjectCreated, userEmail }: CreateProje
         setMessage(null)
 
         try {
-            const response = await fetch('http://localhost:5000/createProject', {
+            const response = await fetch(`${process.env.API_BASE_URL}/createProject`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

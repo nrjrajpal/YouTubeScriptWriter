@@ -1,4 +1,5 @@
 **/.venv*/
+**/venv*/
 **/.laptop_venv/
 __pycache__/
 *.pyc
