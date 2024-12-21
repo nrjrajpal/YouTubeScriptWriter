@@ -2,7 +2,7 @@ from .synthetic_agent import SyntheticAgent
 from utils.firebase import db
 from utils.exceptions import ProjectNotFoundError, KeyNotFoundError
 
-COLLECTION_NAME = "TrialProject"
+PROJECT_COLLECTION_NAME = "TrialProject"
 
 class ResearcherAgent(SyntheticAgent):
     def __init__(self,  projectID, userEmail):
@@ -18,8 +18,8 @@ class ResearcherAgent(SyntheticAgent):
     def getSearchQuery(self):
         try:
             if not self.searchQuery:
-                collection_ref = db.collection(COLLECTION_NAME)
-                docs = collection_ref.where("ID", "==", self.projectID).get()
+                collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+                docs = collection_ref.where("projectID", "==", self.projectID).get()
                 if not docs:
                     raise ProjectNotFoundError("No project found with this ID.")
                 
@@ -36,8 +36,8 @@ class ResearcherAgent(SyntheticAgent):
 
     def setSearchQuery(self, query):
         try:
-            collection_ref = db.collection(COLLECTION_NAME)
-            docs = collection_ref.where("ID", "==", self.projectID).get()
+            collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+            docs = collection_ref.where("projectID", "==", self.projectID).get()
             if not docs:
                 raise ProjectNotFoundError("No project found with this ID.")
             

@@ -4,6 +4,7 @@ from APIs.sign_up_2_api import sign_up_2_blueprint
 from APIs.user_api import user_blueprint
 from APIs.video_title_api import video_title_blueprint
 from APIs.select_questions_api import select_questions_blueprint
+from APIs.sources_api import sources_blueprint
 
 def api_blueprints(app):
     # Register blueprints
@@ -13,4 +14,5 @@ def api_blueprints(app):
     app.register_blueprint(user_blueprint)
     app.register_blueprint(project_blueprint)
     app.register_blueprint(select_questions_blueprint)
+    app.register_blueprint(sources_blueprint)
     # app.register_blueprint(agent_blueprint, url_prefix="/agent")
