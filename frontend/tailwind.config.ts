@@ -12,6 +12,28 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        gradient: {
+          to: { "background-position": "800% center" },
+        },
+        gradientbg: {
+          to: { "background-position": "800% center" },
+        },
+      },
+      animation: {
+        gradient: "gradient 120s linear infinite",
+        gradientbg: "gradient 600s linear infinite",
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+      },
     },
   },
   plugins: [],
