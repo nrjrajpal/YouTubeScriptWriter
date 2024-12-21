@@ -1,5 +1,6 @@
+from utils.exceptions import KeyNotFoundError, UserNotFoundError, ProjectNotFoundError
 from flask import Blueprint, jsonify
-from PseudoAgents import SyntheticAgent,ResearcherAgent,YouTubeAgent,User
+from PseudoAgents import SyntheticAgent,ResearcherAgent,YouTubeAgent,User, ScriptAgent
 import ast
 import json
 import os
@@ -136,3 +137,18 @@ def user():
         print(f"Error: {e}")
         # In case of error, return None or a proper error message
         return None
+
+
+@temp_blueprint.route('/getSelectedQuestions', methods=['POST'])
+def getSelectedQuestions():
+    try:
+        
+        sa=ScriptAgent(projectID="Dx1qIVN", userEmail="ishanvyavahare+real@gmail.com")
+        temp=sa.getSelectedQuestions()
+        return jsonify({"Message":temp})
+        
+    except (UserNotFoundError, KeyNotFoundError, ProjectNotFoundError) as e:
+        return jsonify({"error": e.message, "success": False}), 404
+    except Exception as e:
+        print("\n\n\nError: ", e)
+        return jsonify({"error": "An error occurred. Check the logs.", "success": False}), 500

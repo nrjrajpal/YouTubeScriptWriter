@@ -1,14 +1,14 @@
-from flask import Blueprint, request, jsonify
 from utils.exceptions import KeyNotFoundError, UserNotFoundError, ProjectNotFoundError
-from PseudoAgents import User
-from PseudoAgents import SyntheticAgent
+from flask import Blueprint, jsonify, request
+from PseudoAgents import SyntheticAgent,ResearcherAgent,YouTubeAgent,User, ScriptAgent
+import ast
+import json
+import os
 
-video_title_blueprint = Blueprint('video_title', __name__)
+select_questions_blueprint = Blueprint('select_questions', __name__)
 
-# @video_title_blueprint.route('/setAPIKeysAndChannelID', methods=['POST'])
-# def setAPIKeysAndChannelID():
-@video_title_blueprint.route('/generateVideoTitles', methods=['POST'])
-def generateVideoTitles():
+@select_questions_blueprint.route('/generateQuestionsBasedOnTitle', methods=['POST'])
+def generateQuestionsBasedOnTitle():
     try:
         data = request.get_json()
         userEmail = data.get('userEmail')
@@ -20,10 +20,10 @@ def generateVideoTitles():
         if not projectID:
             return jsonify({"error": "Missing required field: projectID", "success": False}), 400
         
-        syntheticAgent = SyntheticAgent(projectID, userEmail)
-        titles = syntheticAgent.generateVideoTitles()        
+        sa = ScriptAgent(projectID, userEmail)
+        questions = sa.generateQuestionsBasedOnTitle()
+        return jsonify({"message": "Successfully generated questions.", "generated_questions":questions})
         
-        return jsonify({"success": True, "titles": titles}), 200
     except (UserNotFoundError, KeyNotFoundError, ProjectNotFoundError) as e:
         return jsonify({"error": e.message, "success": False}), 404
     except Exception as e:
@@ -31,29 +31,29 @@ def generateVideoTitles():
         return jsonify({"error": "An error occurred. Check the logs.", "success": False}), 500
     
 
-@video_title_blueprint.route('/setVideoTitle', methods=['POST'])
-def setVideoTitle():
+@select_questions_blueprint.route('/setSelectedQuestions', methods=['POST'])
+def setSelectedQuestions():
     try:
         data = request.get_json()
         userEmail = data.get('userEmail')
         projectID = data.get('projectID')
-        videoTitle = data.get('videoTitle')
+        selectedQuestions = data.get('selectedQuestions')
 
         if not userEmail:
             return jsonify({"error": "Missing required field: userEmail", "success": False}), 400
 
         if not projectID:
             return jsonify({"error": "Missing required field: projectID", "success": False}), 400
-
-        if not videoTitle:
-            return jsonify({"error": "Missing required field: videoTitle", "success": False}), 400
-
-        syntheticAgent = SyntheticAgent(projectID, userEmail)
-        message = syntheticAgent.setVideoTitle(videoTitle)    
-        syntheticAgent.updateProjectState('selectQuestions')    
         
-        return jsonify({"success": True, "message": message}), 200
+        if not selectedQuestions:
+            return jsonify({"error": "Questions are not selected", "success": False}), 400
+        
+        sa=ScriptAgent(projectID, userEmail)
+        message = sa.setSelectedQuestions(selectedQuestions)
+        return jsonify({"Message":message})
+        
     except (UserNotFoundError, KeyNotFoundError, ProjectNotFoundError) as e:
         return jsonify({"error": e.message, "success": False}), 404
     except Exception as e:
+        print("\n\n\nError: ", e)
         return jsonify({"error": "An error occurred. Check the logs.", "success": False}), 500
