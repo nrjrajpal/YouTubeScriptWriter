@@ -49,7 +49,8 @@ def setVideoTitle():
             return jsonify({"error": "Missing required field: videoTitle", "success": False}), 400
 
         syntheticAgent = SyntheticAgent(projectID, userEmail)
-        message = syntheticAgent.setVideoTitle(videoTitle)        
+        message = syntheticAgent.setVideoTitle(videoTitle)    
+        syntheticAgent.updateProjectState('selectQuestions')    
         
         return jsonify({"success": True, "message": message}), 200
     except (UserNotFoundError, KeyNotFoundError, ProjectNotFoundError) as e:

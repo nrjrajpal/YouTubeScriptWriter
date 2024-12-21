@@ -186,3 +186,18 @@ class SyntheticAgent:
             return titles
         except:
             raise
+
+    def updateProjectState(self, nextStage):
+        try:
+            collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+            docs = collection_ref.where("projectID", "==", self.projectID).get()
+            if not docs:
+                raise ProjectNotFoundError("No project found with this ID.")
+            
+            doc_ref = docs[0].reference
+            doc_ref.update({"nextStage": nextStage})
+            self.nextStage = nextStage
+            
+            return "Video Title Set Successfully"
+        except:
+            raise
