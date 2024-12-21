@@ -5,8 +5,8 @@ from utils.exceptions import ProjectNotFoundError, KeyNotFoundError
 COLLECTION_NAME = "TrialProject"
 
 class ResearcherAgent(SyntheticAgent):
-    def __init__(self, projectID):
-        super().__init__(projectID)
+    def __init__(self,  projectID, userEmail):
+        super().__init__( projectID, userEmail)
         self.searchQuery = None
         self.__masterSummary = None
         self.__masterYTSummary = None

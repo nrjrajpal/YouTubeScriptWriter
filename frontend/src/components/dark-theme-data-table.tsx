@@ -79,7 +79,7 @@ export default function DataTableDemo() {
 
         try {
             setLoading(true)
-            const response = await fetch(`${process.env.API_BASE_URL}/getUserProjects`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/getUserProjects`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -111,7 +111,7 @@ export default function DataTableDemo() {
         if (!user?.primaryEmailAddress?.emailAddress) return
 
         try {
-            const response = await fetch(`${process.env.API_BASE_URL}/deleteProject`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/deleteProject`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

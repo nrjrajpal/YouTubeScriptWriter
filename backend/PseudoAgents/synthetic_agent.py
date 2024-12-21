@@ -3,6 +3,7 @@ from groq import Groq
 # from dotenv import load_dotenv
 from utils.firebase import db
 from utils.exceptions import ProjectNotFoundError, KeyNotFoundError, UserNotFoundError
+import ast
 
 PROJECT_COLLECTION_NAME = "TrialProject"
 USER_COLLECTION_NAME = "TrialUser"
@@ -13,7 +14,7 @@ USER_COLLECTION_NAME = "TrialUser"
 
 class SyntheticAgent:
     def __init__(self, projectID, userEmail):
-        self.userEmail=userEmail
+        self.userEmail = userEmail
         self.projectID = projectID
         self.ideaTitle = None
         self.ideaDescription = None
@@ -44,7 +45,7 @@ class SyntheticAgent:
         try: 
             if not self.ideaTitle:
                 collection_ref = db.collection(PROJECT_COLLECTION_NAME)
-                docs = collection_ref.where("ID", "==", self.projectID).get()
+                docs = collection_ref.where("projectID", "==", self.projectID).get()
                 if not docs:
                     raise ProjectNotFoundError("No project found with this ID.")
 
@@ -64,7 +65,7 @@ class SyntheticAgent:
         try:
             if not self.ideaDescription:
                 collection_ref = db.collection(PROJECT_COLLECTION_NAME)
-                docs = collection_ref.where("ID", "==", self.projectID).get()
+                docs = collection_ref.where("projectID", "==", self.projectID).get()
                 if not docs:
                     raise ProjectNotFoundError("No project found with this ID.")
                 
@@ -84,7 +85,7 @@ class SyntheticAgent:
         try:
             if not self.videoTitle:
                 collection_ref = db.collection(PROJECT_COLLECTION_NAME)
-                docs = collection_ref.where("ID", "==", self.projectID).get()
+                docs = collection_ref.where("projectID", "==", self.projectID).get()
                 if not docs:
                     raise ProjectNotFoundError("No project found with this ID.")
                 
@@ -96,6 +97,21 @@ class SyntheticAgent:
                 self.videoTitle = record["videoTitle"]
 
             return self.videoTitle
+        except:
+            raise
+
+    def setVideoTitle(self, videoTitle):
+        try:
+            collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+            docs = collection_ref.where("projectID", "==", self.projectID).get()
+            if not docs:
+                raise ProjectNotFoundError("No project found with this ID.")
+            
+            doc_ref = docs[0].reference
+            doc_ref.update({"videoTitle": videoTitle})
+            self.videoTitle = videoTitle
+            
+            return "Video Title Set Successfully"
         except:
             raise
 
@@ -162,9 +178,11 @@ class SyntheticAgent:
             self.getIdeaDescription()
 
             print("Generating video titles based on idea...")
-            sys_prompt="You are a professional youtube title generator who generates a youtube title that can get maximum audience attention, from the idea title and idea description that is provided."
-            user_prompt=f"""Generate a YouTube video title based on the following video idea title and description:Video Idea Title: {self.ideaTitle} Video Idea Description: {self.ideaDescription} The title should meet the following criteria:Be accurate and clearly represent the video's content to ensure viewers do not stop watching mid-video.Preferably be 50-60 characters, and no more than 100 characters.Highlight the key benefit or value viewers will gain from the video.Include major keywords or search terms that are frequently searched by users related to this content.Use CAPS to emphasize one or two key words for impact, but avoid excessive use of all caps.Keep the title brief, direct, and to the point, as viewers may only see part of it on YouTube.Consider using brackets or parentheses to add additional context or perceived value, but don’t force it unless it adds clarity.Address challenges or pain points that the target audience has, and create a title that speaks directly to solving those issues.If the content relates to lists or rankings, create a listicle-style title (e.g., '5 Tips for Boosting Productivity').Add a sense of urgency to encourage immediate clicks, if appropriate.Know the target audience and tailor the title to appeal to them.Include a hook or special element to capture attention and distinguish the video from competing content.Clearly communicate what viewers can expect from the video and why it is special or unique. Output format:Return the titles as an array of strings that can be type casted using the python list function Output: Only generate 3 titles in the form of an array of strings in a single line and nothing else."""
-            response=self.getLLMResponse(sys_prompt, user_prompt)
-            return response
+            sys_prompt = "You are a professional youtube title generator who generates a youtube title that can get maximum audience attention, from the idea title and idea description that is provided."
+            user_prompt = f"""Generate 3 YouTube video titles based on the following video idea title and description: Video Idea Title: {self.ideaTitle} Video Idea Description: {self.ideaDescription} The titles should meet the following criteria: Be accurate and clearly represent the video's content to ensure viewers do not stop watching mid-video. Preferably be 50-60 characters, and no more than 100 characters. Highlight the key benefit or value viewers will gain from the video. Include major keywords or search terms that are frequently searched by users related to this content. Use CAPS to emphasize one or two key words for impact, but avoid excessive use of all caps.Keep the title brief, direct, and to the point, as viewers may only see part of it on YouTube. Consider using brackets or parentheses to add additional context or perceived value, but don't force it unless it adds clarity. Address challenges or pain points that the target audience has, and create a title that speaks directly to solving those issues. If the content relates to lists or rankings, create a listicle-style title(e.g., '5 Tips for Boosting Productivity'). Add a sense of urgency to encourage immediate clicks, if appropriate. Know the target audience and tailor the title to appeal to them. Include a hook or special element to capture attention and distinguish the video from competing content. Clearly communicate what viewers can expect from the video and why it is special or unique. Output format:Return the titles as an array of strings that can be type casted using the python list function Output: Only generate 3 titles in the form of an array of strings in a single line and nothing else."""
+            response = self.getLLMResponse(sys_prompt, user_prompt)
+            titles = ast.literal_eval(response)
+
+            return titles
         except:
             raise
