@@ -155,7 +155,7 @@ export default function VideoTitleSelector() {
                         value={customTitle}
                         onChange={(e) => setCustomTitle(e.target.value)}
                         disabled={selectedTitle !== 'custom'}
-                        className="mt-4 bg-gray-700 text-white placeholder-gray-400 border-gray-600 focus:border-blue-500"
+                        className="mt-4 bg-gray-700 text-white placeholder-gray-400 border-gray-600 focus:border-blue-500 w-full h-fit"
                     />
                     <div className="flex space-x-4 mt-6">
                         <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">

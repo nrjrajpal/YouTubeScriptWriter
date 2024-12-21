@@ -50,7 +50,7 @@ def setVideoTitle():
 
         syntheticAgent = SyntheticAgent(projectID, userEmail)
         message = syntheticAgent.setVideoTitle(videoTitle)    
-        syntheticAgent.updateProjectState('selectQuestions')    
+        syntheticAgent.updateProjectState('selectQuestions')   
         
         return jsonify({"success": True, "message": message}), 200
     except (UserNotFoundError, KeyNotFoundError, ProjectNotFoundError) as e:

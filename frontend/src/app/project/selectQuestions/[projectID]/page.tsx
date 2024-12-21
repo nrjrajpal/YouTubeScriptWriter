@@ -1,22 +1,68 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useParams, useRouter } from "next/navigation"
+import { useUser } from '@clerk/nextjs'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function QuestionSelector() {
   const [selectedItems, setSelectedItems] = useState<string[]>([])
   const [customQuestions, setCustomQuestions] = useState<string[]>(["", "", ""])
+  const [placeholderQuestions, setPlaceholderQuestions] = useState<string[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [isRegenerating, setIsRegenerating] = useState(false)
   const { toast } = useToast()
+  const params = useParams()
+  const router = useRouter()
+  const { isLoaded, isSignedIn, user } = useUser()
 
-  const placeholderQuestions = [
-    "What is your favorite color and why?",
-    "Describe your ideal vacation destination.",
-    "If you could have dinner with any historical figure, who would it be?",
-    "What's the most interesting book you've read recently?",
-    "What's a skill you'd like to learn in the next year?",
-  ]
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      fetchQuestions()
+    }
+  }, [isLoaded, isSignedIn])
+
+  const fetchQuestions = async () => {
+    if (!user?.primaryEmailAddress?.emailAddress || !params.projectID) return
+
+    try {
+      setIsRegenerating(true)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/generateQuestionsBasedOnTitle`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userEmail: user.primaryEmailAddress.emailAddress,
+          projectID: params.projectID,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to fetch questions')
+      }
+
+      const data = await response.json()
+      setPlaceholderQuestions(data.generated_questions)
+      
+      // Clear selections and custom questions
+      setSelectedItems([])
+      setCustomQuestions(["", "", ""])
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "An error occurred while fetching questions.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+      setIsRegenerating(false)
+    }
+  }
 
   const handleToggle = (id: string) => {
     setSelectedItems((prev) => {
@@ -50,11 +96,20 @@ export default function QuestionSelector() {
     return index !== -1 ? index + 1 : null
   }
 
-  const handleSubmit = () => {
-    if (selectedItems.length === 0) {
+  const handleSubmit = async () => {
+    if (selectedItems.length !== 3) {
       toast({
         title: "Error",
-        description: "Please select at least one question before submitting.",
+        description: "Please select exactly 3 questions before submitting.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!user?.primaryEmailAddress?.emailAddress || !params.projectID) {
+      toast({
+        title: "Error",
+        description: "User email or project ID is missing.",
         variant: "destructive",
       })
       return
@@ -69,11 +124,48 @@ export default function QuestionSelector() {
         return customQuestions[index]
       }
     })
-    console.log("Selected questions:", selectedQuestions)
-    toast({
-      title: "Success",
-      description: "Your questions have been submitted successfully!",
-    })
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/setSelectedQuestions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userEmail: user.primaryEmailAddress.emailAddress,
+          projectID: params.projectID,
+          selectedQuestions: selectedQuestions,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to set selected questions')
+      }
+
+      const data = await response.json()
+      toast({
+        title: "Success",
+        description: data.Message || "Your questions have been submitted successfully!",
+      })
+
+      // Redirect to the next page
+      router.push(`/project/selectSources/${params.projectID}`)
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "An error occurred while submitting questions.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <p className="text-2xl">Loading questions...</p>
+      </div>
+    )
   }
 
   return (
@@ -85,43 +177,48 @@ export default function QuestionSelector() {
               Select Questions
             </h1>
             <p className="text-2xl mb-8 text-center">
-              Choose 1-3 questions from the options below or create your own.
-              The order of selection matters. Once 3 are selected, the rest will
-              be disabled.
+              Choose exactly 3 questions from the options below or create your own.
+              The order of selection matters.
             </p>
             <div className="flex flex-col space-y-4">
-              {placeholderQuestions.map((question, index) => (
-                <button
-                  key={`preset-${index}`}
-                  onClick={() => handleToggle(`preset-${index}`)}
-                  disabled={isDisabled(`preset-${index}`)}
-                  className={`w-full p-6 pr-12 text-left border border-gray-700 rounded-md text-2xl relative ${selectedItems.includes(`preset-${index}`)
-                    ? "bg-gray-800"
-                    : "bg-black hover:bg-gray-900"
-                    } ${isDisabled(`preset-${index}`) ? "opacity-50 cursor-not-allowed" : ""}`}
-                >
-                  {question}
-                  {selectedItems.includes(`preset-${index}`) && (
-                    <span className="absolute top-2 right-2 w-8 h-8 bg-white text-black rounded-full flex items-center justify-center text-lg font-bold">
-                      {getSelectionOrder(`preset-${index}`)}
-                    </span>
-                  )}
-                </button>
-              ))}
+              {isRegenerating
+                ? Array(5).fill(0).map((_, index) => (
+                    <Skeleton key={index} className="w-full h-24 bg-gray-800" />
+                  ))
+                : placeholderQuestions.map((question, index) => (
+                    <button
+                      key={`preset-${index}`}
+                      onClick={() => handleToggle(`preset-${index}`)}
+                      disabled={isDisabled(`preset-${index}`) || isRegenerating}
+                      className={`w-full p-6 pr-12 text-left border border-gray-700 rounded-md text-2xl relative ${
+                        selectedItems.includes(`preset-${index}`)
+                          ? "bg-gray-800"
+                          : "bg-black hover:bg-gray-900"
+                      } ${isDisabled(`preset-${index}`) || isRegenerating ? "opacity-50 cursor-not-allowed" : ""}`}
+                    >
+                      {question}
+                      {selectedItems.includes(`preset-${index}`) && (
+                        <span className="absolute top-2 right-2 w-8 h-8 bg-white text-black rounded-full flex items-center justify-center text-lg font-bold">
+                          {getSelectionOrder(`preset-${index}`)}
+                        </span>
+                      )}
+                    </button>
+                  ))}
               {customQuestions.map((question, index) => (
                 <div
                   key={`custom-${index}`}
-                  className={`w-full px-6 pr-12 text-left border border-gray-700 rounded-md text-2xl relative ${selectedItems.includes(`custom-${index}`)
-                    ? "bg-gray-800"
-                    : "bg-black hover:bg-gray-900"
-                    } ${isDisabled(`custom-${index}`) ? "opacity-50 cursor-not-allowed" : ""}`}
+                  className={`w-full px-6 pr-12 text-left border border-gray-700 rounded-md text-2xl relative ${
+                    selectedItems.includes(`custom-${index}`)
+                      ? "bg-gray-800"
+                      : "bg-black hover:bg-gray-900"
+                  } ${isDisabled(`custom-${index}`) || isRegenerating ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   <Input
                     type="text"
                     placeholder="Enter your custom question"
                     value={question}
                     onChange={(e) => handleCustomQuestionChange(index, e.target.value)}
-                    disabled={isDisabled(`custom-${index}`)}
+                    disabled={isDisabled(`custom-${index}`) || isRegenerating}
                     className="w-full bg-transparent border-r-2 border-none focus:ring-0 p-0 text-2xl"
                     maxLength={400}
                   />
@@ -136,16 +233,36 @@ export default function QuestionSelector() {
             <p className="text-xl mt-4 text-gray-400 text-center">
               Custom questions are automatically selected when you start typing.
             </p>
-            <div className="my-8 relative group flex w-[600px] justify-center mx-auto">
-              <div className="absolute inset-0 blur-xl rounded-full w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div className="relative flex rounded-full w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px]">
-                <Button
-                  onClick={handleSubmit}
-                  variant="gradient"
-                  className="h-auto pb-[10px] text-3xl font-medium"
-                >
-                  Submit
-                </Button>
+            <div className="my-8 flex justify-center space-x-4">
+              <div className="relative group">
+                <div className="absolute inset-0 blur-xl rounded-full w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="relative flex rounded-full w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px]">
+                  <Button
+                    onClick={handleSubmit}
+                    disabled={selectedItems.length !== 3 || isRegenerating}
+                    variant="gradient"
+                    className={`h-auto pb-[10px] text-3xl font-medium ${
+                      selectedItems.length !== 3 || isRegenerating ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  >
+                    Submit
+                  </Button>
+                </div>
+              </div>
+              <div className="relative group">
+                <div className="absolute inset-0 blur-xl rounded-full w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="relative flex rounded-full w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px]">
+                  <Button
+                    onClick={fetchQuestions}
+                    disabled={isRegenerating}
+                    variant="gradient"
+                    className={`h-auto pb-[10px] text-3xl font-medium ${
+                      isRegenerating ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  >
+                    Regenerate
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

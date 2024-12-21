@@ -50,6 +50,7 @@ def setSelectedQuestions():
         
         sa=ScriptAgent(projectID, userEmail)
         message = sa.setSelectedQuestions(selectedQuestions)
+        sa.updateProjectState('selectSources')
         return jsonify({"Message":message})
         
     except (UserNotFoundError, KeyNotFoundError, ProjectNotFoundError) as e:
