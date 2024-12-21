@@ -37,7 +37,7 @@ def check_project(project_id):
         project = Project(projectID=project_id)
         project.getProjectDetails(userEmail)
         return jsonify({"exists": True, "project_id": project_id}), 200
-    except ProjectNotFoundError as e:
+    except (ProjectNotFoundError, EmailMismatchError) as e:
         return jsonify({"exists": False, "error": "Project not found"}), 404
     except Exception as e:
         return jsonify({"error": e, "success": False}), 500

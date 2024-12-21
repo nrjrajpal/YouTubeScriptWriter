@@ -141,12 +141,17 @@ class ResearcherAgent(SyntheticAgent):
     def __getAllSummaries(self, type):
         pass
         if type == "youtube":
-            return self.getMasterYTSummary()
+            pass
+            # return self.getMasterYTSummary()
         elif type == "webpage":
-            return self.getMasterWebpageSummary()
+            pass
+            # return self.getMasterWebpageSummary()
         elif type == "researchpaper":
-            return self.getMasterResearchPaperSummary()
+            pass
+            # return self.getMasterResearchPaperSummary()
         elif type == "customdata":
-            return self.getCustomDataSummary()
+            pass
+            # return self.getCustomDataSummary()
         else:
-            raise ValueError("Invalid content type. Valid types: 'youtube', 'webpage', 'researchpaper', 'customdata'.")
+            pass
+            # raise ValueError("Invalid content type. Valid types: 'youtube', 'webpage', 'researchpaper', 'customdata'.")

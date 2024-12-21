@@ -180,8 +180,8 @@ class User:
             self.ownedProjects = record["ownedProjects"]
             print("ownedProjects user:", self.ownedProjects, type(self.ownedProjects))
             projectDetails = []
-            for ownedProject in self.ownedProjects:
-                project = Project(ownedProject)
+            for ownedProjectID in self.ownedProjects:
+                project = Project(ownedProjectID)
                 details=project.getProjectDetails(self.userEmail)
                 projectDetails.append(details)
                 # print("Project:", project)
