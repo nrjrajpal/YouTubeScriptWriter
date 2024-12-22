@@ -92,7 +92,7 @@ def get_idea_details():
 
 @scripts_old_blueprint.route('/api/selected-questions', methods=['GET'])
 def get_selected_questions():
-    time.sleep(3.5)  # Simulating API delay
+    time.sleep(2.5)  # Simulating API delay
     return jsonify([
         "What inspired you to develop this AI personal assistant?",
         "How does your solution differ from existing AI assistants in the market?",
@@ -106,9 +106,9 @@ def get_youtube_videos():
     if not yt_flag:
         return jsonify({"available": False, "message": "YouTube videos were not selected as a data source."})
     yt_links = [
-        "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        "https://www.youtube.com/watch?v=iqJ0kg9xvLs",
-        "https://www.youtube.com/watch?v=kJQP7kiw5Fk"
+        "https://www.youtube.com/watch?v=i8NETqtGHms",
+        "https://www.youtube.com/watch?v=F8NKVhkZZWI",
+        "https://www.youtube.com/watch?v=h2FDq3agImI"
     ]
     data = []
     for link in yt_links:
@@ -144,7 +144,7 @@ def get_youtube_videos():
 
 @scripts_old_blueprint.route('/api/webpages', methods=['GET'])
 def get_webpages():
-    time.sleep(7.2)  # Simulating API delay
+    time.sleep(2.2)  # Simulating API delay
     wp_flag = True
     if not wp_flag:
         return jsonify({"available": False, "message": "Webpages were not selected as a data source."})
@@ -159,7 +159,7 @@ def get_webpages():
 
 @scripts_old_blueprint.route('/api/research-papers', methods=['GET'])
 def get_research_papers():
-    time.sleep(6.8)  # Simulating API delay
+    time.sleep(3.8)  # Simulating API delay
     rp_flag = True
     if not rp_flag:
         return jsonify({"available": False, "message": "Research papers were not selected as a data source."})
@@ -202,8 +202,18 @@ def get_thought_process():
 
 @scripts_old_blueprint.route('/api/final-script', methods=['GET'])
 def get_final_script():
-    time.sleep(10.2)  # Simulating API delay
-    return jsonify("This is the final script content. It's likely more concise and polished compared to the thought process. The AI-powered personal assistant we're developing represents a significant leap forward in how individuals manage their daily lives and interact with technology. By leveraging advanced machine learning algorithms, our assistant can provide highly personalized support, anticipating user needs and offering proactive assistance. Key features include natural language processing for intuitive interactions, predictive analytics for smart recommendations, and a robust privacy framework to ensure user data security. The user interface is designed to be seamless and adaptive, making the AI feel like a natural extension of the user's own cognitive processes. Through continuous refinement and updates based on user feedback and emerging AI technologies, our personal assistant aims to set a new standard in AI-driven productivity and lifestyle enhancement.")
+    time.sleep(1.2)  # Simulating API delay
+    return jsonify("""
+Lorem ipsum odor amet, consectetuer adipiscing elit. Viverra varius montes purus nec elit rutrum convallis. Feugiat nascetur tempor hendrerit habitasse iaculis. Magnis scelerisque sollicitudin risus sem fusce fusce felis. Commodo aenean aliquet ex lacinia ornare ad. Praesent rutrum sollicitudin sit diam ullamcorper nibh. Condimentum vel morbi phasellus sem; ornare tincidunt inceptos pharetra. Himenaeos lectus senectus maximus euismod tempus dapibus adipiscing non.
+
+Ligula tempor urna ad habitasse congue nunc, a id elit. Nisi non parturient dis non nisl faucibus. Orci torquent lacinia tristique sit ut posuere. Dapibus ex pulvinar ligula egestas fames ultricies est torquent. Curae duis at maecenas libero sit proin vestibulum. Mollis ridiculus praesent praesent ipsum mattis purus scelerisque. Alibero nisi hendrerit purus pretium suscipit ultricies luctus. Quisque suspendisse augue lacus primis aliquam sem viverra. Conubia quis aenean vitae nunc erat facilisi adipiscing curae hac. Litora mauris potenti duis ultricies leo metus.
+
+Odio etiam non orci tristique nisi fermentum maximus. Ante facilisis morbi praesent nibh, lacinia fusce aliquet nisl. Vivamus pretium consectetur turpis varius finibus auctor nec sollicitudin. Libero erat neque justo interdum dignissim; dignissim vitae nunc. Tincidunt eros dictum, ornare maximus maecenas litora dictum nisl. Ultricies primis auctor vestibulum a commodo. Fames finibus in efficitur volutpat integer blandit aliquam.
+
+Felis accumsan etiam ligula aliquet arcu luctus. Platea pharetra aptent per diam nascetur parturient odio id. Egestas eros orci id malesuada lorem nisl orci ex dolor. Integer iaculis lacinia pulvinar dignissim ad consequat risus. Curabitur facilisi volutpat ullamcorper mauris est libero taciti nostra ipsum. Eleifend magna vel nibh metus vitae ornare. Pretium nunc nullam ante nibh magnis malesuada massa. Imperdiet interdum tincidunt volutpat mattis purus ac duis. Turpis nunc inceptos ridiculus erat sem massa ornare. Nunc consequat convallis etiam tempus sociosqu metus pretium.
+
+Nisl lectus hac sed nec eget parturient platea tristique sociosqu. Inceptos ut orci imperdiet imperdiet per curabitur in penatibus fringilla. Consectetur parturient nullam, vel tincidunt egestas morbi fermentum. Parturient laoreet hendrerit consectetur in eros massa; justo vel posuere. Adipiscing maximus amet mauris parturient; condimentum dictum orci. Eleifend ligula lobortis nam justo nunc mauris nisl ornare. Posuere netus habitant habitasse faucibus habitasse litora.
+                   """)
 
 if __name__ == '__main__':
     app.run(debug=True)
