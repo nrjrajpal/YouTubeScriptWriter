@@ -7,6 +7,7 @@ from APIs.select_questions_api import select_questions_blueprint
 from APIs.sources_api import sources_blueprint
 from APIs.research_paper_api import researchpaper_blueprint
 from APIs.youtube_api import youtube_blueprint
+from APIs.webpage_api import webpage_blueprint
 
 def api_blueprints(app):
     # Register blueprints
@@ -19,4 +20,5 @@ def api_blueprints(app):
     app.register_blueprint(sources_blueprint)
     app.register_blueprint(researchpaper_blueprint)
     app.register_blueprint(youtube_blueprint)
+    app.register_blueprint(webpage_blueprint)
     # app.register_blueprint(agent_blueprint, url_prefix="/agent")
