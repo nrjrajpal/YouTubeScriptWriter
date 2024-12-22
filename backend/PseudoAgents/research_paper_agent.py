@@ -45,7 +45,22 @@ class ResearchPaperAgent(ResearcherAgent):
         except:
             raise
 
-    def setResearchPaperUrlsAndMetadata(self, researchPaperData):
+    # def setResearchPaperUrlsAndMetadata(self, researchPaperData):
+    #     try:
+    #         collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+    #         docs = collection_ref.where("projectID", "==", self.projectID).get()
+    #         if not docs:
+    #             raise ProjectNotFoundError("No project found with this ID.")
+
+    #         doc_ref = docs[0].reference
+    #         doc_ref.update({"researchPaperData": researchPaperData})
+    #         self.researchPaperData = researchPaperData
+
+    #         return "Research Paper Data set successfully"
+    #     except:
+    #         raise
+
+    def setResearchPaperData(self, researchPaperData):
         try:
             collection_ref = db.collection(PROJECT_COLLECTION_NAME)
             docs = collection_ref.where("projectID", "==", self.projectID).get()
