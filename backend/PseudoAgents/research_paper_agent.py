@@ -9,7 +9,7 @@ import json
 import time
 from groq import Groq
 from tavily import TavilyClient
-from utils.exceptions import ProjectNotFoundError, KeyNotFoundError
+from utils.exceptions import ProjectNotFoundError, KeyNotFoundError, ContentNotFoundError
 # from utils.exceptions ContentNotFoundError
 from dotenv import load_dotenv
 load_dotenv()
@@ -17,8 +17,8 @@ load_dotenv()
 PROJECT_COLLECTION_NAME = "TrialProject"
 
 class ResearchPaperAgent(ResearcherAgent):
-    def __init__(self, projectID):
-        super().__init__(projectID)
+    def __init__(self,  projectID, userEmail):
+        super().__init__( projectID, userEmail)
         self.researchPaperData = []  # Initialize research paper URLs and metadata as an empty list
         self.researchPaperContent = []  # Initialize research paper content (not stored in DB)
         self.researchPaperSummaries = []  # Initialize research paper summaries as an empty list
@@ -64,14 +64,22 @@ class ResearchPaperAgent(ResearcherAgent):
     # Fetch research papers from the web
     def fetchResearchPaperContent(self, url):
         try:
-            tavily_client = TavilyClient(api_key=os.getenv("TAVILYAPIKEY"))
+            tavily_client = TavilyClient(api_key=self.getTavilyAPIKey())
             # paper_urls = [paper["paper_url"] for paper in self.researchPaperUrlsAndMetadata]
             # final_research_formatted_content = []
             # Fetch raw data from Tavily
             response = tavily_client.extract(urls=[url])
-            if not response["results"]:
-                raise ContentNotFoundError("Web content for the given URL not available")
-            return response["results"][0]["raw_content"]
+            if response["results"]:
+                for output in response["results"]:
+                    raw = output["raw_content"]
+                    if len(raw) > 50000:
+                        raw = raw[:50000]
+                    print(len(raw))
+                return raw
+                # return response["results"][0]["raw_content"]
+            return ""
+            # if not response["results"]:
+            #     raise ContentNotFoundError("Web content for the given URL not available")
         # [0]["raw_content"]
             # for output in response["results"]:
             #     raw = output["raw_content"]
@@ -110,18 +118,24 @@ class ResearchPaperAgent(ResearcherAgent):
             url = "https://google.serper.dev/scholar"
             payload = json.dumps({"q": query+" filetype:pdf"})
             headers = {
-                'X-API-KEY': os.getenv("SERPAPIKEY"),
+                'X-API-KEY': self.getSerperAPIKey(),
                 'Content-Type': 'application/json'
             }
             response = requests.request("POST", url, headers=headers, data=payload)
             data = response.json()
 
             researchPaperData = []
+            print(data)
             for i in range(0, 3):
-                researchPaperData.append({
-                    "paper_title": data["organic"][i]["title"],
-                    "paper_url": data["organic"][i]["link"]
-                })
+                try:
+                    researchPaperData.append({
+                        "paper_title": data["organic"][i]["title"],
+                        "paper_url": data["organic"][i]["link"]
+                    })
+                except KeyError:
+                    pass
+                except:
+                    raise
                 # print("Added Paper: ", data["organic"][i]["link"])
 
             # print("\n\n\n\nPapers to use:\n", researchPaperData)

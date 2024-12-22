@@ -51,4 +51,10 @@ class SerperAPIKeyNotFoundError(Exception):
     def __init__(self, message="Serper Api Key not found in the database record."):
         self.message = message
         super().__init__(self.message)
+
+class ContentNotFoundError(Exception):
+    """Exception raised when a content for the specific source is not found in a database record."""
+    def __init__(self, message="Content not found for the specific source"):
+        self.message = message
+        super().__init__(self.message)
         
