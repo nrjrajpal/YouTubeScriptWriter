@@ -121,7 +121,7 @@ export default function SignUpForm() {
                         onChange={(e) => setEmailAddress(e.target.value)}
                         onBlur={handleEmailBlur}
                         placeholder="you@example.com"
-                        className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
+                        className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 h-fit w-full text-base"
                     />
                     {isEmailTouched && !isEmailValid && (
                         <p className="text-sm text-red-500">Please enter a valid email address.</p>
@@ -135,20 +135,20 @@ export default function SignUpForm() {
                             type={showPassword ? "text" : "password"}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 pr-10"
+                            className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 pr-10 h-fit w-full text-base"
                             placeholder="Enter your password"
                         />
                         <Button
                             type="button"
                             variant="ghost"
                             size="icon"
-                            className="absolute right-0 top-0 h-full px-3 text-gray-400 hover:text-white"
+                            className="absolute right-0 top-0 h-full text-gray-400 hover:text-white mr-2"
                             onClick={() => setShowPassword(!showPassword)}
                         >
                             {showPassword ? (
-                                <EyeOff className="h-4 w-4" />
+                                <EyeOff size={22} />
                             ) : (
-                                <Eye className="h-4 w-4" />
+                                <Eye size={22} />
                             )}
                         </Button>
                     </div>

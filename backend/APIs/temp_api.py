@@ -152,3 +152,11 @@ def getSelectedQuestions():
     except Exception as e:
         print("\n\n\nError: ", e)
         return jsonify({"error": "An error occurred. Check the logs.", "success": False}), 500
+
+
+@temp_blueprint.route('/tempYouTube', methods=['POST'])
+def temp():
+    try:
+        yt_agent = YouTubeAgent(projectID="11223")
+    except:
+        

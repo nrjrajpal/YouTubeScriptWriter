@@ -82,7 +82,7 @@ export default function SignInForm() {
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-sm font-medium text-gray-300">
+                            <Label htmlFor="email" className="text-base pl-2 font-medium">
                                 Email address
                             </Label>
                             <Input
@@ -92,7 +92,7 @@ export default function SignInForm() {
                                 name="email"
                                 type="email"
                                 required
-                                className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
+                                className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 h-fit w-full text-base"
                                 placeholder="you@example.com"
                                 value={email}
                             />
@@ -101,7 +101,7 @@ export default function SignInForm() {
                             )}
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="password" className="text-sm font-medium text-gray-300">
+                            <Label htmlFor="password" className="text-base pl-2 font-medium">
                                 Password
                             </Label>
                             <div className="relative">
@@ -111,7 +111,7 @@ export default function SignInForm() {
                                     name="password"
                                     type={showPassword ? "text" : "password"}
                                     required
-                                    className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 pr-10"
+                                    className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 pr-10 h-fit w-full text-base"
                                     placeholder="Enter your password"
                                     value={password}
                                 />
@@ -119,13 +119,13 @@ export default function SignInForm() {
                                     type="button"
                                     variant="ghost"
                                     size="icon"
-                                    className="absolute right-0 top-0 h-full px-3 text-gray-400 hover:text-white"
+                                    className="absolute right-0 top-0 h-full text-gray-400 hover:text-white hover:bg-transparent mr-2"
                                     onClick={() => setShowPassword(!showPassword)}
                                 >
                                     {showPassword ? (
-                                        <EyeOff className="h-4 w-4" />
+                                        <EyeOff size={22} />
                                     ) : (
-                                        <Eye className="h-4 w-4" />
+                                        <Eye size={22} />
                                     )}
                                 </Button>
                             </div>
