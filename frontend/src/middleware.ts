@@ -8,9 +8,9 @@ async function handleProjectMiddleware(request: Request, userEmail: string) {
   console.log("The project middleware")
   const url = new URL(request.url);
   console.log('URL:', url.pathname);
-  // if (url.pathname === '/dashboard') {
-  //   return NextResponse.next();
-  // }
+  if (url.pathname === '/onboarding') {
+    return NextResponse.next();
+  }
   const projectId = url.pathname.split('/')[3];
 
   if (url.pathname.startsWith('/project/') && projectId) {
@@ -65,6 +65,9 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   // console.log("The clerk middleware")
   // First check project middleware if it's a project route
   const { userId, sessionClaims, redirectToSignIn } = await auth();
+  if (req.nextUrl.pathname === '/onboarding') {
+    return NextResponse.next();
+  }
   if (req.nextUrl.pathname.startsWith('/project/')) {
 
     // Extract the user's primary email address from sessionClaims

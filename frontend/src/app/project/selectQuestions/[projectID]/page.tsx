@@ -191,8 +191,8 @@ export default function QuestionSelector() {
                     onClick={() => handleToggle(`preset-${index}`)}
                     disabled={isDisabled(`preset-${index}`) || isRegenerating}
                     className={`w-full p-6 pr-12 text-left border border-gray-700 rounded-md text-2xl relative ${selectedItems.includes(`preset-${index}`)
-                        ? "bg-gray-800"
-                        : "bg-black hover:bg-gray-900"
+                      ? "bg-gray-800"
+                      : "bg-black hover:bg-gray-900"
                       } ${isDisabled(`preset-${index}`) || isRegenerating ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
                     {question}
@@ -207,8 +207,8 @@ export default function QuestionSelector() {
                 <div
                   key={`custom-${index}`}
                   className={`w-full px-6 pr-12 text-left border border-gray-700 rounded-md text-2xl relative ${selectedItems.includes(`custom-${index}`)
-                      ? "bg-gray-800"
-                      : "bg-black hover:bg-gray-900"
+                    ? "bg-gray-800"
+                    : "bg-black hover:bg-gray-900"
                     } ${isDisabled(`custom-${index}`) || isRegenerating ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   <Input
@@ -234,35 +234,70 @@ export default function QuestionSelector() {
             <div className="my-8 flex flex-rows justify-center space-x-4">
               <div className="h-fit relative group flex w-full justify-center mx-auto">
                 {(selectedItems.length == 3 && !isRegenerating) && (
-                  <div className="absolute inset-0 blur-lg rounded-full w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <>
+                    <div className="absolute inset-0 blur-lg rounded-full w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="relative flex rounded-full w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px]">
+                      <Button
+                        onClick={handleSubmit}
+                        disabled={selectedItems.length !== 3 || isRegenerating}
+                        variant="gradient"
+                        className={`h-auto pb-[10px] text-3xl font-medium ${selectedItems.length !== 3 || isRegenerating ? "cursor-not-allowed bg-gray-800 text-gray-400" : ""
+                          }`}
+                      >
+                        Submit
+                      </Button>
+                    </div>
+                  </>
                 )}
-                <div className="relative flex rounded-full w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[4px]">
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={selectedItems.length !== 3 || isRegenerating}
-                    variant="gradient"
-                    className={`h-auto pb-[10px] text-3xl font-medium ${selectedItems.length !== 3 || isRegenerating ? "cursor-not-allowed bg-gray-600 text-gray-400" : ""
-                      }`}
-                  >
-                    Submit
-                  </Button>
-                </div>
+
+                {(selectedItems.length !== 3 || isRegenerating) && (
+                  <>
+                    <div className="relative flex rounded-full w-full h-full bg-gray-400 animate-gradient p-[3px]">
+                      <Button
+                        onClick={handleSubmit}
+                        disabled={selectedItems.length !== 3 || isRegenerating}
+                        variant="gradient"
+                        className={`h-auto pb-[10px] text-3xl font-medium ${selectedItems.length !== 3 || isRegenerating ? "cursor-not-allowed bg-gray-800 text-gray-400" : ""
+                          }`}
+                      >
+                        Submit
+                      </Button>
+                    </div>
+                  </>
+                )}
               </div>
               <div className="h-fit relative group flex w-full justify-center mx-auto">
                 {(!isRegenerating) && (
-                  <div className="absolute inset-0 blur-md rounded-full w-auto bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[2px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <>
+                    <div className="absolute inset-0 blur-lg rounded-full w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="relative flex rounded-full w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px]">
+                      <Button
+                        onClick={fetchQuestions}
+                        disabled={isRegenerating}
+                        variant="gradient"
+                        className={`h-auto pb-[10px] text-3xl font-medium ${isRegenerating ? "cursor-not-allowed bg-gray-800 text-gray-400" : ""
+                          }`}
+                      >
+                        Regenerate
+                      </Button>
+                    </div>
+                  </>
                 )}
-                <div className="relative flex rounded-full w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[1px]">
-                  <Button
-                    onClick={fetchQuestions}
-                    disabled={isRegenerating}
-                    variant="gradient"
-                    className={`h-auto pb-[10px] text-3xl font-medium ${isRegenerating ? "cursor-not-allowed bg-gray-600 text-gray-400" : ""
-                      }`}
-                  >
-                    Regenerate
-                  </Button>
-                </div>
+                {(isRegenerating) && (
+                  <>
+                    <div className="relative flex rounded-full w-full h-full bg-gray-400 animate-gradient p-[3px]">
+                    <Button
+                        onClick={fetchQuestions}
+                        disabled={isRegenerating}
+                        variant="gradient"
+                        className={`h-auto pb-[10px] text-3xl font-medium ${isRegenerating ? "cursor-not-allowed bg-gray-800 text-gray-400" : ""
+                          }`}
+                      >
+                        Regenerate
+                      </Button>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>

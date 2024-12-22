@@ -8,8 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { ExclamationTriangleIcon } from '@radix-ui/react-icons'
 import { completeOnboarding } from './_actions'
+import { TriangleAlert  as ExclamationTriangle, Eye, EyeOff } from 'lucide-react'
 
 export default function OnboardingComponent() {
     const [error, setError] = React.useState('')
@@ -88,15 +88,15 @@ export default function OnboardingComponent() {
 
                     <Card className="w-full border-none bg-transparent text-gray-100">
                         <CardHeader>
-                            <CardTitle className="text-4xl font-bold text-center mb-6">One last step...</CardTitle>
-                            <CardDescription className="text-center text-gray-400 px-12">
+                            <CardTitle className="text-4xl font-bold text-center ">One last step...</CardTitle>
+                            <CardDescription className="text-center text-gray-400 px-12 pb-4">
                                 Please provide your API keys to enable communication with the LLM and web information retrieval.
                                 These keys are free to use up to certain limits.
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-4">
-                                <div className="space-y-2 py-2">
+                                <div className="space-y-2">
                                     {/* <Label htmlFor="groqKey">Groq API Key</Label> */}
                                     <Input
                                         id="groqKey"
@@ -108,7 +108,7 @@ export default function OnboardingComponent() {
                                         placeholder="Enter your Groq API key"
                                     />
                                 </div>
-                                <div className="space-y-2 py-2">
+                                <div className="space-y-2 ">
                                     {/* <Label htmlFor="tavilyKey">Tavily API Key</Label> */}
                                     <Input
                                         id="tavilyKey"
@@ -120,7 +120,7 @@ export default function OnboardingComponent() {
                                         placeholder="Enter your Tavily API key"
                                     />
                                 </div>
-                                <div className="space-y-2 py-2">
+                                <div className="space-y-2 pb-4">
                                     {/* <Label htmlFor="serperKey">Serper API Key</Label> */}
                                     <Input
                                         id="serperKey"
@@ -128,17 +128,19 @@ export default function OnboardingComponent() {
                                         value={serperKey}
                                         onChange={(e) => setSerperKey(e.target.value)}
                                         required
-                                        className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 h-fit w-full disabled:pointer-events-auto"
+                                        className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 h-fit w-full disabled:pointer-events-auto "
                                         placeholder="Enter your Serper API key"
                                     />
                                 </div>
                                 {error && (
-                                    <Alert variant="destructive" className="mt-4 bg-red-900/50 border border-red-600 text-red-100">
-                                        <ExclamationTriangleIcon className="h-4 w-4 mr-2" />
-                                        <AlertDescription>{error}</AlertDescription>
-                                    </Alert>
+                                    <Alert variant="destructive" className="bg-red-900/50 border border-red-600 text-red-100 h-full flex justify-center mt-4">
+                                    <div className=' flex items-center h-full'>
+                                        <ExclamationTriangle className="h-5 w-5 mr-2" />
+                                        <AlertDescription className='h-full'>{error}</AlertDescription>
+                                    </div>
+                                </Alert>
                                 )}
-
+                                <div className="h-fit relative group w-full">
                                 {(isFormValid && isLoaded && isSignedIn) && (
                                     <>
                                         <div className="absolute inset-0 blur-xl rounded-full w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:border-none transition-opacity"></div>
@@ -154,17 +156,18 @@ export default function OnboardingComponent() {
                                 )}
                                 {(!isFormValid || !isLoaded || !isSignedIn) && (
                                     <div>
-                                        <div className="relative flex rounded-full w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px] group-disabled:bg-black">
+                                        <div className="relative flex rounded-full w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px]">
                                         <Button
                                             type="submit"
                                             variant={"gradient"}
                                             disabled={!isFormValid || !isLoaded || !isSignedIn}
-                                            className="h-full w-full rounded-full pb-[10px] text-3xl font-medium bg-gray-700">
+                                            className="h-full w-full rounded-full pb-[10px] text-3xl font-medium bg-gray-600 text-gray-400">
                                             Complete Onboarding
                                         </Button>
                                         </div>
                                     </div>
                                 )}
+                                </div>
                             </form>
                         </CardContent>
                     </Card>

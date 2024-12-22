@@ -80,7 +80,7 @@ export default function SignUpForm() {
 
             if (signUpAttempt.status === 'complete') {
                 await setActive({ session: signUpAttempt.createdSessionId })
-                router.push('/')
+                router.push('/dashboard')
             } else {
                 setError('Verification incomplete. Please try again.')
             }
@@ -97,15 +97,27 @@ export default function SignUpForm() {
         if (verifying) {
             return (
                 <form onSubmit={handleVerify} className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="code">Enter your verification code</Label>
+                    <div className="space-y-2 flex items-center w-full flex-col pb-4">
+                        <Label htmlFor="code" className='text-xl'>Enter your verification code</Label>
                         <OTPInput
                             value={code}
                             valueLength={6}
                             onChange={(value) => setCode(value)}
                         />
                     </div>
-                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">Verify</Button>
+                    <div className="h-fit relative group flex w-2/3 justify-center mx-auto">
+                        <div className="absolute inset-0 blur-lg rounded-full w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="relative flex rounded-full w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px]">
+
+                            <Button
+                                type="submit"
+                                variant={"gradient"}
+                                className="h-full w-full rounded-full pb-[10px] text-3xl font-medium disabled: bg-black">
+                                Verify
+                            </Button>
+                        </div>
+                    </div>
+                    {/* <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">Verify</Button> */}
                 </form>
             )
         }
@@ -113,91 +125,107 @@ export default function SignUpForm() {
         return (
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                    <Label htmlFor="email">Email address</Label>
+                    {/* <Label htmlFor="email">Email address</Label> */}
                     <Input
                         id="email"
                         type="email"
                         value={emailAddress}
                         onChange={(e) => setEmailAddress(e.target.value)}
                         onBlur={handleEmailBlur}
-                        placeholder="you@example.com"
-                        className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 h-fit w-full text-base"
+                        className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 h-fit w-full text-lg py-4"
+                        placeholder="Enter your email"
                     />
                     {isEmailTouched && !isEmailValid && (
-                        <p className="text-sm text-red-500">Please enter a valid email address.</p>
+                        <p className="pl-2 text-base text-red-500">Please enter a valid email address.</p>
                     )}
                 </div>
-                <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
+                <div className="space-y-2 pb-4">
+                    {/* <Label htmlFor="password">Password</Label> */}
                     <div className="relative">
                         <Input
                             id="password"
                             type={showPassword ? "text" : "password"}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 pr-10 h-fit w-full text-base"
+                            className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 pr-10 h-fit w-full text-lg py-4"
                             placeholder="Enter your password"
                         />
                         <Button
                             type="button"
                             variant="ghost"
                             size="icon"
-                            className="absolute right-0 top-0 h-full text-gray-400 hover:text-white mr-2"
+                            className="absolute right-0 top-0 h-full text-gray-400 hover:text-white hover:bg-transparent mr-2"
                             onClick={() => setShowPassword(!showPassword)}
                         >
                             {showPassword ? (
-                                <EyeOff size={22} />
+                                <EyeOff size={25} />
                             ) : (
-                                <Eye size={22} />
+                                <Eye size={25} />
                             )}
                         </Button>
                     </div>
                 </div>
-                <Button
-                    type="submit"
-                    disabled={!isEmailValid || !password}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                    Sign up
-                </Button>
+                <div className="h-fit relative group flex w-full justify-center mx-auto">
+                    <div className="absolute inset-0 blur-lg rounded-full w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="relative flex rounded-full w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px]">
+
+                        <Button
+                            type="submit"
+                            disabled={!isEmailValid || !password}
+                            variant={"gradient"}
+                            className="h-full w-full rounded-full pb-[10px] text-3xl font-medium disabled: bg-black">
+                            Sign up
+                        </Button>
+                    </div>
+                </div>
+
                 {/* <Button type="submit" className="w-full">Sign up</Button> */}
             </form>
         )
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-950 p-4">
-            <Card className="w-full max-w-md bg-gray-900 text-gray-100">
-                <CardHeader>
-                    <CardTitle className="text-2xl font-bold text-center">
-                        {verifying ? 'Verify your email' : 'Sign up'}
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    {renderForm()}
-                    {error && (
-                        <Alert variant="destructive" className="mt-4 bg-red-900/50 border border-red-600 text-red-100">
-                            <ExclamationTriangle className="h-4 w-4 mr-2" />
-                            <AlertDescription>{error}</AlertDescription>
-                        </Alert>
-                    )}
-                </CardContent>
-                <CardFooter className="flex justify-center">
-                    <p className="text-sm text-gray-400">
-                        {verifying ? (
-                            // "Didn't receive the code? " 
-                            ""
-                        ) : (
-                            <>
-                                Already have an account?{' '}
-                                <Link href="/sign-in" className="text-blue-400 hover:underline">
-                                    Sign in
-                                </Link>
-                            </>
-                        )}
-                    </p>
-                </CardFooter>
-            </Card>
+        <div className="min-h-screen flex items-center justify-center bg-black p-4">
+            <div className="rounded-2xl w-2/5 h-auto bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px] shadow-lg">
+                <div className="bg-black rounded-2xl flex justify-center items-center">
+
+                    <Card className="w-full rounded-2xl text-gray-100">
+                        <CardHeader>
+                            <CardTitle className="text-5xl font-bold text-center py-4">
+                                {verifying ? 'Verify your email' : 'Sign up'}
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            {renderForm()}
+                            {error && (
+                                <div className='flex justify-center'>
+                                    <Alert variant="destructive" className="bg-red-900/50 border border-red-600 text-red-100 h-full w-2/3 flex justify-center mt-4">
+                                        <div className=' flex items-center h-full'>
+                                            <ExclamationTriangle className="h-5 w-5 mr-2" />
+                                            <AlertDescription className='h-full'>{error}</AlertDescription>
+                                        </div>
+                                    </Alert>
+                                </div>
+                            )}
+                        </CardContent>
+                        <CardFooter className="flex justify-center">
+                            <p className="text-lg text-gray-300">
+                                {verifying ? (
+                                    // "Didn't receive the code? " 
+                                    ""
+                                ) : (
+                                    <>
+                                        Already have an account?{' '}
+                                        <Link href="/sign-in" className="text-blue-400 hover:underline">
+                                            Sign in
+                                        </Link>
+                                    </>
+                                )}
+                            </p>
+                        </CardFooter>
+                    </Card>
+                </div>
+            </div>
         </div>
     )
 }
