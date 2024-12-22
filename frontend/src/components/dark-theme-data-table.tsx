@@ -92,7 +92,7 @@ export default function DataTableDemo() {
                 setData([])
                 setError(null)
             } else if (result.success) {
-                const sortedProjects = result.allUserProjects.sort((a: { dateCreated: string | number | Date }, b: { dateCreated: string | number | Date }) => 
+                const sortedProjects = result.allUserProjects.sort((a: { dateCreated: string | number | Date }, b: { dateCreated: string | number | Date }) =>
                     new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
                 )
                 setData(sortedProjects)
@@ -204,8 +204,8 @@ export default function DataTableDemo() {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                                 <AlertDialogCancel className="bg-gray-700 text-gray-100">Cancel</AlertDialogCancel>
-                                <AlertDialogAction 
-                                    onClick={() => deleteProject(project.projectID)} 
+                                <AlertDialogAction
+                                    onClick={() => deleteProject(project.projectID)}
                                     className="bg-red-600 text-white"
                                 >
                                     Delete
@@ -272,82 +272,88 @@ export default function DataTableDemo() {
                                 onChange={(event) =>
                                     table.getColumn("ideaTitle")?.setFilterValue(event.target.value)
                                 }
-                                className="max-w-sm text-lg bg-gray-800 text-gray-100 border-gray-700"
+                                className="max-w-sm text-lg bg-gray-800 text-gray-100 border-gray-700 w-full h-fit"
                             />
                             <CreateProjectDialog onProjectCreated={handleProjectCreated} userEmail={user.primaryEmailAddress?.emailAddress || ''} />
                         </div>
                         {error ? (
                             <div className="text-center text-red-500 mb-4">{error}</div>
                         ) : (
-                            <div className="rounded-md border border-gray-700 overflow-hidden">
-                                <Table className="gap-96">
-                                    <TableHeader className="bg-gray-800">
-                                        {table.getHeaderGroups().map((headerGroup) => (
-                                            <TableRow key={headerGroup.id}>
-                                                {headerGroup.headers.map((header) => {
-                                                    return (
-                                                        <TableHead key={header.id} className="py-2 text-white text-left">
-                                                            {header.isPlaceholder
-                                                                ? null
-                                                                : flexRender(
-                                                                    header.column.columnDef.header,
-                                                                    header.getContext()
-                                                                )}
-                                                        </TableHead>
-                                                    )
-                                                })}
-                                            </TableRow>
-                                        ))}
-                                    </TableHeader>
-                                    <TableBody>
-                                        {table.getRowModel().rows?.length ? (
-                                            table.getRowModel().rows.map((row) => (
-                                                <TableRow
-                                                    key={row.id}
-                                                    data-state={row.getIsSelected() && "selected"}
-                                                    onClick={(event) => handleRowClick(event, row.original.projectID)}
-                                                    className="cursor-pointer hover:bg-gray-800"
-                                                >
-                                                    {row.getVisibleCells().map((cell) => (
-                                                        <TableCell key={cell.id} className="pl-6 text-left">
-                                                            {cell.column.id !== "actions" ? (
-                                                                <TooltipProvider>
-                                                                    <Tooltip>
-                                                                        <TooltipTrigger asChild>
-                                                                            <div>
-                                                                                {flexRender(
-                                                                                    cell.column.columnDef.cell,
-                                                                                    cell.getContext()
-                                                                                )}
-                                                                            </div>
-                                                                        </TooltipTrigger>
-                                                                        <TooltipContent>
-                                                                            <p className="text-lg">{row.original.ideaDescription}</p>
-                                                                        </TooltipContent>
-                                                                    </Tooltip>
-                                                                </TooltipProvider>
-                                                            ) : (
-                                                                flexRender(
-                                                                    cell.column.columnDef.cell,
-                                                                    cell.getContext()
-                                                                )
-                                                            )}
+                            <div className="rounded-2xl w-full h-auto bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px] shadow-lg">
+                                <div className="bg-black rounded-2xl flex justify-center items-center">
+                                    <div className="rounded-2xl overflow-hidden w-full">
+
+                                        {/* <div><div> */}
+                                        <Table className="gap-96">
+                                            <TableHeader className="bg-gray-800">
+                                                {table.getHeaderGroups().map((headerGroup) => (
+                                                    <TableRow key={headerGroup.id}>
+                                                        {headerGroup.headers.map((header) => {
+                                                            return (
+                                                                <TableHead key={header.id} className="py-2 text-white text-left">
+                                                                    {header.isPlaceholder
+                                                                        ? null
+                                                                        : flexRender(
+                                                                            header.column.columnDef.header,
+                                                                            header.getContext()
+                                                                        )}
+                                                                </TableHead>
+                                                            )
+                                                        })}
+                                                    </TableRow>
+                                                ))}
+                                            </TableHeader>
+                                            <TableBody>
+                                                {table.getRowModel().rows?.length ? (
+                                                    table.getRowModel().rows.map((row) => (
+                                                        <TableRow
+                                                            key={row.id}
+                                                            data-state={row.getIsSelected() && "selected"}
+                                                            onClick={(event) => handleRowClick(event, row.original.projectID)}
+                                                            className="cursor-pointer hover:bg-gray-800"
+                                                        >
+                                                            {row.getVisibleCells().map((cell) => (
+                                                                <TableCell key={cell.id} className="pl-6 text-left">
+                                                                    {cell.column.id !== "actions" ? (
+                                                                        <TooltipProvider>
+                                                                            <Tooltip>
+                                                                                <TooltipTrigger asChild>
+                                                                                    <div>
+                                                                                        {flexRender(
+                                                                                            cell.column.columnDef.cell,
+                                                                                            cell.getContext()
+                                                                                        )}
+                                                                                    </div>
+                                                                                </TooltipTrigger>
+                                                                                <TooltipContent>
+                                                                                    <p className="text-lg">{row.original.ideaDescription}</p>
+                                                                                </TooltipContent>
+                                                                            </Tooltip>
+                                                                        </TooltipProvider>
+                                                                    ) : (
+                                                                        flexRender(
+                                                                            cell.column.columnDef.cell,
+                                                                            cell.getContext()
+                                                                        )
+                                                                    )}
+                                                                </TableCell>
+                                                            ))}
+                                                        </TableRow>
+                                                    ))
+                                                ) : (
+                                                    <TableRow>
+                                                        <TableCell
+                                                            colSpan={columns.length}
+                                                            className="h-24 text-center"
+                                                        >
+                                                            No results.
                                                         </TableCell>
-                                                    ))}
-                                                </TableRow>
-                                            ))
-                                        ) : (
-                                            <TableRow>
-                                                <TableCell
-                                                    colSpan={columns.length}
-                                                    className="h-24 text-center"
-                                                >
-                                                    No results.
-                                                </TableCell>
-                                            </TableRow>
-                                        )}
-                                    </TableBody>
-                                </Table>
+                                                    </TableRow>
+                                                )}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                </div>
                             </div>
                         )}
                         <div className="flex items-center justify-end space-x-2 py-4">

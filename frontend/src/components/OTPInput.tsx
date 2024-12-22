@@ -135,7 +135,7 @@ export function OTPInput({
                     autoComplete="one-time-code"
                     pattern="\d{1}"
                     maxLength={valueLength}
-                    className="w-10 h-10 text-center bg-gray-800 border-gray-700 text-white"
+                    className="w-10 h-10 text-center bg-gray-800 border-gray-700 text-white px-0 py-0"
                     value={digit}
                     onChange={(e) => inputOnChange(e, idx)}
                     onKeyDown={inputOnKeyDown}

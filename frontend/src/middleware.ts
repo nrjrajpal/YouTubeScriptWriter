@@ -8,6 +8,9 @@ async function handleProjectMiddleware(request: Request, userEmail: string) {
   console.log("The project middleware")
   const url = new URL(request.url);
   console.log('URL:', url.pathname);
+  // if (url.pathname === '/dashboard') {
+  //   return NextResponse.next();
+  // }
   const projectId = url.pathname.split('/')[3];
 
   if (url.pathname.startsWith('/project/') && projectId) {
@@ -59,7 +62,7 @@ async function handleProjectMiddleware(request: Request, userEmail: string) {
 }
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
-  console.log("The clerk middleware")
+  // console.log("The clerk middleware")
   // First check project middleware if it's a project route
   const { userId, sessionClaims, redirectToSignIn } = await auth();
   if (req.nextUrl.pathname.startsWith('/project/')) {
@@ -73,28 +76,28 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     }
   }
     // For users visiting /onboarding, don't try to redirect
-    if (userId && isOnboardingRoute(req)) {
+    else if (userId && isOnboardingRoute(req)) {
       return NextResponse.next()
     }
 
     // If the user isn't signed in and the route is private, redirect to sign-in
-    if (!userId && !isPublicRoute(req)) {
+    else if (!userId && !isPublicRoute(req)) {
       return redirectToSignIn({ returnBackUrl: req.url })
     }
 
     // Catch users who do not have `onboardingComplete: true` in their publicMetadata
     // Redirect them to the /onboarding route to complete onboarding
-    if (userId && !sessionClaims?.metadata?.onboardingComplete) {
+    else if (userId && !sessionClaims?.metadata?.onboardingComplete) {
       const onboardingUrl = new URL('/onboarding', req.url)
       return NextResponse.redirect(onboardingUrl)
     }
 
     // If the user is logged in and the route is protected, let them view.
-    if (userId && !isPublicRoute(req)) {
+    else if (userId && !isPublicRoute(req)) {
       return NextResponse.next()
     }
 
-    if (userId && isPublicRoute(req)) {
+    else if (userId && isPublicRoute(req)) {
       const dashboardUrl = new URL('/dashboard', req.url)
       return NextResponse.redirect(dashboardUrl)
     }

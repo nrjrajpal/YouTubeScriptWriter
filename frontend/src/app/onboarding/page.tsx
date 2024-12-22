@@ -83,69 +83,94 @@ export default function OnboardingComponent() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-950 p-4">
-            <Card className="w-full max-w-md bg-gray-900 text-gray-100">
-                <CardHeader>
-                    <CardTitle className="text-2xl font-bold text-center">Welcome to the Onboarding Process</CardTitle>
-                    <CardDescription className="text-center text-gray-400">
-                        Please provide your API keys to enable communication with the LLM and web information retrieval.
-                        These keys are free to use up to certain limits.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="groqKey">Groq API Key</Label>
-                            <Input
-                                id="groqKey"
-                                type="password"
-                                value={groqKey}
-                                onChange={(e) => setGroqKey(e.target.value)}
-                                required
-                                className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
-                                placeholder="Enter your Groq API key"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="tavilyKey">Tavily API Key</Label>
-                            <Input
-                                id="tavilyKey"
-                                type="password"
-                                value={tavilyKey}
-                                onChange={(e) => setTavilyKey(e.target.value)}
-                                required
-                                className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
-                                placeholder="Enter your Tavily API key"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="serperKey">Serper API Key</Label>
-                            <Input
-                                id="serperKey"
-                                type="password"
-                                value={serperKey}
-                                onChange={(e) => setSerperKey(e.target.value)}
-                                required
-                                className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
-                                placeholder="Enter your Serper API key"
-                            />
-                        </div>
-                        {error && (
-                            <Alert variant="destructive" className="mt-4 bg-red-900/50 border border-red-600 text-red-100">
-                                <ExclamationTriangleIcon className="h-4 w-4 mr-2" />
-                                <AlertDescription>{error}</AlertDescription>
-                            </Alert>
-                        )}
-                        <Button
-                            type="submit"
-                            disabled={!isFormValid || !isLoaded || !isSignedIn}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                        >
-                            Complete Onboarding
-                        </Button>
-                    </form>
-                </CardContent>
-            </Card>
-        </div>
+            <div className="rounded-2xl w-1/2 h-auto bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px] shadow-lg">
+                <div className="bg-black rounded-2xl flex justify-center items-center py-4 px-4">
+
+                    <Card className="w-full border-none bg-transparent text-gray-100">
+                        <CardHeader>
+                            <CardTitle className="text-4xl font-bold text-center mb-6">One last step...</CardTitle>
+                            <CardDescription className="text-center text-gray-400 px-12">
+                                Please provide your API keys to enable communication with the LLM and web information retrieval.
+                                These keys are free to use up to certain limits.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <div className="space-y-2 py-2">
+                                    {/* <Label htmlFor="groqKey">Groq API Key</Label> */}
+                                    <Input
+                                        id="groqKey"
+                                        type="password"
+                                        value={groqKey}
+                                        onChange={(e) => setGroqKey(e.target.value)}
+                                        required
+                                        className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 h-fit w-full"
+                                        placeholder="Enter your Groq API key"
+                                    />
+                                </div>
+                                <div className="space-y-2 py-2">
+                                    {/* <Label htmlFor="tavilyKey">Tavily API Key</Label> */}
+                                    <Input
+                                        id="tavilyKey"
+                                        type="password"
+                                        value={tavilyKey}
+                                        onChange={(e) => setTavilyKey(e.target.value)}
+                                        required
+                                        className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 h-fit w-full"
+                                        placeholder="Enter your Tavily API key"
+                                    />
+                                </div>
+                                <div className="space-y-2 py-2">
+                                    {/* <Label htmlFor="serperKey">Serper API Key</Label> */}
+                                    <Input
+                                        id="serperKey"
+                                        type="password"
+                                        value={serperKey}
+                                        onChange={(e) => setSerperKey(e.target.value)}
+                                        required
+                                        className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 h-fit w-full disabled:pointer-events-auto"
+                                        placeholder="Enter your Serper API key"
+                                    />
+                                </div>
+                                {error && (
+                                    <Alert variant="destructive" className="mt-4 bg-red-900/50 border border-red-600 text-red-100">
+                                        <ExclamationTriangleIcon className="h-4 w-4 mr-2" />
+                                        <AlertDescription>{error}</AlertDescription>
+                                    </Alert>
+                                )}
+
+                                {(isFormValid && isLoaded && isSignedIn) && (
+                                    <>
+                                        <div className="absolute inset-0 blur-xl rounded-full w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:border-none transition-opacity"></div>
+                                        <div className="relative flex rounded-full w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px]">
+                                            <Button
+                                                type="submit"
+                                                variant={"gradient"}
+                                                className="h-full w-full rounded-full pb-[10px] text-3xl font-medium disabled: bg-black">
+                                                Complete Onboarding
+                                            </Button>
+                                        </div>
+                                    </>
+                                )}
+                                {(!isFormValid || !isLoaded || !isSignedIn) && (
+                                    <div>
+                                        <div className="relative flex rounded-full w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px] group-disabled:bg-black">
+                                        <Button
+                                            type="submit"
+                                            variant={"gradient"}
+                                            disabled={!isFormValid || !isLoaded || !isSignedIn}
+                                            className="h-full w-full rounded-full pb-[10px] text-3xl font-medium bg-gray-700">
+                                            Complete Onboarding
+                                        </Button>
+                                        </div>
+                                    </div>
+                                )}
+                            </form>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        </div >
     )
 }
 
