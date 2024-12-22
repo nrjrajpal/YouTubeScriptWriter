@@ -98,6 +98,7 @@ export function CreateProjectDialog({ onProjectCreated, userEmail }: CreateProje
                         <Button
                             type="submit"
                             onClick={handleCreate}
+                            variant={"gradient"}
                             disabled={!ideaTitle || !ideaDescription || isCreating}
                             className="w-full rounded-full bg-black h-full text-xl font-bold text-white"
                             >
