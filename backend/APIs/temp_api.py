@@ -154,10 +154,12 @@ def getSelectedQuestions():
         return jsonify({"error": "An error occurred. Check the logs.", "success": False}), 500
 
 
-@temp_blueprint.route('/tempYouTube', methods=['POST'])
-def tempYouTube():
+@temp_blueprint.route('/tempIntro', methods=['POST'])
+def tempIntro():
     try:
-        pass
+        sa=ScriptAgent(projectID="Dx1qIVN", userEmail="ishanvyavahare+real@gmail.com")
+        intro = sa.generateIntroduction()
+        return jsonify({"Introduction":intro})
         # yt_agent = YouTubeAgent(projectID="11223")
     except:
-        pass
+        return jsonify({"error": "An error occurred. Check the logs.", "success": False}), 500
