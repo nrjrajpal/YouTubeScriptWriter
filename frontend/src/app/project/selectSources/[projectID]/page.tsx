@@ -1,5 +1,7 @@
 "use client";
 
+import { useUser } from '@clerk/nextjs'
+import { useParams, useRouter } from 'next/navigation'
 import { useState, useCallback, useEffect } from "react";
 import { Globe, FileText, Pencil, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -41,6 +43,11 @@ export default function DataInput() {
   } | null>(null);
   const [isHoveringButton, setIsHoveringButton] = useState(false);
   const { toast } = useToast();
+  const params = useParams()
+  const router = useRouter()
+
+  const projectID = params.projectID as string
+  const { isLoaded, isSignedIn, user } = useUser()
 
   const features = [
     {
@@ -161,6 +168,7 @@ export default function DataInput() {
     console.log("Selected features:", selectedFeatures);
 
     const payload = {
+
       "YouTube Videos_selected": selectedFeatures.includes("YouTube Videos"),
       "YouTube Videos_links": inputValues["YouTube Videos"].filter(
         (link) => link.trim() !== ""
@@ -175,10 +183,12 @@ export default function DataInput() {
       ),
       Custom_selected: selectedFeatures.includes("Custom"),
       Custom_text: customText,
+      userEmail: user?.primaryEmailAddress?.emailAddress,
+      projectID: projectID
     };
 
     try {
-      const response = await fetch("http://localhost:5000/api/submit", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/submitSources`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -196,6 +206,8 @@ export default function DataInput() {
         title: "Success",
         description: data.message,
       });
+      router.push(`/project/selectQuestions/${projectID}`)
+
     } catch (error) {
       console.error("Error submitting data:", error);
       toast({

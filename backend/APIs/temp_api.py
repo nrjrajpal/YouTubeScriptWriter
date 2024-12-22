@@ -1,5 +1,5 @@
 from utils.exceptions import KeyNotFoundError, UserNotFoundError, ProjectNotFoundError
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from PseudoAgents import SyntheticAgent,ResearcherAgent,YouTubeAgent,User, ScriptAgent
 import ast
 import json
@@ -162,4 +162,24 @@ def tempIntro():
         return jsonify({"Introduction":intro})
         # yt_agent = YouTubeAgent(projectID="11223")
     except:
+        return jsonify({"error": "An error occurred. Check the logs.", "success": False}), 500
+
+@temp_blueprint.route('/submitSources', methods=['POST'])
+def submitSources():
+    try:
+        data = request.get_json()
+        userEmail = data.get('userEmail')
+        projectID = data.get('projectID')
+        if not userEmail:
+            return jsonify({"error": "Missing required field: userEmail", "success": False}), 400
+
+        if not projectID:
+            return jsonify({"error": "Missing required field: projectID", "success": False}), 400
+
+        syntheticAgent = SyntheticAgent(projectID, userEmail)
+        syntheticAgent.updateProjectState('script')
+        return jsonify({"success":True}),200
+        # yt_agent = YouTubeAgent(projectID="11223")
+    except Exception as e:
+        print(e)
         return jsonify({"error": "An error occurred. Check the logs.", "success": False}), 500
