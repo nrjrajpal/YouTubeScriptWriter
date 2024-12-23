@@ -36,8 +36,8 @@ def setResearchPaperData():
 def fetchResearchPaperFromWeb():
     try:
         data = request.get_json()
-        userEmail = data.get('userEmail')
-        projectID = data.get('projectID')
+        userEmail = "ishanvyavahare+real@gmail.com" #data.get('userEmail')
+        projectID = "Dx1qIVN" #data.get('projectID')
 
         if not userEmail:
             return jsonify({"error": "Missing required field: userEmail", "success": False}), 400
@@ -59,9 +59,9 @@ def fetchResearchPaperFromWeb():
 def fetchResearchPaperContent():
     try:
         data = request.get_json()
-        userEmail = data.get('userEmail')
-        projectID = data.get('projectID')
-        researchPaperURLS = data.get('researchPaperURLS')
+        userEmail = "ishanvyavahare+real@gmail.com" #data.get('userEmail')
+        projectID = "Dx1qIVN" #data.get('projectID')
+        researchPaperData = data.get('researchPaperData')
 
         if not userEmail:
             return jsonify({"error": "Missing required field: userEmail", "success": False}), 400
@@ -69,11 +69,14 @@ def fetchResearchPaperContent():
         if not projectID:
             return jsonify({"error": "Missing required field: projectID", "success": False}), 400
         
+        if not researchPaperData:
+            return jsonify({"error": "Missing required field: researchPaperData", "success": False}), 400
+        
         rspragent = ResearchPaperAgent(projectID, userEmail)
 
         research_papers_raw_content = []
-        for paper_url in researchPaperURLS:
-            research_papers_raw_content.append(rspragent.fetchResearchPaperContent(paper_url))
+        for rpData in researchPaperData:
+            research_papers_raw_content.append(rspragent.fetchResearchPaperContent(rpData["paper_url"])[0:200])
 
         # rspragent.setResearchPaperUrlsAndMetadata(result)
         return jsonify({"message": "Successfully retrieved research papers' raw content", "research_papers_raw_content":research_papers_raw_content,"success": True}), 200

@@ -34,9 +34,9 @@ def fetchVideosFromYT():
 def fetchVideoTranscript():
     try:
         data = request.get_json()
-        userEmail = data.get('userEmail')
-        projectID = data.get('projectID')
-        video_ids = data.get('video_ids')
+        userEmail = "ishanvyavahare+real@gmail.com" #data.get('userEmail')
+        projectID = "Dx1qIVN" #data.get('projectID')
+        videoIDs = data.get('videoIDs')
 
         if not userEmail:
             return jsonify({"error": "Missing required field: userEmail", "success": False}), 400
@@ -44,20 +44,20 @@ def fetchVideoTranscript():
         if not projectID:
             return jsonify({"error": "Missing required field: projectID", "success": False}), 400
         
-        if not video_ids:
-            return jsonify({"error": "Missing required field: video_ids", "success": False}), 400
+        if not videoIDs:
+            return jsonify({"error": "Missing required field: videoIDs", "success": False}), 400
         
         ytagent = YouTubeAgent(projectID, userEmail)
         transcripts = []
-        for videoID in video_ids:
-            transcripts.append(ytagent.fetchVideoTranscript(videoID = videoID))
+        for videoID in videoIDs:
+            transcripts.append(ytagent.fetchVideoTranscript(videoID = videoID)[0:100])
 
         return jsonify({"message":"Successfully retrieved transcripts for youtube videos", "transcripts":transcripts, "success": True}), 200
     
     except (KeyNotFoundError,ProjectNotFoundError) as e:
         return jsonify({"error": e.message, "success": False}), 404
     except Exception as e:
-        return jsonify({"error": "An error occurred: " + e.message or e, "success": False}), 500
+        return jsonify({"error": f"An error occurred: {e}", "success": False}), 500
 
 @youtube_blueprint.route('/setVideoIDs', methods=['POST'])
 def setVideoIDs():

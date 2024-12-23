@@ -85,12 +85,12 @@ class ResearchPaperAgent(ResearcherAgent):
             if response["results"]:
                 for output in response["results"]:
                     raw = output["raw_content"]
-                    if len(raw) > 50000:
-                        raw = raw[:50000]
+                    if len(raw) > 20000:
+                        raw = raw[:20000]
                     print(len(raw))
                 return raw
                 # return response["results"][0]["raw_content"]
-            return ""
+            return "Raw data is not availabe for " + url
             # if not response["results"]:
             #     raise ContentNotFoundError("Web content for the given URL not available")
         # [0]["raw_content"]
