@@ -85,6 +85,40 @@ class WebpageAgent(ResearcherAgent):
             return "Webpage data set successfully"
         except:
             raise
+
+    def fetchWebPageRawContent(self, url):
+        try:
+            collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+            docs = collection_ref.where("projectID", "==", self.projectID).get()
+            if not docs:
+                raise ProjectNotFoundError("Project with the given id doesn't exist.")
+           
+            dbrecord = docs[0].to_dict()
+            # doc_ref = docs[0].reference
+
+            if "webPageData" not in dbrecord:
+                raise KeyNotFoundError("webPageData is not set in the database.")
+
+            web_page_data = dbrecord["webPageData"]
+            for record in web_page_data:
+                if record["webpage_url"] == url and record["webpage_raw_content"] == "N/A":
+                    tavily_client = TavilyClient(api_key=self.getTavilyAPIKey())
+                    response = tavily_client.extract(urls=[url])
+                    if response["results"]:
+                        for output in response["results"]:
+                            raw = output["raw_content"]
+                            if len(raw) > 20000:
+                                raw = raw[:20000]
+                        # record["raw_content"] = raw
+                        # doc_ref.update({"webPageData": web_page_data})
+                        return raw
+                        # return response["results"][0]["raw_content"]
+                elif record["webpage_url"] == url and record["webpage_raw_content"] != "N/A":
+                    return record["webpage_raw_content"]
+           
+            return "URL: " + url + " doesnt exist in the database"
+        except:
+            raise
             
     # Generate summary (inherited from ResearcherAgent)
     def generateSummary(self):
