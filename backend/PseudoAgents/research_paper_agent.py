@@ -22,7 +22,6 @@ class ResearchPaperAgent(ResearcherAgent):
         self.researchPaperContent = []  # Initialize research paper content (not stored in DB)
         self.researchPaperSummaries = []  # Initialize research paper summaries as an empty list
 
-    # Getter for research paper URLs and metadata
     def getResearchPaperUrlsAndMetadata(self):
         try: 
             print("self.researchPaperData: ", self.researchPaperData)
