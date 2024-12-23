@@ -19,7 +19,7 @@ class WebpageAgent(ResearcherAgent):
     def __init__(self,  projectID, userEmail):
         super().__init__( projectID, userEmail)
         self.webPageURLsAndMetadata = []  
-        self.webPageContent = []  
+        self.webPageData = []  
         self.webPageSummaries = []  
 
     # Getter for research paper URLs and metadata
@@ -50,6 +50,41 @@ class WebpageAgent(ResearcherAgent):
         except:
             raise
 
+    def getWebPageData(self):
+        try: 
+            if not self.webPageData:
+                collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+                docs = collection_ref.where("projectID", "==", self.projectID).get()
+                if not docs:
+                    raise ProjectNotFoundError("Project with the given id doesn't exist.")
+
+                record = docs[0].to_dict()
+                print("RECORD ", record)
+
+                if "webPageData" not in record:
+                    raise KeyNotFoundError("webPageData is not set in the database.")
+
+                self.webPageData = record["webPageData"]
+                print(record["webPageData"])
+
+            return self.webPageData 
+        except:
+            raise
+
+    def setWebpageData(self, webPageData):
+        try:
+            collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+            docs = collection_ref.where("projectID", "==", self.projectID).get()
+            if not docs:
+                raise ProjectNotFoundError("No project found with this ID.")
+
+            doc_ref = docs[0].reference
+            doc_ref.update({"webPageData": webPageData})
+            self.webPageData = webPageData
+
+            return "Webpage data set successfully"
+        except:
+            raise
             
     # Generate summary (inherited from ResearcherAgent)
     def generateSummary(self):
