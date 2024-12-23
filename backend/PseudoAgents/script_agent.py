@@ -8,6 +8,7 @@ PROJECT_COLLECTION_NAME = "TrialProject"
 class ScriptAgent(SyntheticAgent):
     def __init__(self,  projectID, userEmail):
         super().__init__(projectID, userEmail)
+        self.introduction = None
         self.selectedQuestions = None
         self.youTubeSummaries = None
         self.webpageSummaries = None
@@ -183,7 +184,7 @@ class ScriptAgent(SyntheticAgent):
             summaries = project_data.get("youTubeSummaries", [])
             
             summaries.append(summary)
-            project_doc_ref.update({"youTubeSummaries": youTubeSummaries})
+            project_doc_ref.update({"youTubeSummaries": summaries})
             
             return "YouTube Summary set successfully"
         except:
@@ -202,7 +203,7 @@ class ScriptAgent(SyntheticAgent):
             summaries = project_data.get("webpageSummaries", [])
             
             summaries.append(summary)
-            project_doc_ref.update({"webpageSummaries": webpageSummaries})
+            project_doc_ref.update({"webpageSummaries": summaries})
             
             return "Web Page Summary set successfully"
         except:
@@ -221,7 +222,7 @@ class ScriptAgent(SyntheticAgent):
             summaries = project_data.get("researchPaperSummaries", [])
             
             summaries.append(summary)
-            project_doc_ref.update({"researchPaperSummaries": researchPaperSummaries})
+            project_doc_ref.update({"researchPaperSummaries": summaries})
             
             return "Research Paper Summary set successfully"
         except:
