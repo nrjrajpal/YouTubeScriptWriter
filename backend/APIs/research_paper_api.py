@@ -36,8 +36,8 @@ def setResearchPaperData():
 def fetchResearchPaperFromWeb():
     try:
         data = request.get_json()
-        userEmail = "ishanvyavahare+real@gmail.com" #data.get('userEmail')
-        projectID = "Dx1qIVN" #data.get('projectID')
+        userEmail = data.get('userEmail')
+        projectID = data.get('projectID')
 
         if not userEmail:
             return jsonify({"error": "Missing required field: userEmail", "success": False}), 400
@@ -53,7 +53,7 @@ def fetchResearchPaperFromWeb():
     except (KeyNotFoundError,ProjectNotFoundError) as e:
         return jsonify({"error": e.message, "success": False}), 404
     except Exception as e:
-        return jsonify({"error": "An error occurred: " + e.message or e, "success": False}), 500
+        return jsonify({"error": f"An error occurred: {e}", "success": False}), 500
     
 @researchpaper_blueprint.route('/fetchResearchPaperContent', methods=['POST'])
 def fetchResearchPaperContent():
