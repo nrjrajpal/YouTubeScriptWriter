@@ -59,13 +59,13 @@ class WebpageAgent(ResearcherAgent):
                     raise ProjectNotFoundError("Project with the given id doesn't exist.")
 
                 record = docs[0].to_dict()
-                print("RECORD ", record)
+                # print("RECORD ", record)
 
                 if "webPageData" not in record:
                     raise KeyNotFoundError("webPageData is not set in the database.")
 
                 self.webPageData = record["webPageData"]
-                print(record["webPageData"])
+                # print(record["webPageData"])
 
             return self.webPageData 
         except:

@@ -32,13 +32,13 @@ class ResearchPaperAgent(ResearcherAgent):
                     raise ProjectNotFoundError("Project with the given id doesn't exist.")
 
                 record = docs[0].to_dict()
-                print("RECORD ", record)
+                # print("RECORD ", record)
 
                 if "researchPaperData" not in record:
                     raise KeyNotFoundError("researchPaperData is not set in the database.")
 
                 self.researchPaperData = record["researchPaperData"]
-                print(record["researchPaperData"])
+                # print(record["researchPaperData"])
 
             return self.researchPaperData 
         except:

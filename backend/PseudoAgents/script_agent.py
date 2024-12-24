@@ -13,6 +13,11 @@ class ScriptAgent(SyntheticAgent):
         self.youTubeSummaries = None
         self.webpageSummaries = None
         self.researchPaperSummaries = None
+        self.masterYouTubeSummary = None
+        self.masterWebPageSummary = None
+        self.masterResearchPaperSummary = None
+        self.customDataSummary = None
+        self.masterSummary = None
         self.script = None
 
     def generateQuestionsBasedOnTitle(self):
@@ -20,7 +25,7 @@ class ScriptAgent(SyntheticAgent):
             self.getVideoTitle()
             self.getIdeaDescription()
             
-            print("Generating questions based on video title and idea description...")
+            
             sys_prompt="You are a scriptwriting assistant, and your task is to generate introduction for a YouTube video based on the provided video title, idea description, and questions based on the video title."
             user_prompt=f"""
                 Instructions:
@@ -83,7 +88,7 @@ class ScriptAgent(SyntheticAgent):
             self.getVideoTitle()
             self.getIdeaDescription()
             
-            print("Generating questions based on video title and idea description...")
+            
             sys_prompt="You are a scriptwriting assistant, and your task is to generate 5 concise, engaging questions based on the provided video title and idea description. These questions should reflect potential viewers' expectations, concerns, and reasons to watch the video. Assume the role of a curious viewer who is considering watching the video and wants to know what value it offers."
             user_prompt=f"""
                 Create a highly engaging introduction for a YouTube video based on the provided title, idea description, and viewer questions. The introduction should include the following:
@@ -147,7 +152,7 @@ class ScriptAgent(SyntheticAgent):
             self.getIdeaDescription()
             self.getIntroduction()
             
-            print("Generating questions based on video title and idea description...")
+            
             sys_prompt="You are a professional summarizer tasked with extracting the most relevant and accurate information from raw data to create a detailed summary. Your summaries are concise, focused, and only include information derived from the input. You must not add or invent any details that are not explicitly provided in the raw data."
             user_prompt=f"""
                 Using the provided video title, idea description, video introduction, and raw data, create a detailed and accurate summary. The summary should focus only on the information relevant to the video topic and script-writing requirements. Ensure the content is well-organized and avoids any assumptions or made-up details.
@@ -228,9 +233,9 @@ class ScriptAgent(SyntheticAgent):
         except:
             raise
         
-    def getYouTubeSummary(self):
+    def getYouTubeSummaries(self):
         try:
-            if not self.introduction:
+            if not self.youTubeSummaries:
                 collection_ref = db.collection(PROJECT_COLLECTION_NAME)
                 docs = collection_ref.where("projectID", "==", self.projectID).get()
                 if not docs:
@@ -238,13 +243,12 @@ class ScriptAgent(SyntheticAgent):
                 record = docs[0].to_dict()
                 if "youTubeSummaries" not in record:
                     raise KeyNotFoundError("YouTube Summaries are not set in the database.")
-            
-            self.youTubeSummaries = record["youTubeSummaries"]
+                self.youTubeSummaries = record["youTubeSummaries"]
             return self.youTubeSummaries
         except:
             raise
     
-    def getWebPageSummary(self):
+    def getWebPageSummaries(self):
         try:
             if not self.webpageSummaries:
                 collection_ref = db.collection(PROJECT_COLLECTION_NAME)
@@ -255,12 +259,12 @@ class ScriptAgent(SyntheticAgent):
                 if "webpageSummaries" not in record:
                     raise KeyNotFoundError("Web Page Summaries are not set in the database.")
             
-            self.webpageSummaries = record["webpageSummaries"]
+                self.webpageSummaries = record["webpageSummaries"]
             return self.webpageSummaries
         except:
             raise
     
-    def getResearchPaperSummary(self):
+    def getResearchPaperSummaries(self):
         try:
             if not self.researchPaperSummaries:
                 collection_ref = db.collection(PROJECT_COLLECTION_NAME)
@@ -271,7 +275,7 @@ class ScriptAgent(SyntheticAgent):
                 if "researchPaperSummaries" not in record:
                     raise KeyNotFoundError("Research Paper Summaries are not set in the database.")
             
-            self.researchPaperSummaries = record["researchPaperSummaries"]
+                self.researchPaperSummaries = record["researchPaperSummaries"]
             return self.researchPaperSummaries
         except:
             raise
@@ -282,7 +286,7 @@ class ScriptAgent(SyntheticAgent):
             self.getIdeaDescription()
             self.getIntroduction()
             
-            print("Generating questions based on video title and idea description...")
+            
             sys_prompt="You are an expert in synthesizing multiple summaries into a single, comprehensive main summary. Your job is to distil key points while ensuring no critical information is omitted. Only use the information provided in the input summaries; do not invent or assume any details."
             user_prompt=f"""
                 Combine the provided summaries into one cohesive and comprehensive summary. Ensure that the final summary:
@@ -341,8 +345,145 @@ class ScriptAgent(SyntheticAgent):
             return "Master Summary set successfully"
         except:
             raise
-        
+
+    def getMasterYouTubeSummary(self):
+        try:
+            if not self.masterYouTubeSummary:
+                collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+                docs = collection_ref.where("projectID", "==", self.projectID).get()
+                if not docs:
+                    raise ProjectNotFoundError("No project found with this ID.")
+                
+                record = docs[0].to_dict()
+
+                if "masterYouTubeSummary" not in record:
+                    raise KeyNotFoundError("Master YouTube Summary is not set in the database.")
+
+                self.masterYouTubeSummary = record["masterYouTubeSummary"]
+
+            return self.masterYouTubeSummary
+        except:
+            print("Error in get Master YT summary")
+            raise
+
+    def setMasterYouTubeSummary(self, masterYouTubeSummary):
+        try:
+            collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+            docs = collection_ref.where("projectID", "==", self.projectID).get()
+            if not docs:
+                raise ProjectNotFoundError("No project found with this ID.")
+            
+            doc_ref = docs[0].reference
+            doc_ref.update({"masterYouTubeSummary": masterYouTubeSummary})
+            self.masterYouTubeSummary = masterYouTubeSummary
+            
+            return "Master YouTube Summary set successfully"
+        except:
+            print("Error in set Master YT summary")
+            raise
+
+    def getMasterWebPageSummary(self):
+        try:
+            if not self.masterWebPageSummary:
+                collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+                docs = collection_ref.where("projectID", "==", self.projectID).get()
+                if not docs:
+                    raise ProjectNotFoundError("No project found with this ID.")
+                
+                record = docs[0].to_dict()
+
+                if "masterWebPageSummary" not in record:
+                    raise KeyNotFoundError("Master Web Page Summary is not set in the database.")
+
+                self.masterWebPageSummary = record["masterWebPageSummary"]
+
+            return self.masterWebPageSummary
+        except:
+            raise
+
+    def setMasterWebPageSummary(self, masterWebPageSummary):
+        try:
+            collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+            docs = collection_ref.where("projectID", "==", self.projectID).get()
+            if not docs:
+                raise ProjectNotFoundError("No project found with this ID.")
+            
+            doc_ref = docs[0].reference
+            doc_ref.update({"masterWebPageSummary": masterWebPageSummary})
+            self.masterWebPageSummary = masterWebPageSummary
+            
+            return "Master Web Page Summary set successfully"
+        except:
+            raise
+
+    def getMasterResearchPaperSummary(self):
+        try:
+            if not self.masterResearchPaperSummary:
+                collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+                docs = collection_ref.where("projectID", "==", self.projectID).get()
+                if not docs:
+                    raise ProjectNotFoundError("No project found with this ID.")
+                
+                record = docs[0].to_dict()
+
+                if "masterResearchPaperSummary" not in record:
+                    raise KeyNotFoundError("Master Research Paper Summary is not set in the database.")
+
+                self.masterResearchPaperSummary = record["masterResearchPaperSummary"]
+
+            return self.masterResearchPaperSummary
+        except:
+            raise
+
+    def setMasterResearchPaperSummary(self, masterResearchPaperSummary):
+        try:
+            collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+            docs = collection_ref.where("projectID", "==", self.projectID).get()
+            if not docs:
+                raise ProjectNotFoundError("No project found with this ID.")
+            
+            doc_ref = docs[0].reference
+            doc_ref.update({"masterResearchPaperSummary": masterResearchPaperSummary})
+            self.masterResearchPaperSummary = masterResearchPaperSummary
+            
+            return "Master Research Paper Summary set successfully"
+        except:
+            raise    
     
+    def getCustomDataSummary(self):
+        try:
+            if not self.customDataSummary:
+                collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+                docs = collection_ref.where("projectID", "==", self.projectID).get()
+                if not docs:
+                    raise ProjectNotFoundError("No project found with this ID.")
+                
+                record = docs[0].to_dict()
+
+                if "customDataSummary" not in record:
+                    raise KeyNotFoundError("Custom Data Summary is not set in the database.")
+
+                self.customDataSummary = record["customDataSummary"]
+
+            return self.customDataSummary
+        except:
+            raise
+
+    def setCustomDataSummary(self, customDataSummary):
+        try:
+            collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+            docs = collection_ref.where("projectID", "==", self.projectID).get()
+            if not docs:
+                raise ProjectNotFoundError("No project found with this ID.")
+            
+            doc_ref = docs[0].reference
+            doc_ref.update({"customDataSummary": customDataSummary})
+            self.customDataSummary = customDataSummary
+            
+            return "Master YouTube Summary set successfully"
+        except:
+            raise
+
     def generateScript(self, summaries):
         try:
             self.getVideoTitle()
@@ -350,7 +491,7 @@ class ScriptAgent(SyntheticAgent):
             self.getIntroduction()
             self.getMasterSummary()
             
-            print("Generating questions based on video title and idea description...")
+            
             sys_prompt="You are an expert scriptwriter tasked with creating engaging YouTube scripts designed to maximize audience retention. Your scripts follow a structured format with well-defined parts/chapters, each including hooks, build, tension, and payouts. You base your scripts entirely on the provided inputs, ensuring no additional or made-up information is included."
             user_prompt=f"""
                 Using the provided video title, idea description, video introduction, and information summary, create a detailed script for a YouTube video. The script should:

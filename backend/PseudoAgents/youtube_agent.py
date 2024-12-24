@@ -53,7 +53,7 @@ class YouTubeAgent(ResearcherAgent):
     
     def fetchVideoTranscript(self, videoID):
         # Simulate fetching a transcript for a given video ID
-        print(f"Fetching transcript for video ID: {videoID}")
+        # print(f"Fetching transcript for video ID: {videoID}")
         
         try:
             # Get available transcripts
