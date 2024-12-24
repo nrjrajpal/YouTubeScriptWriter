@@ -1,15 +1,20 @@
 from groq import Groq
-import os
-from dotenv import load_dotenv
+# import os
+# from dotenv import load_dotenv
 from utils.firebase import db
-from utils.exceptions import ProjectNotFoundError, KeyNotFoundError
+from utils.exceptions import ProjectNotFoundError, KeyNotFoundError, UserNotFoundError
+import ast
 
-COLLECTION_NAME = "TrialProject"
+PROJECT_COLLECTION_NAME = "TrialProject"
+USER_COLLECTION_NAME = "TrialUser"
 
-load_dotenv()
+# load_dotenv()
+# os.getenv("SERPAPIKey")
+
 
 class SyntheticAgent:
-    def __init__(self, projectID):
+    def __init__(self, projectID, userEmail):
+        self.userEmail = userEmail
         self.projectID = projectID
         self.ideaTitle = None
         self.ideaDescription = None
@@ -32,15 +37,15 @@ class SyntheticAgent:
             )
 
             return chat_completion.choices[0].message.content
-        except Exception as e:
+        except:
             raise
 
     # Idea Title Functions
     def getIdeaTitle(self):
         try: 
             if not self.ideaTitle:
-                collection_ref = db.collection(COLLECTION_NAME)
-                docs = collection_ref.where("ID", "==", self.projectID).get()
+                collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+                docs = collection_ref.where("projectID", "==", self.projectID).get()
                 if not docs:
                     raise ProjectNotFoundError("No project found with this ID.")
 
@@ -59,8 +64,8 @@ class SyntheticAgent:
     def getIdeaDescription(self):
         try:
             if not self.ideaDescription:
-                collection_ref = db.collection(COLLECTION_NAME)
-                docs = collection_ref.where("ID", "==", self.projectID).get()
+                collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+                docs = collection_ref.where("projectID", "==", self.projectID).get()
                 if not docs:
                     raise ProjectNotFoundError("No project found with this ID.")
                 
@@ -79,8 +84,8 @@ class SyntheticAgent:
     def getVideoTitle(self):
         try:
             if not self.videoTitle:
-                collection_ref = db.collection(COLLECTION_NAME)
-                docs = collection_ref.where("ID", "==", self.projectID).get()
+                collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+                docs = collection_ref.where("projectID", "==", self.projectID).get()
                 if not docs:
                     raise ProjectNotFoundError("No project found with this ID.")
                 
@@ -95,34 +100,77 @@ class SyntheticAgent:
         except:
             raise
 
-    # API Key Functions
-    def getGroqAPIKey(self):
+    def setVideoTitle(self, videoTitle):
         try:
-            if not self.groqAPIKey:
-                print("If called")
-                self.groqAPIKey = os.getenv("GROQAPIKEY")  #Fetch this from DB later
+            collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+            docs = collection_ref.where("projectID", "==", self.projectID).get()
+            if not docs:
+                raise ProjectNotFoundError("No project found with this ID.")
             
-            return self.groqAPIKey
+            doc_ref = docs[0].reference
+            doc_ref.update({"videoTitle": videoTitle})
+            self.videoTitle = videoTitle
+            
+            return "Video Title Set Successfully"
+        except:
+            raise
+
+    def getGroqAPIKey(self):
+        try: 
+            if not self.groqAPIKey:
+                collection_ref = db.collection(USER_COLLECTION_NAME)
+                docs = collection_ref.where("userEmail", "==", self.userEmail).get()
+                if not docs:
+                    raise UserNotFoundError("No user found with this email.")
+
+                record = docs[0].to_dict()
+
+                if "groqAPIKey" not in record:
+                    raise KeyNotFoundError("Groq API Key is not set in the database.")
+
+                self.groqAPIKey = record["groqAPIKey"]
+
+            return self.groqAPIKey 
         except:
             raise
         
     def getSerperAPIKey(self):
-        try:
-            # return self.serperAPIKey
+        try: 
             if not self.serperAPIKey:
-                print("If called")
-                self.serperAPIKey = os.getenv("SERPAPIKey")  #Fetch this from DB later
-            
-            return self.serperAPIKey
+                collection_ref = db.collection(USER_COLLECTION_NAME)
+                docs = collection_ref.where("userEmail", "==", self.userEmail).get()
+                if not docs:
+                    raise UserNotFoundError("No user found with this email.")
+
+                record = docs[0].to_dict()
+
+                if "serperAPIKey" not in record:
+                    raise KeyNotFoundError("Serper API Key is not set in the database.")
+
+                self.serperAPIKey = record["serperAPIKey"]
+
+            return self.serperAPIKey 
         except:
             raise
 
     def getTavilyAPIKey(self):
-        if not self.tavilyAPIKey:
-            print("If called")
-            self.tavilyAPIKey = os.getenv("TAVILYAPIKEY")  #Fetch this from DB later
-        
-        return self.tavilyAPIKey
+        try: 
+            if not self.tavilyAPIKey:
+                collection_ref = db.collection(USER_COLLECTION_NAME)
+                docs = collection_ref.where("userEmail", "==", self.userEmail).get()
+                if not docs:
+                    raise UserNotFoundError("No user found with this email.")
+
+                record = docs[0].to_dict()
+
+                if "tavilyAPIKey" not in record:
+                    raise KeyNotFoundError("Tavily API Key is not set in the database.")
+
+                self.tavilyAPIKey = record["tavilyAPIKey"]
+
+            return self.tavilyAPIKey 
+        except:
+            raise
 
     def generateVideoTitles(self):
         try:
@@ -130,9 +178,26 @@ class SyntheticAgent:
             self.getIdeaDescription()
 
             print("Generating video titles based on idea...")
-            sys_prompt="You are a professional youtube title generator who generates a youtube title that can get maximum audience attention, from the idea title and idea description that is provided."
-            user_prompt=f"""Generate a YouTube video title based on the following video idea title and description:Video Idea Title: {self.ideaTitle} Video Idea Description: {self.ideaDescription} The title should meet the following criteria:Be accurate and clearly represent the video's content to ensure viewers do not stop watching mid-video.Preferably be 50-60 characters, and no more than 100 characters.Highlight the key benefit or value viewers will gain from the video.Include major keywords or search terms that are frequently searched by users related to this content.Use CAPS to emphasize one or two key words for impact, but avoid excessive use of all caps.Keep the title brief, direct, and to the point, as viewers may only see part of it on YouTube.Consider using brackets or parentheses to add additional context or perceived value, but don’t force it unless it adds clarity.Address challenges or pain points that the target audience has, and create a title that speaks directly to solving those issues.If the content relates to lists or rankings, create a listicle-style title (e.g., '5 Tips for Boosting Productivity').Add a sense of urgency to encourage immediate clicks, if appropriate.Know the target audience and tailor the title to appeal to them.Include a hook or special element to capture attention and distinguish the video from competing content.Clearly communicate what viewers can expect from the video and why it is special or unique. Output format:Return the titles as an array of strings that can be type casted using the python list function Output: Only generate 3 titles in the form of an array of strings in a single line and nothing else."""
-            response=self.getLLMResponse(sys_prompt, user_prompt)
-            return response
+            sys_prompt = "You are a professional youtube title generator who generates a youtube title that can get maximum audience attention, from the idea title and idea description that is provided."
+            user_prompt = f"""Generate 3 YouTube video titles based on the following video idea title and description: Video Idea Title: {self.ideaTitle} Video Idea Description: {self.ideaDescription} The titles should meet the following criteria: Be accurate and clearly represent the video's content to ensure viewers do not stop watching mid-video. Preferably be 50-60 characters, and no more than 100 characters. Highlight the key benefit or value viewers will gain from the video. Include major keywords or search terms that are frequently searched by users related to this content. Use CAPS to emphasize one or two key words for impact, but avoid excessive use of all caps.Keep the title brief, direct, and to the point, as viewers may only see part of it on YouTube. Consider using brackets or parentheses to add additional context or perceived value, but don't force it unless it adds clarity. Address challenges or pain points that the target audience has, and create a title that speaks directly to solving those issues. If the content relates to lists or rankings, create a listicle-style title(e.g., '5 Tips for Boosting Productivity'). Add a sense of urgency to encourage immediate clicks, if appropriate. Know the target audience and tailor the title to appeal to them. Include a hook or special element to capture attention and distinguish the video from competing content. Clearly communicate what viewers can expect from the video and why it is special or unique. Output format:Return the titles as an array of strings that can be type casted using the python list function Output: Only generate 3 titles in the form of an array of strings in a single line and nothing else."""
+            response = self.getLLMResponse(sys_prompt, user_prompt)
+            titles = ast.literal_eval(response)
+
+            return titles
+        except:
+            raise
+
+    def updateProjectState(self, nextStage):
+        try:
+            collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+            docs = collection_ref.where("projectID", "==", self.projectID).get()
+            if not docs:
+                raise ProjectNotFoundError("No project found with this ID.")
+            
+            doc_ref = docs[0].reference
+            doc_ref.update({"nextStage": nextStage})
+            self.nextStage = nextStage
+            
+            return "Video Title Set Successfully"
         except:
             raise

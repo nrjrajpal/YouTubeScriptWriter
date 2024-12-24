@@ -1,10 +1,10 @@
 **/.venv*/
+**/venv*/
 **/.laptop_venv/
-
 __pycache__/
 *.pyc
 *.pyo
 *.log
 *.env
-
+**/.DS_Store
 **/scriptwriter-firebase-adminsdk.json

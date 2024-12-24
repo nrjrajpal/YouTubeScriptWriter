@@ -1,30 +1,59 @@
 from .researcher_agent import ResearcherAgent
 from .synthetic_agent import SyntheticAgent
 import yt_dlp
+from utils.firebase import db
 from datetime import datetime, timedelta
 from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
 from youtube_transcript_api.formatters import TextFormatter
 from flask import jsonify
+from utils.exceptions import ProjectNotFoundError, KeyNotFoundError
+
+PROJECT_COLLECTION_NAME = "TrialProject"
 
 class YouTubeAgent(ResearcherAgent):
-    def __init__(self, projectID):
-        super().__init__(projectID)
+    def __init__(self,  projectID, userEmail):
+        super().__init__( projectID, userEmail)
         self.videoIDs = []  # Initialize video IDs as an empty list
         self.videoTranscripts = []  # Initialize video transcripts as an empty list (not stored in DB)
 
     # Video ID Functions
     def getVideoIDs(self):
-        if not self.videoIDs:
-            print("If called")
-            self.videoIDs = self._fetch_from_db("videoIDs")  # Fetch video IDs from DB later
-        return self.videoIDs
+        try: 
+            if not self.videoIDs:
+                collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+                docs = collection_ref.where("projectID", "==", self.projectID).get()
+                if not docs:
+                    raise ProjectNotFoundError("No Project found with this ID.")
+
+                record = docs[0].to_dict()
+
+                if "videoIDs" not in record:
+                    raise KeyNotFoundError("No video ids are present in the database.")
+
+                self.videoIDs = record["videoIDs"]
+
+            return self.videoIDs 
+        except:
+            raise
 
     def setVideoIDs(self, videoIDs):
-        self.videoIDs = videoIDs  # Update video IDs in DB later
+        try:
+            collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+            docs = collection_ref.where("projectID", "==", self.projectID).get()
+            if not docs:
+                raise ProjectNotFoundError("No project found with this ID.")
+            
+            doc_ref = docs[0].reference
+            doc_ref.update({"videoIDs": videoIDs})
+            self.videoIDs = videoIDs
+            
+            return "Video IDs set successfully"
+        except:
+            raise
     
     def fetchVideoTranscript(self, videoID):
         # Simulate fetching a transcript for a given video ID
-        print(f"Fetching transcript for video ID: {videoID}")
+        # print(f"Fetching transcript for video ID: {videoID}")
         
         try:
             # Get available transcripts

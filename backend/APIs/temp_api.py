@@ -1,5 +1,6 @@
-from flask import Blueprint, jsonify
-from PseudoAgents import SyntheticAgent,ResearcherAgent,YouTubeAgent
+from utils.exceptions import KeyNotFoundError, UserNotFoundError, ProjectNotFoundError
+from flask import Blueprint, jsonify, request
+from PseudoAgents import SyntheticAgent,ResearcherAgent,YouTubeAgent,User, ScriptAgent
 import ast
 import json
 import os
@@ -124,16 +125,61 @@ def YtIds():
     
     return {"Data": Data}
 
-@temp_blueprint.route('/getYTmetadata', methods=['POST'])
-def Ytmetadata():
-    researcher = YouTubeAgent(projectID=1234)
+@temp_blueprint.route('/user', methods=['POST'])
+def user():
     try:
+        usr=User(userEmail="temp@email.com")
+        print(usr.userEmail)
+        temp=usr.getChannelDetails()
+        return jsonify({"Message":temp})
         
-        temp=researcher.fetchVideoMetadata()
-        for i in temp:
-            x=researcher.fetch
-            
+    except Exception as e:
+        print(f"Error: {e}")
+        # In case of error, return None or a proper error message
+        return None
+
+
+# @temp_blueprint.route('/getSelectedQuestions', methods=['POST'])
+# def getSelectedQuestions():
+#     try:
+        
+#         sa=ScriptAgent(projectID="Dx1qIVN", userEmail="ishanvyavahare+real@gmail.com")
+#         temp=sa.getSelectedQuestions()
+#         return jsonify({"Message":temp})
+        
+#     except (UserNotFoundError, KeyNotFoundError, ProjectNotFoundError) as e:
+#         return jsonify({"error": e.message, "success": False}), 404
+#     except Exception as e:
+#         print("\n\n\nError: ", e)
+#         return jsonify({"error": "An error occurred. Check the logs.", "success": False}), 500
+
+
+@temp_blueprint.route('/tempIntro', methods=['POST'])
+def tempIntro():
+    try:
+        sa=ScriptAgent(projectID="Dx1qIVN", userEmail="ishanvyavahare+real@gmail.com")
+        intro = sa.generateIntroduction()
+        return jsonify({"Introduction":intro})
+        # yt_agent = YouTubeAgent(projectID="11223")
     except:
-        return jsonify({"message":"error"})
-    
-    return jsonify({"Videos_Ids":temp})
+        return jsonify({"error": "An error occurred. Check the logs.", "success": False}), 500
+
+@temp_blueprint.route('/submitSources', methods=['POST'])
+def submitSources():
+    try:
+        data = request.get_json()
+        userEmail = data.get('userEmail')
+        projectID = data.get('projectID')
+        if not userEmail:
+            return jsonify({"error": "Missing required field: userEmail", "success": False}), 400
+
+        if not projectID:
+            return jsonify({"error": "Missing required field: projectID", "success": False}), 400
+
+        syntheticAgent = SyntheticAgent(projectID, userEmail)
+        syntheticAgent.updateProjectState('script')
+        return jsonify({"success":True}),200
+        # yt_agent = YouTubeAgent(projectID="11223")
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "An error occurred. Check the logs.", "success": False}), 500
