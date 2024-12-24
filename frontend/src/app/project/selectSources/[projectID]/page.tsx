@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const YouTubeIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg
@@ -51,8 +52,16 @@ export default function DataInput() {
 
   const [originalYouTubeLinks, setOriginalYouTubeLinks] = useState<string[]>([]);
   const [latestValidYouTubeLinks, setLatestValidYouTubeLinks] = useState<string[]>([]);
-  const [isLoadingYouTubeVideos, setIsLoadingYouTubeVideos] = useState(false);
+  const [isLoadingYouTubeVideos, setIsLoadingYouTubeVideos] = useState(true);
   const [isDialogSubmitDisabled, setIsDialogSubmitDisabled] = useState(false);
+
+  const [originalResearchPapers, setOriginalResearchPapers] = useState<any[]>([]);
+  const [latestValidResearchPapers, setLatestValidResearchPapers] = useState<any[]>([]);
+  const [isLoadingResearchPapers, setIsLoadingResearchPapers] = useState(true);
+
+  const [originalWebPages, setOriginalWebPages] = useState<any[]>([]);
+  const [latestValidWebPages, setLatestValidWebPages] = useState<any[]>([]);
+  const [isLoadingWebPages, setIsLoadingWebPages] = useState(true);
 
   const features = [
     {
@@ -126,6 +135,30 @@ export default function DataInput() {
           ...prev,
           [title]: updatedLinks
         }));
+      } else if (title === "Research Papers") {
+        const updatedLinks = inputValues[title].map((link, index) => {
+          if (link.startsWith("http")) {
+            return link;
+          } else {
+            return latestValidResearchPapers[index]?.paper_url || originalResearchPapers[index]?.paper_url || "";
+          }
+        });
+        setInputValues(prev => ({
+          ...prev,
+          [title]: updatedLinks
+        }));
+      } else if (title === "Web Pages") {
+        const updatedLinks = inputValues[title].map((link, index) => {
+          if (link.startsWith("http")) {
+            return link;
+          } else {
+            return latestValidWebPages[index]?.webpage_url || originalWebPages[index]?.webpage_url || "";
+          }
+        });
+        setInputValues(prev => ({
+          ...prev,
+          [title]: updatedLinks
+        }));
       } else if (title === "Custom") {
         console.log(`Submitted for ${title}:`, customText);
       } else {
@@ -133,7 +166,7 @@ export default function DataInput() {
       }
       setOpenDialog(null);
     },
-    [inputValues, latestValidYouTubeLinks, originalYouTubeLinks, customText]
+    [inputValues, latestValidYouTubeLinks, originalYouTubeLinks, latestValidResearchPapers, originalResearchPapers, latestValidWebPages, originalWebPages, customText]
   );
 
   const handleInputChange = useCallback(
@@ -152,6 +185,23 @@ export default function DataInput() {
             newLinks[index] = value;
             return newLinks;
           });
+        }
+      } else if (title === "Research Papers" || title === "Web Pages") {
+        const isValidLink = value.startsWith("http");
+        if (isValidLink) {
+          if (title === "Research Papers") {
+            setLatestValidResearchPapers((prev) => {
+              const newPapers = [...prev];
+              newPapers[index] = { paper_url: value, paper_title: value };
+              return newPapers;
+            });
+          } else {
+            setLatestValidWebPages((prev) => {
+              const newPages = [...prev];
+              newPages[index] = { webpage_url: value, webpage_title: value, webpage_raw_content: "" };
+              return newPages;
+            });
+          }
         }
       }
 
@@ -292,6 +342,90 @@ export default function DataInput() {
     }
   }, [user, projectID, toast, setInputValues]);
 
+  const fetchResearchPaperFromWeb = useCallback(async () => {
+    setIsLoadingResearchPapers(true);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/fetchResearchPaperFromWeb`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userEmail: user?.primaryEmailAddress?.emailAddress,
+          projectID: projectID
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        const papers = data["research papers"].slice(0, 3);
+        setInputValues(prev => ({
+          ...prev,
+          "Research Papers": papers.map((paper: any) => paper.paper_url)
+        }));
+        setOriginalResearchPapers(papers);
+        setLatestValidResearchPapers(papers);
+      } else {
+        throw new Error(data.error || "Failed to fetch research papers");
+      }
+    } catch (error) {
+      console.error("Error fetching research papers:", error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch research papers. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingResearchPapers(false);
+    }
+  }, [user, projectID, toast, setInputValues]);
+
+  const fetchWebPagesFromWeb = useCallback(async () => {
+    setIsLoadingWebPages(true);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/fetchWebPagesFromWeb`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userEmail: user?.primaryEmailAddress?.emailAddress,
+          projectID: projectID
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        const webpages = data["webpage content"].slice(0, 3);
+        setInputValues(prev => ({
+          ...prev,
+          "Web Pages": webpages.map((webpage: any) => webpage.webpage_url)
+        }));
+        setOriginalWebPages(webpages);
+        setLatestValidWebPages(webpages);
+      } else {
+        throw new Error(data.error || "Failed to fetch web pages");
+      }
+    } catch (error) {
+      console.error("Error fetching web pages:", error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch web pages. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingWebPages(false);
+    }
+  }, [user, projectID, toast, setInputValues]);
+
   const handleMainSubmit = useCallback(async () => {
     if (selectedFeatures.length === 0) {
       toast({
@@ -370,6 +504,65 @@ export default function DataInput() {
         console.log("setVideoIDs API response:", videoIDsData);
       }
 
+      if (selectedFeatures.includes("Research Papers")) {
+        const researchPaperData = inputValues["Research Papers"].map((url, index) => {
+          const originalPaper = originalResearchPapers[index];
+          return {
+            paper_url: url,
+            paper_title: url !== originalPaper.paper_url ? url : originalPaper.paper_title,
+          };
+        });
+
+        const researchPaperResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/setResearchPaperData`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userEmail: user?.primaryEmailAddress?.emailAddress,
+            projectID: projectID,
+            researchPaperData: researchPaperData
+          }),
+        });
+
+        if (!researchPaperResponse.ok) {
+          throw new Error(`HTTP error! status: ${researchPaperResponse.status}`);
+        }
+
+        const researchPaperResult = await researchPaperResponse.json();
+        console.log("setResearchPaperData API response:", researchPaperResult);
+      }
+
+      if (selectedFeatures.includes("Web Pages")) {
+        const webPageData = inputValues["Web Pages"].map((url, index) => {
+          const originalWebPage = originalWebPages[index];
+          return {
+            webpage_url: url,
+            webpage_title: url !== originalWebPage.webpage_url ? url : originalWebPage.webpage_title,
+            webpage_raw_content: url !== originalWebPage.webpage_url ? "N/A" : originalWebPage.webpage_raw_content,
+          };
+        });
+
+        const webPageResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/setWebPageData`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userEmail: user?.primaryEmailAddress?.emailAddress,
+            projectID: projectID,
+            webPageData: webPageData
+          }),
+        });
+
+        if (!webPageResponse.ok) {
+          throw new Error(`HTTP error! status: ${webPageResponse.status}`);
+        }
+
+        const webPageResult = await webPageResponse.json();
+        console.log("setWebPageData API response:", webPageResult);
+      }
+
       if (selectedFeatures.includes("Custom")) {
         const customDataResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/setCustomData`, {
           method: "POST",
@@ -407,7 +600,7 @@ export default function DataInput() {
         variant: "destructive",
       });
     }
-  }, [inputValues, customText, selectedFeatures, toast, router, projectID, user]);
+  }, [inputValues, customText, selectedFeatures, toast, router, projectID, user, originalResearchPapers, originalWebPages]);
 
   const toggleFeatureSelection = useCallback((title: string) => {
     setSelectedFeatures((prev) => {
@@ -449,11 +642,13 @@ export default function DataInput() {
         await generateSearchQuery();
         await setSearchQueryAPI();
         await fetchVideosFromYT();
+        await fetchResearchPaperFromWeb();
+        await fetchWebPagesFromWeb();
       }
     };
 
     fetchData();
-  }, [user, projectID, generateSearchQuery, setSearchQueryAPI, fetchVideosFromYT]);
+  }, [user, projectID, generateSearchQuery, setSearchQueryAPI, fetchVideosFromYT, fetchResearchPaperFromWeb, fetchWebPagesFromWeb]);
 
   const ToggleButton = ({ title }: { title: string }) => (
     <button
@@ -519,86 +714,95 @@ export default function DataInput() {
                     <li key={pointIndex}>{point}</li>
                   ))}
                 </ul>
-                <Dialog
-                  open={openDialog === feature.title}
-                  onOpenChange={(open) => {
-                    setOpenDialog(open ? feature.title : null);
-                    if (!open) {
-                      handleSubmit(feature.title);
-                    }
-                  }}
-                >
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="default"
-                      className="rounded-full bg-gray-950 text-white mt-4 sm:mt-6 text-sm sm:text-base lg:text-lg hover:bg-indigo-950 transition-all border-gray-700 border-2 py-4 sm:py-6"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setOpenDialog(feature.title);
-                      }}
-                      onMouseEnter={() => setIsHoveringButton(true)}
-                      onMouseLeave={() => setIsHoveringButton(false)}
-                      disabled={feature.title === "YouTube Videos" && isLoadingYouTubeVideos}
-                    >
-                      {feature.buttonText}
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent
-                    className="sm:max-w-[90vw] md:max-w-[750px] bg-gray-950 text-white border border-gray-800 w-11/12 p-4 sm:p-6 lg:p-8 rounded-2xl"
-                    onClick={(e) => e.stopPropagation()}
+                {((feature.title === "YouTube Videos" && isLoadingYouTubeVideos) ||
+                (feature.title === "Research Papers" && isLoadingResearchPapers) ||
+                (feature.title === "Web Pages" && isLoadingWebPages)) ? (
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-[250px]" />
+                    <Skeleton className="h-4 w-[200px]" />
+                    <Skeleton className="h-4 w-[150px]" />
+                  </div>
+                ) : (
+                  <Dialog
+                    open={openDialog === feature.title}
+                    onOpenChange={(open) => {
+                      setOpenDialog(open ? feature.title : null);
+                      if (!open) {
+                        handleSubmit(feature.title);
+                      }
+                    }}
                   >
-                    <DialogHeader>
-                      <DialogTitle className="text-xl sm:text-2xl lg:text-3xl">
-                        {feature.dialogTitle}
-                      </DialogTitle>
-                    </DialogHeader>
-                    <p className="text-sm sm:text-base lg:text-lg text-gray-400 mb-2">
-                      {feature.subText}
-                    </p>
-                    {feature.title === "YouTube Videos" && (
-                      <p className="text-sm text-gray-400 mb-2">
-                        Example of a valid URL format: https://www.youtube.com/watch?v= &lt;desired youtube video's ID&gt;
-                      </p>
-                    )}
-                    <div className="grid gap-3 sm:gap-4 py-3 sm:py-4">
-                      {feature.title === "Custom" ? (
-                        <Textarea
-                          placeholder="Enter your custom information here"
-                          value={customText}
-                          onChange={(e) =>
-                            handleCustomTextChange(e.target.value)
-                          }
-                          maxLength={20000}
-                          className="h-40 sm:h-60 bg-gray-900 text-white text-base sm:text-lg lg:text-xl p-3 sm:p-4"
-                        />
-                      ) : (
-                        inputValues[feature.title].map((value, i) => (
-                          <Input
-                            key={i}
-                            placeholder={`Link ${i + 1}`}
-                            value={value}
-                            onChange={(e) =>
-                              handleInputChange(
-                                feature.title,
-                                i,
-                                e.target.value
-                              )
-                            }
-                            className="bg-gray-900 text-white text-base sm:text-lg lg:text-xl p-3 sm:p-4 h-10 sm:h-12 lg:h-14 w-full"
-                          />
-                        ))
-                      )}
-                    </div>
-                    <Button
-                      onClick={() => handleSubmit(feature.title)}
-                      variant="default"
-                      className="rounded-full bg-white text-black hover:bg-slate-200 transition-all border-slate-400 hover:border-[3px] w-full text-base sm:text-lg lg:text-xl h-10 sm:h-12  lg:h-14"
-                      disabled={feature.title === "YouTube Videos" && isDialogSubmitDisabled}
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="default"
+                        className="rounded-full bg-gray-950 text-white mt-4 sm:mt-6 text-sm sm:text-base lg:text-lg hover:bg-indigo-950 transition-all border-gray-700 border-2 py-4 sm:py-6"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenDialog(feature.title);
+                        }}
+                        onMouseEnter={() => setIsHoveringButton(true)}
+                        onMouseLeave={() => setIsHoveringButton(false)}
+                      >
+                        {feature.buttonText}
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent
+                      className="sm:max-w-[90vw] md:max-w-[750px] bg-gray-950 text-white border border-gray-800 w-11/12 p-4 sm:p-6 lg:p-8 rounded-2xl"
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      Submit
-                    </Button>
-                  </DialogContent>
-                </Dialog>
+                      <DialogHeader>
+                        <DialogTitle className="text-xl sm:text-2xl lg:text-3xl">
+                          {feature.dialogTitle}
+                        </DialogTitle>
+                      </DialogHeader>
+                      <p className="text-sm sm:text-base lg:text-lg text-gray-400 mb-2">
+                        {feature.subText}
+                      </p>
+                      {feature.title === "YouTube Videos" && (
+                        <p className="text-sm text-gray-400 mb-2">
+                          Example of a valid URL format: https://www.youtube.com/watch?v= &lt;desired youtube video's ID&gt;
+                        </p>
+                      )}
+                      <div className="grid gap-3 sm:gap-4 py-3 sm:py-4">
+                        {feature.title === "Custom" ? (
+                          <Textarea
+                            placeholder="Enter your custom information here"
+                            value={customText}
+                            onChange={(e) =>
+                              handleCustomTextChange(e.target.value)
+                            }
+                            maxLength={20000}
+                            className="h-40 sm:h-60 bg-gray-900 text-white text-base sm:text-lg lg:text-xl p-3 sm:p-4"
+                          />
+                        ) : (
+                          inputValues[feature.title].map((value, i) => (
+                            <Input
+                              key={i}
+                              placeholder={`Link ${i + 1}`}
+                              value={value}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  feature.title,
+                                  i,
+                                  e.target.value
+                                )
+                              }
+                              className="bg-gray-900 text-white text-base sm:text-lg lg:text-xl p-3 sm:p-4 h-10 sm:h-12 lg:h-14 w-full"
+                            />
+                          ))
+                        )}
+                      </div>
+                      <Button
+                        onClick={() => handleSubmit(feature.title)}
+                        variant="default"
+                        className="rounded-full bg-white text-black hover:bg-slate-200 transition-all border-slate-400 hover:border-[3px] w-full text-base sm:text-lg lg:text-xl h-10 sm:h-12  lg:h-14"
+                        disabled={feature.title === "YouTube Videos" && isDialogSubmitDisabled}
+                      >
+                        Submit
+                      </Button>
+                    </DialogContent>
+                  </Dialog>
+                )}
               </div>
             ))}
           </div>
@@ -614,17 +818,6 @@ export default function DataInput() {
               </Button>
             </div>
           </div>
-          {/* <Button
-            onClick={() =>
-              toast({
-                title: "Test Toast",
-                description: "This is a test toast message",
-              })
-            }
-            className="mt-4"
-          >
-            Test Toast
-          </Button> */}
         </div>
       </div>
       {hoverPosition && !isHoveringButton && (
