@@ -2,8 +2,8 @@
 
 import { useUser } from '@clerk/nextjs'
 import { useParams, useRouter } from 'next/navigation'
-import { useState, useCallback, useEffect } from "react";
-import { Globe, FileText, Pencil, Check } from "lucide-react";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { Globe, FileText, Pencil, Check } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -48,6 +48,11 @@ export default function DataInput() {
 
   const projectID = params.projectID as string
   const { isLoaded, isSignedIn, user } = useUser()
+
+  const [originalYouTubeLinks, setOriginalYouTubeLinks] = useState<string[]>([]);
+  const [latestValidYouTubeLinks, setLatestValidYouTubeLinks] = useState<string[]>([]);
+  const [isLoadingYouTubeVideos, setIsLoadingYouTubeVideos] = useState(false);
+  const [isDialogSubmitDisabled, setIsDialogSubmitDisabled] = useState(false);
 
   const features = [
     {
@@ -109,14 +114,26 @@ export default function DataInput() {
 
   const handleSubmit = useCallback(
     (title: string) => {
-      if (title === "Custom") {
+      if (title === "YouTube Videos") {
+        const updatedLinks = inputValues[title].map((link, index) => {
+          if (link.startsWith("https://www.youtube.com/watch?v=")) {
+            return link;
+          } else {
+            return latestValidYouTubeLinks[index] || originalYouTubeLinks[index] || "";
+          }
+        });
+        setInputValues(prev => ({
+          ...prev,
+          [title]: updatedLinks
+        }));
+      } else if (title === "Custom") {
         console.log(`Submitted for ${title}:`, customText);
       } else {
         console.log(`Submitted for ${title}:`, inputValues[title]);
       }
       setOpenDialog(null);
     },
-    [customText, inputValues]
+    [inputValues, latestValidYouTubeLinks, originalYouTubeLinks, customText]
   );
 
   const handleInputChange = useCallback(
@@ -125,6 +142,19 @@ export default function DataInput() {
         ...prev,
         [title]: prev[title].map((v, i) => (i === index ? value : v)),
       }));
+
+      if (title === "YouTube Videos") {
+        const isValidYouTubeLink = value.startsWith("https://www.youtube.com/watch?v=");
+        setIsDialogSubmitDisabled(!isValidYouTubeLink);
+        if (isValidYouTubeLink) {
+          setLatestValidYouTubeLinks((prev) => {
+            const newLinks = [...prev];
+            newLinks[index] = value;
+            return newLinks;
+          });
+        }
+      }
+
       if (value.trim() !== "") {
         setSelectedFeatures((prev) =>
           prev.includes(title) ? prev : [...prev, title]
@@ -151,6 +181,117 @@ export default function DataInput() {
     }
   }, []);
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchQueryRef = useRef("");
+
+  const generateSearchQuery = useCallback(async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/generateSearchQuery`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userEmail: user?.primaryEmailAddress?.emailAddress,
+          projectID: projectID
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        setSearchQuery(data.searchQuery);
+        searchQueryRef.current = data.searchQuery;
+      } else {
+        throw new Error(data.error || "Failed to generate search query");
+      }
+    } catch (error) {
+      console.error("Error generating search query:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate search query. Please try again.",
+        variant: "destructive",
+      });
+    }
+  }, [user, projectID, toast]);
+
+  const setSearchQueryAPI = useCallback(async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/setSearchQuery`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userEmail: user?.primaryEmailAddress?.emailAddress,
+          projectID: projectID,
+          searchQuery: searchQueryRef.current
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.error || "Failed to set search query");
+      }
+    } catch (error) {
+      console.error("Error setting search query:", error);
+      toast({
+        title: "Error",
+        description: "Failed to set search query. Please try again.",
+        variant: "destructive",
+      });
+    }
+  }, [user, projectID, toast]);
+
+  const fetchVideosFromYT = useCallback(async () => {
+    setIsLoadingYouTubeVideos(true);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/fetchVideosFromYT`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userEmail: user?.primaryEmailAddress?.emailAddress,
+          projectID: projectID
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        const videoUrls = data.video_urls.slice(0, 3);
+        setInputValues(prev => ({
+          ...prev,
+          "YouTube Videos": videoUrls
+        }));
+        setOriginalYouTubeLinks(videoUrls);
+        setLatestValidYouTubeLinks(videoUrls);
+      } else {
+        throw new Error(data.error || "Failed to fetch YouTube videos");
+      }
+    } catch (error) {
+      console.error("Error fetching YouTube videos:", error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch YouTube videos. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingYouTubeVideos(false);
+    }
+  }, [user, projectID, toast, setInputValues]);
+
   const handleMainSubmit = useCallback(async () => {
     if (selectedFeatures.length === 0) {
       toast({
@@ -162,27 +303,32 @@ export default function DataInput() {
       return;
     }
 
-    console.log("Main submit button clicked");
-    console.log("All input values:", inputValues);
-    console.log("Custom text:", customText);
-    console.log("Selected features:", selectedFeatures);
+    const selectedData: any = {};
+    selectedFeatures.forEach(feature => {
+      if (feature === "Custom") {
+        selectedData[feature] = customText;
+      } else {
+        selectedData[feature] = inputValues[feature];
+      }
+    });
+
+    console.log("Selected data:", selectedData);
 
     const payload = {
-
       "YouTube Videos_selected": selectedFeatures.includes("YouTube Videos"),
-      "YouTube Videos_links": inputValues["YouTube Videos"].filter(
+      "YouTube Videos_links": selectedFeatures.includes("YouTube Videos") ? inputValues["YouTube Videos"].filter(
         (link) => link.trim() !== ""
-      ),
+      ) : [],
       "Web Pages_selected": selectedFeatures.includes("Web Pages"),
-      "Web Pages_links": inputValues["Web Pages"].filter(
+      "Web Pages_links": selectedFeatures.includes("Web Pages") ? inputValues["Web Pages"].filter(
         (link) => link.trim() !== ""
-      ),
+      ) : [],
       "Research Papers_selected": selectedFeatures.includes("Research Papers"),
-      "Research Papers_links": inputValues["Research Papers"].filter(
+      "Research Papers_links": selectedFeatures.includes("Research Papers") ? inputValues["Research Papers"].filter(
         (link) => link.trim() !== ""
-      ),
+      ) : [],
       Custom_selected: selectedFeatures.includes("Custom"),
-      Custom_text: customText,
+      Custom_text: selectedFeatures.includes("Custom") ? customText : "",
       userEmail: user?.primaryEmailAddress?.emailAddress,
       projectID: projectID
     };
@@ -202,11 +348,55 @@ export default function DataInput() {
 
       const data = await response.json();
       console.log("API response:", data);
+
+      if (selectedFeatures.includes("YouTube Videos")) {
+        const videoIDsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/setVideoIDs`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userEmail: user?.primaryEmailAddress?.emailAddress,
+            projectID: projectID,
+            video_urls: inputValues["YouTube Videos"]
+          }),
+        });
+
+        if (!videoIDsResponse.ok) {
+          throw new Error(`HTTP error! status: ${videoIDsResponse.status}`);
+        }
+
+        const videoIDsData = await videoIDsResponse.json();
+        console.log("setVideoIDs API response:", videoIDsData);
+      }
+
+      if (selectedFeatures.includes("Custom")) {
+        const customDataResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/setCustomData`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userEmail: user?.primaryEmailAddress?.emailAddress,
+            projectID: projectID,
+            customData: customText
+          }),
+        });
+
+        if (!customDataResponse.ok) {
+          throw new Error(`HTTP error! status: ${customDataResponse.status}`);
+        }
+
+        const customDataResult = await customDataResponse.json();
+        console.log("setCustomData API response:", customDataResult);
+      }
+
       toast({
         title: "Success",
-        description: data.message,
+        description: "Data submitted successfully",
       });
-      router.push(`/project/selectQuestions/${projectID}`)
+
+      router.push(`/project/selectQuestions/${projectID}`);
 
     } catch (error) {
       console.error("Error submitting data:", error);
@@ -217,7 +407,7 @@ export default function DataInput() {
         variant: "destructive",
       });
     }
-  }, [inputValues, customText, selectedFeatures, toast]);
+  }, [inputValues, customText, selectedFeatures, toast, router, projectID, user]);
 
   const toggleFeatureSelection = useCallback((title: string) => {
     setSelectedFeatures((prev) => {
@@ -252,6 +442,18 @@ export default function DataInput() {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputValues, customText, manuallyDeselected]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (user?.primaryEmailAddress?.emailAddress && projectID) {
+        await generateSearchQuery();
+        await setSearchQueryAPI();
+        await fetchVideosFromYT();
+      }
+    };
+
+    fetchData();
+  }, [user, projectID, generateSearchQuery, setSearchQueryAPI, fetchVideosFromYT]);
 
   const ToggleButton = ({ title }: { title: string }) => (
     <button
@@ -336,6 +538,7 @@ export default function DataInput() {
                       }}
                       onMouseEnter={() => setIsHoveringButton(true)}
                       onMouseLeave={() => setIsHoveringButton(false)}
+                      disabled={feature.title === "YouTube Videos" && isLoadingYouTubeVideos}
                     >
                       {feature.buttonText}
                     </Button>
@@ -352,6 +555,11 @@ export default function DataInput() {
                     <p className="text-sm sm:text-base lg:text-lg text-gray-400 mb-2">
                       {feature.subText}
                     </p>
+                    {feature.title === "YouTube Videos" && (
+                      <p className="text-sm text-gray-400 mb-2">
+                        Example of a valid URL format: https://www.youtube.com/watch?v= &lt;desired youtube video's ID&gt;
+                      </p>
+                    )}
                     <div className="grid gap-3 sm:gap-4 py-3 sm:py-4">
                       {feature.title === "Custom" ? (
                         <Textarea
@@ -385,6 +593,7 @@ export default function DataInput() {
                       onClick={() => handleSubmit(feature.title)}
                       variant="default"
                       className="rounded-full bg-white text-black hover:bg-slate-200 transition-all border-slate-400 hover:border-[3px] w-full text-base sm:text-lg lg:text-xl h-10 sm:h-12  lg:h-14"
+                      disabled={feature.title === "YouTube Videos" && isDialogSubmitDisabled}
                     >
                       Submit
                     </Button>
@@ -432,3 +641,4 @@ export default function DataInput() {
     </div>
   );
 }
+

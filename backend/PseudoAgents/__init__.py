@@ -6,3 +6,4 @@ from .research_paper_agent import ResearchPaperAgent
 from .webpage_agent import WebpageAgent
 from .user import User
 from .project import Project
+from .customdata_agent import CustomDataAgent

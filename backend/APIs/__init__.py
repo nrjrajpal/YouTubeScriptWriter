@@ -10,6 +10,7 @@ from APIs.youtube_api import youtube_blueprint
 from APIs.webpage_api import webpage_blueprint
 from APIs.sctipts_page_old import scripts_old_blueprint
 from APIs.script_gen_trial import script_gen_trial_blueprint
+from APIs.customdata_api import custom_blueprint
 
 def api_blueprints(app):
     # Register blueprints
@@ -25,4 +26,5 @@ def api_blueprints(app):
     app.register_blueprint(webpage_blueprint)
     app.register_blueprint(scripts_old_blueprint)
     app.register_blueprint(script_gen_trial_blueprint)
+    app.register_blueprint(custom_blueprint)
     # app.register_blueprint(agent_blueprint, url_prefix="/agent")
