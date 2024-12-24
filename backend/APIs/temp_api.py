@@ -139,19 +139,19 @@ def user():
         return None
 
 
-@temp_blueprint.route('/getSelectedQuestions', methods=['POST'])
-def getSelectedQuestions():
-    try:
+# @temp_blueprint.route('/getSelectedQuestions', methods=['POST'])
+# def getSelectedQuestions():
+#     try:
         
-        sa=ScriptAgent(projectID="Dx1qIVN", userEmail="ishanvyavahare+real@gmail.com")
-        temp=sa.getSelectedQuestions()
-        return jsonify({"Message":temp})
+#         sa=ScriptAgent(projectID="Dx1qIVN", userEmail="ishanvyavahare+real@gmail.com")
+#         temp=sa.getSelectedQuestions()
+#         return jsonify({"Message":temp})
         
-    except (UserNotFoundError, KeyNotFoundError, ProjectNotFoundError) as e:
-        return jsonify({"error": e.message, "success": False}), 404
-    except Exception as e:
-        print("\n\n\nError: ", e)
-        return jsonify({"error": "An error occurred. Check the logs.", "success": False}), 500
+#     except (UserNotFoundError, KeyNotFoundError, ProjectNotFoundError) as e:
+#         return jsonify({"error": e.message, "success": False}), 404
+#     except Exception as e:
+#         print("\n\n\nError: ", e)
+#         return jsonify({"error": "An error occurred. Check the logs.", "success": False}), 500
 
 
 @temp_blueprint.route('/tempIntro', methods=['POST'])

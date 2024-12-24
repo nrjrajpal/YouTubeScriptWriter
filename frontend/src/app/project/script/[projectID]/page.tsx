@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/accordion";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { useUser } from '@clerk/nextjs'
+import { useParams, useRouter } from 'next/navigation'
 import {
   // Edit,
   Lightbulb,
@@ -61,7 +63,7 @@ interface ThoughtProcessParagraph {
   color: string;
 }
 
-const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api`;
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/`;
 
 const YouTubeIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg
@@ -75,6 +77,12 @@ const YouTubeIcon: React.FC<{ className?: string }> = ({ className }) => (
 );
 
 export default function Component() {
+  const { isLoaded, isSignedIn, user } = useUser()
+
+  const params = useParams();
+  const projectID = params.projectID as string;
+  
+  const [payload, setPayload] = useState<{userEmail: string | null; projectID: string; } | null> (null);
   const [viewMode, setViewMode] = useState<"thought" | "script">("thought");
   const [loading, setLoading] = useState({
     projectTitle: true,
@@ -100,12 +108,24 @@ export default function Component() {
     ThoughtProcessParagraph[]
   >([]);
   const [finalScript, setFinalScript] = useState<string>("");
-
+  
   useEffect(() => {
+    if (!isLoaded || !isSignedIn || !projectID) {
+      return
+    }
+    const payload = {
+      userEmail: user?.primaryEmailAddress?.emailAddress,
+      projectID: projectID
+    }
     const fetchData = async (endpoint: string, key: keyof typeof loading) => {
       try {
         if (key === "thoughtProcess") {
-          const response = await fetch(`${API_BASE_URL}/${endpoint}`);
+          const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            }
+          });
           const reader = response.body?.getReader();
           const decoder = new TextDecoder("utf-8");
           let previousText = "";
@@ -156,7 +176,13 @@ export default function Component() {
             }
           }
         } else {
-          const response = await fetch(`${API_BASE_URL}/${endpoint}`);
+          const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
           const data = await response.json();
           if (key === "projectTitle") {
             setProjectTitle(data.title);
@@ -173,16 +199,16 @@ export default function Component() {
       }
     };
 
-    fetchData("project-title", "projectTitle");
-    fetchData("idea-details", "ideaDetails");
-    fetchData("selected-questions", "selectedQuestions");
-    fetchData("youtube-videos", "youtubeVideos");
-    fetchData("webpages", "webpages");
-    fetchData("research-papers", "researchPapers");
-    fetchData("custom-data", "customData");
-    fetchData("thought-process", "thoughtProcess");
-    fetchData("final-script", "finalScript");
-  }, []);
+    fetchData("getVideoTitle", "projectTitle");
+    fetchData("getIdeaDetails", "ideaDetails");
+    fetchData("getSelectedQuestions", "selectedQuestions");
+    fetchData("getYoutubeVideos", "youtubeVideos");
+    fetchData("getWebPages", "webpages");
+    fetchData("getResearchPapers", "researchPapers");
+    fetchData("getCustomData", "customData");
+    // fetchData("getThoughtProcess", "thoughtProcess");
+    // fetchData("getFinalScript", "finalScript");
+  }, [isLoaded, isSignedIn, user, projectID]);
 
   const getVisibleColorClass = (color: string) => {
     const colorMap: { [key: string]: string } = {
@@ -399,9 +425,9 @@ export default function Component() {
                                 className="text-blue-400  hover:underline"
                               >
                                 <p className="font-semibold">{paper.title}</p>
-                                <p className="text-xs sm:text-sm">
+                                {/* <p className="text-xs sm:text-sm">
                                   by {paper.authors}
-                                </p>
+                                </p> */}
                               </a>
                             </li>
                           )

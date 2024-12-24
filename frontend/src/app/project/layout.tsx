@@ -6,7 +6,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="min-h-screen flex flex-col">
             <header className="p-4 border-b">
                 <Link href="/dashboard" passHref>
-                    <Button variant="outline" className="text-xl border-[1px] border-white">
+                    <Button variant="outline" className="text-md border-[1px] border-white">
                         Dashboard
                     </Button>
                 </Link>
