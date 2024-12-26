@@ -201,15 +201,15 @@ export default function Component() {
       }
     };
 
-    // fetchData("getVideoTitle", "projectTitle");
-    // fetchData("getIdeaDetails", "ideaDetails");
-    // fetchData("getSelectedQuestions", "selectedQuestions");
-    // fetchData("getYoutubeVideos", "youtubeVideos");
-    // fetchData("getWebPages", "webpages");
-    // fetchData("getResearchPapers", "researchPapers");
-    // fetchData("getCustomData", "customData");
+    fetchData("getVideoTitle", "projectTitle");
+    fetchData("getIdeaDetails", "ideaDetails");
+    fetchData("getSelectedQuestions", "selectedQuestions");
+    fetchData("getYoutubeVideos", "youtubeVideos");
+    fetchData("getWebPages", "webpages");
+    fetchData("getResearchPapers", "researchPapers");
+    fetchData("getCustomData", "customData");
     fetchData("getThoughtProcess", "thoughtProcess");
-    // fetchData("getFinalScript", "finalScript");
+    fetchData("getFinalScript", "finalScript");
   }, [isLoaded, isSignedIn, user, projectID]);
 
   const getVisibleColorClass = (color: string) => {
@@ -537,7 +537,12 @@ export default function Component() {
                   <Skeleton className="h-4 w-full" />
                 </div>
               ) : (
-                <p className="text-sm sm:text-lg">{finalScript}</p>
+                // <p className="text-sm sm:text-lg">{finalScript}</p>
+                <div className="space-y-4">
+                    <p className={`text-sm sm:text-lg ${getVisibleColorClass("text-green-500")}`}>
+                      {finalScript}
+                    </p>
+                </div>
               )}
             </div>
             {/* <div className="flex items-center justify-center mt-4 sm:mt-6 mx-auto bg-gray-800 w-fit p-2 rounded-full px-4"> */}
