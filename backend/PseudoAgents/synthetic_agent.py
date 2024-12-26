@@ -14,8 +14,8 @@ USER_COLLECTION_NAME = "TrialUser"
 
 class SyntheticAgent:
     def __init__(self, projectID, userEmail):
-        self.userEmail = userEmail
         self.projectID = projectID
+        self.userEmail = userEmail
         self.ideaTitle = None
         self.ideaDescription = None
         self.videoTitle = None

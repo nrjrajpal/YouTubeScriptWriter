@@ -120,11 +120,13 @@ export default function Component() {
     const fetchData = async (endpoint: string, key: keyof typeof loading) => {
       try {
         if (key === "thoughtProcess") {
+          console.log(projectID)
           const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-            }
+            },
+            body: JSON.stringify(payload),
           });
           const reader = response.body?.getReader();
           const decoder = new TextDecoder("utf-8");
@@ -199,14 +201,14 @@ export default function Component() {
       }
     };
 
-    fetchData("getVideoTitle", "projectTitle");
-    fetchData("getIdeaDetails", "ideaDetails");
-    fetchData("getSelectedQuestions", "selectedQuestions");
-    fetchData("getYoutubeVideos", "youtubeVideos");
-    fetchData("getWebPages", "webpages");
-    fetchData("getResearchPapers", "researchPapers");
-    fetchData("getCustomData", "customData");
-    // fetchData("getThoughtProcess", "thoughtProcess");
+    // fetchData("getVideoTitle", "projectTitle");
+    // fetchData("getIdeaDetails", "ideaDetails");
+    // fetchData("getSelectedQuestions", "selectedQuestions");
+    // fetchData("getYoutubeVideos", "youtubeVideos");
+    // fetchData("getWebPages", "webpages");
+    // fetchData("getResearchPapers", "researchPapers");
+    // fetchData("getCustomData", "customData");
+    fetchData("getThoughtProcess", "thoughtProcess");
     // fetchData("getFinalScript", "finalScript");
   }, [isLoaded, isSignedIn, user, projectID]);
 

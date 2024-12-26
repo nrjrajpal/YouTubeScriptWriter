@@ -7,7 +7,9 @@ PROJECT_COLLECTION_NAME = "TrialProject"
 
 class ScriptAgent(SyntheticAgent):
     def __init__(self,  projectID, userEmail):
-        super().__init__(projectID, userEmail)
+        print("proj", projectID)
+        print("usr", userEmail)
+        super().__init__(projectID=projectID, userEmail=userEmail)
         self.introduction = None
         self.selectedQuestions = None
         self.youTubeSummaries = None
@@ -87,7 +89,7 @@ class ScriptAgent(SyntheticAgent):
         try:
             self.getVideoTitle()
             self.getIdeaDescription()
-            
+            self.getSelectedQuestions()
             
             sys_prompt="You are a scriptwriting assistant, and your task is to generate 5 concise, engaging questions based on the provided video title and idea description. These questions should reflect potential viewers' expectations, concerns, and reasons to watch the video. Assume the role of a curious viewer who is considering watching the video and wants to know what value it offers."
             user_prompt=f"""
@@ -237,9 +239,11 @@ class ScriptAgent(SyntheticAgent):
         try:
             if not self.youTubeSummaries:
                 collection_ref = db.collection(PROJECT_COLLECTION_NAME)
+                print("projectIDprojectID", self.projectID)
+                print("userEmailuserEmail", self.userEmail)
                 docs = collection_ref.where("projectID", "==", self.projectID).get()
                 if not docs:
-                    raise ProjectNotFoundError("No project found with this ID.")
+                    raise ProjectNotFoundError("No project found with this ID..")
                 record = docs[0].to_dict()
                 if "youTubeSummaries" not in record:
                     raise KeyNotFoundError("YouTube Summaries are not set in the database.")
@@ -484,7 +488,7 @@ class ScriptAgent(SyntheticAgent):
         except:
             raise
 
-    def generateScript(self, summaries):
+    def generateScript(self):
         try:
             self.getVideoTitle()
             self.getIdeaDescription()
@@ -499,8 +503,8 @@ class ScriptAgent(SyntheticAgent):
                 Be divided into logical sections or chapters.
                 Include hooks at the beginning of each section to keep the audience engaged.
                 Build tension and excitement, leading to a satisfying payout for the viewer at the end of each section.
+                End with a resolution that ties back to the introduction's hook and leaves the audience feeling satisfied.
                 Feature a climax where the conflict or primary question is resolved.
-                End with a resolution that ties back to the introduction’s hook and leaves the audience feeling satisfied.
                 Input:
                 Video Title: {self.videoTitle}
                 Idea Description: {self.ideaDescription}
@@ -508,12 +512,12 @@ class ScriptAgent(SyntheticAgent):
                 Information Summary: {self.masterSummary}
                 Output Requirements:
                 The script must use only the information provided in the summary.
+                Hook: A compelling line to grab the viewer's attention.
                 Each section should follow the structure:
-                Hook: A compelling line to grab the viewer’s attention.
                 Content: Relevant details with gradual build and tension.
                 Payout: Provide the answer or resolution for that section.
+                The resolution should wrap up the story and relate to the introduction's hook.
                 The climax should be the most exciting part, resolving the primary conflict or question.
-                The resolution should wrap up the story and relate to the introduction’s hook.
                 Output Format:
                 The script should be divided into sections with clear headings, like this:
                 Introduction  
