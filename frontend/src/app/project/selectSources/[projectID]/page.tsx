@@ -3,7 +3,7 @@
 import { useUser } from '@clerk/nextjs'
 import { useParams, useRouter } from 'next/navigation'
 import { useState, useCallback, useEffect, useRef } from "react";
-import { Globe, FileText, Pencil, Check } from 'lucide-react';
+import { Globe, FileText, Pencil, Check, CloudFog } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -49,11 +49,13 @@ export default function DataInput() {
 
   const projectID = params.projectID as string
   const { isLoaded, isSignedIn, user } = useUser()
+  const [userEmail, setUserEmail] = useState("");
 
   const [originalYouTubeLinks, setOriginalYouTubeLinks] = useState<string[]>([]);
   const [latestValidYouTubeLinks, setLatestValidYouTubeLinks] = useState<string[]>([]);
   const [isLoadingYouTubeVideos, setIsLoadingYouTubeVideos] = useState(true);
   const [isDialogSubmitDisabled, setIsDialogSubmitDisabled] = useState(false);
+
 
   const [originalResearchPapers, setOriginalResearchPapers] = useState<any[]>([]);
   const [latestValidResearchPapers, setLatestValidResearchPapers] = useState<any[]>([]);
@@ -62,6 +64,11 @@ export default function DataInput() {
   const [originalWebPages, setOriginalWebPages] = useState<any[]>([]);
   const [latestValidWebPages, setLatestValidWebPages] = useState<any[]>([]);
   const [isLoadingWebPages, setIsLoadingWebPages] = useState(true);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchQuerySet, setIsSearchQuerySet] = useState(false);
+  const searchQueryRef = useRef("");
+  const [searchQuerySubmitted, setSearchQuerySubmitted] = useState(false);
 
   const features = [
     {
@@ -231,11 +238,10 @@ export default function DataInput() {
     }
   }, []);
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const searchQueryRef = useRef("");
 
   const generateSearchQuery = useCallback(async () => {
     try {
+      console.log("userEmail", userEmail);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/generateSearchQuery`, {
         method: "POST",
         headers: {
@@ -255,9 +261,12 @@ export default function DataInput() {
       if (data.success) {
         setSearchQuery(data.searchQuery);
         searchQueryRef.current = data.searchQuery;
+        setIsSearchQuerySet(true)
+        setUserEmail(user?.primaryEmailAddress?.emailAddress || "");
       } else {
         throw new Error(data.error || "Failed to generate search query");
       }
+
     } catch (error) {
       console.error("Error generating search query:", error);
       toast({
@@ -270,6 +279,7 @@ export default function DataInput() {
 
   const setSearchQueryAPI = useCallback(async () => {
     try {
+      console.log(user?.primaryEmailAddress?.emailAddress);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/setSearchQuery`, {
         method: "POST",
         headers: {
@@ -278,7 +288,8 @@ export default function DataInput() {
         body: JSON.stringify({
           userEmail: user?.primaryEmailAddress?.emailAddress,
           projectID: projectID,
-          searchQuery: searchQueryRef.current
+          // searchQuery: searchQueryRef.current
+          searchQuery: searchQuery
         }),
       });
 
@@ -615,6 +626,12 @@ export default function DataInput() {
   }, []);
 
   useEffect(() => {
+    if (!user?.primaryEmailAddress?.emailAddress) return
+
+    if (!isLoaded || !isSignedIn || !projectID) {
+      return
+    }
+    console.log("UseEffect 1")
     setSelectedFeatures((prev) => {
       const newSelectedFeatures = features
         .filter((feature) => {
@@ -637,26 +654,47 @@ export default function DataInput() {
   }, [inputValues, customText, manuallyDeselected]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (user?.primaryEmailAddress?.emailAddress && projectID) {
-        await generateSearchQuery();
-        await setSearchQueryAPI();
-        await fetchVideosFromYT();
-        await fetchResearchPaperFromWeb();
-        await fetchWebPagesFromWeb();
-      }
-    };
+    if (!user?.primaryEmailAddress?.emailAddress) return
 
-    fetchData();
+    if (!isLoaded || !isSignedIn || !projectID) {
+      return
+    }
+    console.log("UseEffect 2")
+    if (isLoaded && isSignedIn && projectID) {
+      if (user?.primaryEmailAddress) {
+        console.log("setting userEmail")
+        setUserEmail(user.primaryEmailAddress.emailAddress);
+        console.log(userEmail)
+      }
+      const fetchData = async () => {
+        if (user?.primaryEmailAddress?.emailAddress && projectID) {
+          await generateSearchQuery();
+          // await setSearchQueryAPI();
+          // await fetchVideosFromYT();
+          // await fetchResearchPaperFromWeb();
+          // await fetchWebPagesFromWeb();
+        }
+      };
+
+      fetchData();
+    }
   }, [user, projectID, generateSearchQuery, setSearchQueryAPI, fetchVideosFromYT, fetchResearchPaperFromWeb, fetchWebPagesFromWeb]);
+
+  const searchQuerySubmitHandler = useCallback(async () => {
+    await setSearchQueryAPI();
+    setSearchQuerySubmitted(true);
+    // await fetchVideosFromYT();
+    // await fetchResearchPaperFromWeb();
+    // await fetchWebPagesFromWeb();
+  }, []);
+
 
   const ToggleButton = ({ title }: { title: string }) => (
     <button
-      className={`absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full transition-colors ${
-        selectedFeatures.includes(title)
-          ? "bg-green-500 text-white"
-          : "bg-transparent"
-      }`}
+      className={`absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full transition-colors ${selectedFeatures.includes(title)
+        ? "bg-green-500 text-white"
+        : "bg-transparent"
+        }`}
       onClick={(e) => {
         e.stopPropagation();
         toggleFeatureSelection(title);
@@ -680,22 +718,69 @@ export default function DataInput() {
     <div className="flex items-center justify-center flex-col min-h-screen p-4 sm:p-6 lg:p-8 text-base sm:text-lg">
       <div className="rounded-2xl w-full max-w-[1380px] sm:w-5/6 lg:w-4/5 xl:w-3/4 h-auto bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px] shadow-lg">
         <div className="bg-black rounded-2xl justify-center items-center py-4 px-4">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-6 text-center">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-2 sm:mb-2 text-center">
             Select Information Sources
           </h1>
-          <p className="text-center text-gray-400 mb-4">
+          <p className="text-center text-gray-400 mb-8">
             Click to select or deselect a source. Sources with content will be
             automatically selected, but you can unselect them.
           </p>
+          <div className='flex justify-center gap-2 px-4 h-fit pb-6'>
+            <Input
+              required
+              className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 h-fit w-3/4 text-lg py-4"
+              placeholder={isSearchQuerySet ? "Search Query" : "Generating Search Query..."}
+              disabled={!isSearchQuerySet || searchQuerySubmitted}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {/* </div> */}
+            <div className="h-fit relative group flex w-1/4 justify-center mx-auto">
+              {/* <div className="absolute inset-0 blur-lg rounded-2xl w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="relative flex rounded-2xl w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px]">
+                <Button variant={"gradient"} disabled={!isSearchQuerySet} className="flex-1 h-full w-full rounded-2xl pb-[10px] text-3xl font-medium py-[11px]">
+                  Set
+                </Button>
+              </div> */}
+              {(isSearchQuerySet) && (
+                <>
+                  <div className="absolute inset-0 blur-lg rounded-2xl w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="relative flex rounded-2xl w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px]">
+                    <Button
+                      variant="gradient"
+                      className={"h-auto pb-[10px] rounded-2xl text-3xl font-medium py-[11px]"}
+                      onClick={searchQuerySubmitHandler}
+                      disabled={searchQuerySubmitted}
+                    >
+                      Set
+                    </Button>
+                  </div>
+                </>
+              )}
+              {(!isSearchQuerySet) && (
+                <>
+                  <div className="relative flex rounded-2xl w-full h-full bg-gray-400 animate-gradient p-[3px]">
+                    <Button
+                      disabled={!isSearchQuerySet}
+                      variant="gradient"
+                      className={`h-auto pb-[10px] text-3xl rounded-2xl font-medium py-[11px] ${!isSearchQuerySet ? "cursor-not-allowed bg-gray-800 text-gray-400" : ""
+                        }`}
+                    >
+                      Set
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 sm:gap-6 lg:gap-8">
             {features.map((feature, index) => (
               <div
                 key={index}
-                className={`bg-gray-900 rounded-lg px-6 sm:px-6 lg:px-8 pb-6 sm:pb-6 lg:pb-8 pt-4 sm:pt-4 lg:pt-6 flex flex-col relative cursor-pointer ${
-                  selectedFeatures.includes(feature.title)
-                    ? "ring-2 ring-green-500"
-                    : ""
-                }`}
+                className={`bg-gray-900 rounded-lg px-6 sm:px-6 lg:px-8 pb-6 sm:pb-6 lg:pb-8 pt-4 sm:pt-4 lg:pt-6 flex flex-col relative cursor-pointer ${selectedFeatures.includes(feature.title)
+                  ? "ring-2 ring-green-500"
+                  : ""
+                  }`}
                 onClick={() => toggleFeatureSelection(feature.title)}
                 onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
@@ -715,8 +800,8 @@ export default function DataInput() {
                   ))}
                 </ul>
                 {((feature.title === "YouTube Videos" && isLoadingYouTubeVideos) ||
-                (feature.title === "Research Papers" && isLoadingResearchPapers) ||
-                (feature.title === "Web Pages" && isLoadingWebPages)) ? (
+                  (feature.title === "Research Papers" && isLoadingResearchPapers) ||
+                  (feature.title === "Web Pages" && isLoadingWebPages)) ? (
                   <div className="space-y-2">
                     <Skeleton className="h-4 w-[250px]" />
                     <Skeleton className="h-4 w-[200px]" />
