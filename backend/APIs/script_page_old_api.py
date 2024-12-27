@@ -264,10 +264,34 @@ def getResearchPapers():
 @scripts_old_blueprint.route('/getCustomData', methods=['POST'])
 def getCustomData():
     time.sleep(2)  # Simulating API delay
-    return jsonify({
-        "available": True,
-        "data": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-    })
+
+    try:
+        data = request.get_json()
+        userEmail = data.get('userEmail')
+        projectID = data.get('projectID')
+
+        if not userEmail:
+            return jsonify({"error": "Missing required field: userEmail", "success": False}), 400
+
+        if not projectID:
+            return jsonify({"error": "Missing required field: projectID", "success": False}), 400
+                    
+        customagent = CustomDataAgent(projectID, userEmail)
+        customData = customagent.getCustomData()
+
+        return jsonify({"available": True, "data": customData}), 200
+    except (KeyNotFoundError) as e:
+        return jsonify({"available": False, "message": "Research papers were not selected as a data source."})
+    except (UserNotFoundError, ProjectNotFoundError) as e: 
+        return jsonify({"error": e, "success": False}), 404
+    except Exception as e:
+        return jsonify({"error": e, "success": False}), 500
+    
+    
+    # return jsonify({
+    #     "available": True,
+    #     "data": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+    # })
 
 @scripts_old_blueprint.route('/getThoughtProcess', methods=['POST'])
 def getThoughtProcess():

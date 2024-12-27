@@ -109,101 +109,6 @@ export default function Component() {
   >([]);
   const [finalScript, setFinalScript] = useState<string>("");
 
-
-  // -----------------------------------------------------------------
-  const [displayedText, setDisplayedText] = useState("");
-  const [isScriptAnimationComplete, setIsScriptAnimationComplete] = useState(false);
-
-  useEffect(() => {
-    if (finalScript && !isScriptAnimationComplete) {
-      let currentIndex = 0;
-      
-      const animateText = () => {
-        if (currentIndex < finalScript.length) {
-          setDisplayedText(prev => prev + finalScript[currentIndex]);
-          currentIndex++;
-          scriptAnimationTimeout = setTimeout(animateText, 30);
-        } else {
-          setIsScriptAnimationComplete(true);
-        }
-      };
-
-      let scriptAnimationTimeout = setTimeout(animateText, 30);
-      
-      return () => {
-        if (scriptAnimationTimeout) {
-          clearTimeout(scriptAnimationTimeout);
-        }
-      };
-    }
-  }, [finalScript]);
-
-  // ---------------------------------------------------------------------
-
-    const [displayedThoughts, setDisplayedThoughts] = useState<ThoughtProcessParagraph[]>([]);
-    const [isThoughtAnimationComplete, setIsThoughtAnimationComplete] = useState(false);
-  
-    useEffect(() => {
-    // Thought process animation
-    if (thoughtProcess.length > 0 && !isThoughtAnimationComplete) {
-      let currentIndex = 0;
-      let currentCharIndex = 0;
-      let currentThought = thoughtProcess[0];
-      let tempThoughts: ThoughtProcessParagraph[] = [];
-      
-      const animateThoughts = () => {
-        if (currentIndex >= thoughtProcess.length) {
-          setIsThoughtAnimationComplete(true);
-          return;
-        }
-
-        if (currentCharIndex === 0) {
-          tempThoughts = [...tempThoughts, { paragraph: "", color: currentThought.color }];
-        }
-
-        if (currentCharIndex < currentThought.paragraph.length) {
-          tempThoughts[currentIndex] = {
-            paragraph: currentThought.paragraph.slice(0, currentCharIndex + 1),
-            color: currentThought.color
-          };
-          setDisplayedThoughts([...tempThoughts]);
-          currentCharIndex++;
-          thoughtAnimationTimeout = setTimeout(animateThoughts, 30);
-        } else {
-          currentIndex++;
-          if (currentIndex < thoughtProcess.length) {
-            currentThought = thoughtProcess[currentIndex];
-            currentCharIndex = 0;
-            thoughtAnimationTimeout = setTimeout(animateThoughts, 30);
-          } else {
-            setIsThoughtAnimationComplete(true);
-          }
-        }
-      };
-
-      let thoughtAnimationTimeout = setTimeout(animateThoughts, 30);
-      
-      return () => {
-        if (thoughtAnimationTimeout) {
-          clearTimeout(thoughtAnimationTimeout);
-        }
-      };
-    }
-  }, [thoughtProcess]);
-
-  //-----------------------------------------------------------------------------
-
-  useEffect(() => {
-    if (loading.thoughtProcess || loading.finalScript) {
-      setDisplayedThoughts([]);
-      setDisplayedText("");
-      setIsThoughtAnimationComplete(false);
-      setIsScriptAnimationComplete(false);
-    }
-  }, [loading.thoughtProcess, loading.finalScript]);
-
-  //-----------------------------------------------------------------------------
-
   useEffect(() => {
     if (!isLoaded || !isSignedIn || !projectID) {
       return
@@ -610,18 +515,6 @@ export default function Component() {
                     <Skeleton className="h-4 w-full" />
                   </div>
                 ) : (
-                  // <div className="space-y-4">
-                  //   {displayedThoughts.map((paragraph, index) => (
-                  //     <p
-                  //       key={index}
-                  //       className={`text-sm sm:text-[15px] font-script py-3 ${getVisibleColorClass(
-                  //         paragraph.color
-                  //       )}`}
-                  //     >
-                  //       {paragraph.paragraph}
-                  //     </p>
-                  //   ))}
-                  // </div>
                   <div className="space-y-4">
                     {thoughtProcess.map((paragraph, index) => (
                       <p
@@ -647,8 +540,7 @@ export default function Component() {
                 // <p className="text-sm sm:text-lg">{finalScript}</p>
                 <div className="space-y-4">
                     <p className={`text-sm sm:text-[15px] font-script ${getVisibleColorClass("text-green-500")}`}>
-                      {/* {finalScript} */}
-                      {displayedText}
+                      {finalScript}
                     </p>
                 </div>
               )}
