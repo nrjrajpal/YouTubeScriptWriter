@@ -63,6 +63,12 @@ export default function DataInput() {
   const [latestValidWebPages, setLatestValidWebPages] = useState<any[]>([]);
   const [isLoadingWebPages, setIsLoadingWebPages] = useState(true);
 
+  const [isGeneratingQuery, setIsGeneratingQuery] = useState(false);
+  const [isComponentsDisabled, setIsComponentsDisabled] = useState(true);
+  const [isInputInUse, setIsInputInUse] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [isSearchQuerySet, setIsSearchQuerySet] = useState(false);
+
   const features = [
     {
       icon: YouTubeIcon,
@@ -75,7 +81,7 @@ export default function DataInput() {
       points: [
         "Uses transcripts of YouTube videos",
         "Fetches English transcripts for script information",
-        "Extracts diverse insights from video content",
+        "Extracts diverse insights from video content"
       ],
     },
     {
@@ -88,7 +94,7 @@ export default function DataInput() {
         "Enter up to 3 web page URLs. Empty fields will be filled with automatically fetched web pages later.",
       points: [
         "Crawls web pages to gather detailed content",
-        "Prioritizes reliable and relevant web sources",
+        "Prioritizes reliable and relevant web sources"
       ],
     },
     {
@@ -102,7 +108,7 @@ export default function DataInput() {
       points: [
         "Retrieves peer-reviewed research papers",
         "Extracts insights backed by data and evidence",
-        "Focuses on high-quality academic sources",
+        "Focuses on high-quality academic sources"
       ],
     },
     {
@@ -116,7 +122,7 @@ export default function DataInput() {
       points: [
         "Information tailored to your needs",
         "Allows unique, unseen ideas to be used",
-        "Ensures flexibility for custom material",
+        "Ensures flexibility for custom material"
       ],
     },
   ];
@@ -235,6 +241,7 @@ export default function DataInput() {
   const searchQueryRef = useRef("");
 
   const generateSearchQuery = useCallback(async () => {
+    setIsGeneratingQuery(true);
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/generateSearchQuery`, {
         method: "POST",
@@ -265,10 +272,12 @@ export default function DataInput() {
         description: "Failed to generate search query. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsGeneratingQuery(false);
     }
   }, [user, projectID, toast]);
 
-  const setSearchQueryAPI = useCallback(async () => {
+  const setSearchQueryAPI = useCallback(async (query: string) => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/setSearchQuery`, {
         method: "POST",
@@ -278,7 +287,7 @@ export default function DataInput() {
         body: JSON.stringify({
           userEmail: user?.primaryEmailAddress?.emailAddress,
           projectID: projectID,
-          searchQuery: searchQueryRef.current
+          searchQuery: query
         }),
       });
 
@@ -299,6 +308,34 @@ export default function DataInput() {
       });
     }
   }, [user, projectID, toast]);
+
+  const handleSearchSubmit = async () => {
+    setIsGeneratingQuery(true);
+    try {
+      await setSearchQueryAPI(searchQuery);
+      setIsSearchQuerySet(true);
+      setIsComponentsDisabled(false);
+      await Promise.all([
+        fetchVideosFromYT(),
+        fetchResearchPaperFromWeb(),
+        fetchWebPagesFromWeb()
+      ]);
+    } catch (error) {
+      console.error("Error submitting search query:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit search query. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingQuery(false);
+    }
+  };
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setIsSearchQuerySet(false);
+  };
 
   const fetchVideosFromYT = useCallback(async () => {
     setIsLoadingYouTubeVideos(true);
@@ -640,15 +677,12 @@ export default function DataInput() {
     const fetchData = async () => {
       if (user?.primaryEmailAddress?.emailAddress && projectID) {
         await generateSearchQuery();
-        await setSearchQueryAPI();
-        await fetchVideosFromYT();
-        await fetchResearchPaperFromWeb();
-        await fetchWebPagesFromWeb();
+        setIsSearchQuerySet(false);
       }
     };
 
     fetchData();
-  }, [user, projectID, generateSearchQuery, setSearchQueryAPI, fetchVideosFromYT, fetchResearchPaperFromWeb, fetchWebPagesFromWeb]);
+  }, [user, projectID, generateSearchQuery]);
 
   const ToggleButton = ({ title }: { title: string }) => (
     <button
@@ -683,11 +717,28 @@ export default function DataInput() {
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-6 text-center">
             Select Information Sources
           </h1>
+          <div className="flex w-full max-w-sm items-center space-x-2 mb-4 mx-auto">
+            <Input
+              type="text"
+              placeholder="Search query"
+              value={searchQuery}
+              onChange={handleSearchInputChange}
+              disabled={isGeneratingQuery || isSearchQuerySet}
+              ref={searchInputRef}
+            />
+            <Button 
+              type="submit" 
+              disabled={isGeneratingQuery || !searchQuery || isSearchQuerySet} 
+              onClick={handleSearchSubmit}
+            >
+              Set Query
+            </Button>
+          </div>
           <p className="text-center text-gray-400 mb-4">
             Click to select or deselect a source. Sources with content will be
             automatically selected, but you can unselect them.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 sm:gap-6 lg:gap-8">
+          <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 sm:gap-6 lg:gap-8 ${!isSearchQuerySet ? 'opacity-50 pointer-events-none' : ''}`}>
             {features.map((feature, index) => (
               <div
                 key={index}
@@ -720,7 +771,7 @@ export default function DataInput() {
                   <div className="space-y-2">
                     <Skeleton className="h-4 w-[250px]" />
                     <Skeleton className="h-4 w-[200px]" />
-                    <Skeleton className="h-4 w-[150px]" />
+                    <Skeleton className="h-4 w-[150pxpx]" />
                   </div>
                 ) : (
                   <Dialog
@@ -772,7 +823,7 @@ export default function DataInput() {
                               handleCustomTextChange(e.target.value)
                             }
                             maxLength={20000}
-                            className="h-40 sm:h-60 bg-gray-900 text-white text-base sm:text-lg lg:text-xl p-3 sm:p-4"
+                            className="h-40 sm:h-60 bg-gray-900 text-white text-base sm:lg:text-xl p-3 sm:p-4"
                           />
                         ) : (
                           inputValues[feature.title].map((value, i) => (
@@ -813,6 +864,7 @@ export default function DataInput() {
                 onClick={handleMainSubmit}
                 variant="gradient"
                 className="h-auto py-2 sm:py-3 md:py-4 lg:pb-[18px] text-base sm:text-lg md:text-xl lg:text-2xl"
+                disabled={!isSearchQuerySet}
               >
                 Submit
               </Button>
@@ -834,3 +886,4 @@ export default function DataInput() {
     </div>
   );
 }
+
