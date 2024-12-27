@@ -183,3 +183,16 @@ def submitSources():
     except Exception as e:
         print(e)
         return jsonify({"error": "An error occurred. Check the logs.", "success": False}), 500
+    
+@temp_blueprint.route('/getTranscript', methods=['POST'])
+def getTranscript():
+    try:
+        data = request.get_json()
+        videoID = data.get('videoID')
+        ytAgent = YouTubeAgent(None, None)
+        transcript = ytAgent.fetchVideoTranscript(videoID)
+        print(transcript)
+        return jsonify({"transcript": transcript}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "An error occurred. Check the logs.", "success": False}), 500
