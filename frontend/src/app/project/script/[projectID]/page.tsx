@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import React from "react";
 import {
   Accordion,
   AccordionContent,
@@ -14,6 +15,8 @@ import { useParams, useRouter } from 'next/navigation'
 import { Lightbulb, MessageSquare, Globe, FileText, Pencil } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
+import { useState as useState2 } from "react"; // Added import
+
 
 interface VideoDetails {
   id: string;
@@ -101,7 +104,8 @@ export default function Component() {
     ThoughtProcessParagraph[]
   >([]);
   const [finalScript, setFinalScript] = useState<string>("");
-  
+  const [expandedAccordions, setExpandedAccordions] = useState<{ [key: string]: boolean }>({}); // Added state
+
   
   const fetchData = async (endpoint: string, key: keyof typeof loading) => {
     if (!isLoaded || !isSignedIn || !projectID) {
@@ -144,6 +148,7 @@ export default function Component() {
               .map((p) => {
                 try {
                   const parsed = JSON.parse(p.replace(/^data: /, ""));
+                  // console.log(parsed.paragraph)
                   return parsed as ThoughtProcessParagraph;
                   // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 } catch (e) {
@@ -171,7 +176,6 @@ export default function Component() {
           }
         }
         setIsThoughtProcessDataLoaded(true);
-        
       } else {
         const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
           method: "POST",
@@ -212,6 +216,7 @@ export default function Component() {
   useEffect(() => {
     // console.log(thoughtProcess.length)
     if (isThoughtProcessDataLoaded) {
+      console.log(thoughtProcess);
       fetchData("getFinalScript", "finalScript");
     }
   }, [isThoughtProcessDataLoaded]);
@@ -225,6 +230,37 @@ export default function Component() {
       "text-yellow-500": "text-yellow-300",
     };
     return colorMap[color] || color;
+  };
+
+  const renderAccordionContent = (content: React.ReactNode, accordionId: string) => {
+    const paragraphs = React.Children.toArray(content);
+    const isExpanded = expandedAccordions[accordionId];
+    
+    let visibleContent;
+    if (accordionId === "final-script") {
+      const scriptContent = (paragraphs[0] as React.ReactElement).props.children;
+      visibleContent = isExpanded ? scriptContent : scriptContent.slice(0, 1500);
+    } else {
+      visibleContent = isExpanded ? paragraphs : [paragraphs[0]];
+    }
+
+    return (
+      <>
+        {visibleContent}
+        {((accordionId === "final-script" && (paragraphs[0] as React.ReactElement).props.children.length > 300) || 
+           (accordionId !== "final-script" && paragraphs.length > 1)) && !isExpanded && (
+          <div className="relative">
+            <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-black to-transparent"></div>
+            <Button
+              onClick={() => setExpandedAccordions(prev => ({ ...prev, [accordionId]: true }))}
+              className="border absolute bottom-0 left-1/2 transform -translate-x-1/2 z-10 bg-gray-900 text-white hover:bg-gray-700"
+            >
+              Load More
+            </Button>
+          </div>
+        )}
+      </>
+    );
   };
 
   return (
@@ -247,7 +283,7 @@ export default function Component() {
       {loading.projectTitle ? (
         <Skeleton className="h-8 sm:h-10 w-3/4 mx-auto mb-4 sm:mb-8" />
       ) : (
-        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-8 text-center">
+        <h1 className="text-2xl sm:text-3xl font-semibold mb-4 sm:mb-8 text-center font-script">
           {projectTitle}
         </h1>
       )}
@@ -255,7 +291,7 @@ export default function Component() {
       <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 flex-grow h-full lg:h-full overflow-hidden">
         <div className=" flex rounded-2xl w-full lg:w-1/2 bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px] shadow-lg overflow-hidden">
           <div className="w-full h-full bg-black rounded-2xl py-4 px-2 sm:px-4 overflow-hidden p-4 sm:p-6">
-            <h2 className="text-2xl sm:text-4xl font-semibold mb-4 sm:mb-6 text-center">
+            <h2 className="text-2xl sm:text-3xl mb-4 sm:mb-6 text-center font-medium">
               Details
             </h2>
             <div className="overflow-y-auto flex-grow w-full pr-2 sm:pr-4">
@@ -493,50 +529,135 @@ export default function Component() {
                   <AccordionItem value="item-1">
                     <AccordionTrigger>YouTube Summary</AccordionTrigger>
                     <AccordionContent>
-                      {thoughtProcess.slice(0, 4).map((paragraph, index) => (
-                        <p key={index} className={`text-sm sm:text-[15px] font-script py-3 ${getVisibleColorClass(paragraph.color)}`}>
-                          {paragraph.paragraph}
-                        </p>
-                      ))}
+                      {renderAccordionContent(
+                        thoughtProcess
+                          .filter((paragraph) => paragraph.paragraph.includes("yt "))
+                          .map((paragraph, index) => {
+                            const updatedParagraph = (() => {
+                              const firstOccurrenceIndex = paragraph.paragraph.indexOf("yt");
+                              if (firstOccurrenceIndex !== -1) {
+                                return paragraph.paragraph.slice(firstOccurrenceIndex + "yt".length);
+                              }
+                            })();
+
+                            return (
+                              <p
+                                key={index}
+                                className={`text-sm sm:text-[15px] font-script py-3 ${getVisibleColorClass(paragraph.color)}`}
+                              >
+                                {updatedParagraph}
+                              </p>
+                            );
+                          }),
+                        "youtube-summary"
+                      )}
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="item-2">
                     <AccordionTrigger> Webpage Summary </AccordionTrigger>
                     <AccordionContent>
-                      {thoughtProcess.slice(4, 8).map((paragraph, index) => (
-                        <p key={index} className={`text-sm sm:text-[15px] font-script py-3 ${getVisibleColorClass(paragraph.color)}`}>
-                          {paragraph.paragraph}
-                        </p>
-                      ))}
+                      {renderAccordionContent(
+                        thoughtProcess
+                          .filter((paragraph) => paragraph.paragraph.includes("wp "))
+                          .map((paragraph, index) => {
+                            const updatedParagraph = (() => {
+                              const firstOccurrenceIndex = paragraph.paragraph.indexOf("wp");
+                              if (firstOccurrenceIndex !== -1) {
+                                return paragraph.paragraph.slice(firstOccurrenceIndex + "wp".length);
+                              }
+                            })();
+
+                            return (
+                              <p
+                                key={index}
+                                className={`text-sm sm:text-[15px] font-script py-3 ${getVisibleColorClass(paragraph.color)}`}
+                              >
+                                {updatedParagraph}
+                              </p>
+                            );
+                          }),
+                        "webpage-summary"
+                      )}
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="item-3">
                     <AccordionTrigger>Research Paper Summary</AccordionTrigger>
                     <AccordionContent>
-                      {thoughtProcess.slice(8, 12).map((paragraph, index) => (
-                        <p key={index} className={`text-sm sm:text-[15px] font-script py-3 ${getVisibleColorClass(paragraph.color)}`}>
-                          {paragraph.paragraph}
-                        </p>
-                      ))}
+                      {renderAccordionContent(
+                        thoughtProcess
+                          .filter((paragraph) => paragraph.paragraph.includes("rp "))
+                          .map((paragraph, index) => {
+                            const updatedParagraph = (() => {
+                              const firstOccurrenceIndex = paragraph.paragraph.indexOf("rp");
+                              if (firstOccurrenceIndex !== -1) {
+                                return paragraph.paragraph.slice(firstOccurrenceIndex + "rp".length);
+                              }
+                            })();
+
+                            return (
+                              <p
+                                key={index}
+                                className={`text-sm sm:text-[15px] font-script py-3 ${getVisibleColorClass(paragraph.color)}`}
+                              >
+                                {updatedParagraph}
+                              </p>
+                            );
+                          }),
+                        "research-paper-summary"
+                      )}
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="item-4">
                     <AccordionTrigger>Custom Data Summary</AccordionTrigger>
                     <AccordionContent>
-                      {thoughtProcess[12] && (
-                        <p className={`text-sm sm:text-[15px] font-script py-3 ${getVisibleColorClass(thoughtProcess[12].color)}`}>
-                          {thoughtProcess[12].paragraph}
-                        </p>
+                      {renderAccordionContent(
+                        thoughtProcess
+                          .filter((paragraph) => paragraph.paragraph.includes("cd "))
+                          .map((paragraph, index) => {
+                            const updatedParagraph = (() => {
+                              const firstOccurrenceIndex = paragraph.paragraph.indexOf("cd");
+                              if (firstOccurrenceIndex !== -1) {
+                                return paragraph.paragraph.slice(firstOccurrenceIndex + "cd".length);
+                              }
+                            })();
+
+                            return (
+                              <p
+                                key={index}
+                                className={`text-sm sm:text-[15px] font-script py-3 ${getVisibleColorClass(paragraph.color)}`}
+                              >
+                                {updatedParagraph}
+                              </p>
+                            );
+                          }),
+                        "custom-data-summary"
                       )}
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="item-5">
                     <AccordionTrigger>Master Summary</AccordionTrigger>
                     <AccordionContent>
-                      {thoughtProcess[13] && (
-                        <p className={`text-sm sm:text-[15px] font-script py-3 ${getVisibleColorClass(thoughtProcess[13].color)}`}>
-                          {thoughtProcess[13].paragraph}
-                        </p>
+                      {renderAccordionContent(
+                        thoughtProcess
+                          .filter((paragraph) => paragraph.paragraph.includes("Master Summary"))
+                          .map((paragraph, index) => {
+                            const updatedParagraph = (() => {
+                              const firstOccurrenceIndex = paragraph.paragraph.indexOf("ms");
+                              if (firstOccurrenceIndex !== -1) {
+                                return paragraph.paragraph.slice(firstOccurrenceIndex + "ms".length);
+                              }
+                            })();
+
+                            return (
+                              <p
+                                key={index}
+                                className={`text-sm sm:text-[15px] font-script py-3 ${getVisibleColorClass(paragraph.color)}`}
+                              >
+                                {updatedParagraph}
+                              </p>
+                            );
+                          }),
+                        "master-summary"
                       )}
                     </AccordionContent>
                   </AccordionItem>
@@ -551,9 +672,12 @@ export default function Component() {
                 </div>
               ) : (
                 <div className="space-y-4">
+                  {renderAccordionContent(
                     <p className={`text-sm sm:text-[15px] font-script ${getVisibleColorClass("text-green-500")}`}>
                       {finalScript}
-                    </p>
+                    </p>,
+                    "final-script"
+                  )}
                 </div>
               )}
             </div>

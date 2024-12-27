@@ -242,7 +242,7 @@ def getResearchPapers():
 
         formattedResearchPaperData = []
         for record in researchPaperData:
-            formattedResearchPaperData.append({"title": record["research_paper_title"], "url": record["research_paper_url"]})
+            formattedResearchPaperData.append({"title": record["paper_title"], "url": record["paper_url"]})
 
         return jsonify({"available": True, "data" : formattedResearchPaperData, "success": True, "message": "Successfully retrieved webpages' details"}), 200
     except (KeyNotFoundError) as e:
@@ -297,17 +297,6 @@ def getCustomData():
 def getThoughtProcess():
     def generate(projectID, userEmail):
         print("In gen")
-        # paragraphs = [
-        #     {"paragraph": "As we embark on the journey of developing an AI-powered personal assistant, it's crucial to first understand the core problem we're addressing. In today's fast-paced world, individuals are overwhelmed with information, tasks, and decisions. Our AI assistant aims to alleviate this cognitive load by providing personalized, context-aware support across various aspects of daily life.", "color": "text-blue-500"},
-        #     {"paragraph": "The foundation of our AI assistant lies in its ability to learn from user behavior and preferences. This involves implementing advanced machine learning algorithms, particularly in the realms of natural language processing and predictive analytics. By analyzing patterns in user interactions, the system can anticipate needs and offer proactive assistance.", "color": "text-green-500"},
-        #     {"paragraph": "One of the key challenges we face is striking the right balance between functionality and user privacy. While deep learning models benefit from vast amounts of data, we must ensure that user information is handled ethically and securely. This necessitates the implementation of robust data encryption methods and giving users granular control over their data sharing preferences.", "color": "text-red-500"},
-        #     {"paragraph": "Another critical aspect of our development process is creating an intuitive and seamless user interface. The AI assistant should feel like a natural extension of the user's thought process, rather than a separate entity to be commanded. This involves designing conversational AI that can understand context, maintain coherent dialogues, and adapt its communication style to individual users.", "color": "text-purple-500"},
-        #     {"paragraph": "As we progress, we'll need to continuously evaluate and refine our AI models. This iterative process will involve extensive testing, gathering user feedback, and staying abreast of the latest advancements in AI research. By doing so, we can ensure that our personal assistant remains at the cutting edge of technology while providing tangible benefits to its users.", "color": "text-yellow-500"}
-        # ]
-        
-        # for paragraph in paragraphs:
-        #     time.sleep(3)  # Simulate delay between paragraphs
-        #     yield f"data: {json.dumps(paragraph)}\n\n"
         try:
             scriptAgent = ScriptAgent(projectID, userEmail)
             
@@ -332,7 +321,7 @@ def getThoughtProcess():
                             # text = {"paragraph": "BAs we embark on the journey of developing an AI-powered personal assistant, it's crucial to first understand the core problem we're addressing. In today's fast-paced world, individuals are overwhelmed with information, tasks, and decisions. Our AI assistant aims to alleviate this cognitive load by providing personalized, context-aware support across various aspects of daily life.", "color": "text-blue-500"}
                             
                             # text = {"paragraph": "CAs we embark on the journey of developing an AI-powered personal assistant, it's crucial to first understand the core problem we're addressing. In today's fast-paced world, individuals are overwhelmed with information, tasks, and decisions. Our AI assistant aims to alleviate this cognitive load by providing personalized, context-aware support across various aspects of daily life.", "color": "text-blue-500"}
-                            text = {"paragraph": "\n\n\nSummary for https://www.youtube.com/watch?v="+videoID+":\n\n"+ytSummary, "color": "text-blue-500"}
+                            text = {"paragraph": "\n\n\nyt Summary for https://www.youtube.com/watch?v="+videoID+":\n\n"+ytSummary, "color": "text-blue-500"}
                             yield f"data: {json.dumps(text)}\n\n"
                             # yield f"data: {json.dumps(text)}"
                     else:
@@ -364,7 +353,7 @@ def getThoughtProcess():
                             ytSummary = scriptAgent.generateSummaryFromRawData(transcript[0:20000])
                             scriptAgent.setYouTubeSummary(ytSummary)
                             # print(f"\n\nSummary for https://www.youtube.com/watch?v={videoID}:\n{ytSummary}")
-                            text = {"paragraph": "\n\n\nSummary for https://www.youtube.com/watch?v="+videoID+":\n\n"+ytSummary, "color": "text-red-500"}
+                            text = {"paragraph": "\n\n\nyt Summary for https://www.youtube.com/watch?v="+videoID+":\n\n"+ytSummary, "color": "text-red-500"}
                             yield f"data: {json.dumps(text)}\n\n"
                         # for videoTranscript in videoTranscripts:
                     except KeyNotFoundError:
@@ -377,7 +366,7 @@ def getThoughtProcess():
                     masterYTSummary = scriptAgent.getMasterYouTubeSummary()
                     if masterYTSummary:
                         masterYTSummaryOnDB = True
-                        text = {"paragraph": f"Master YouTube Summary:\n{masterYTSummary}", "color": "text-yellow-500"}
+                        text = {"paragraph": f"yt Master Youtube Summary:\n{masterYTSummary}", "color": "text-yellow-500"}
                         yield f"data: {json.dumps(text)}\n\n"
                 except KeyNotFoundError:
                     pass
@@ -392,7 +381,7 @@ def getThoughtProcess():
                         masterYTSummary = scriptAgent.generateSummaryFromSummaries(ytSummaries)
                         scriptAgent.setMasterYouTubeSummary(masterYTSummary)
                         # print(f"\n\n\nMaster YouTube Summary:\n{masterYTSummary}")
-                        text = {"paragraph": f"\n\nSet Master YouTube Summary:\n{masterYTSummary}", "color": "text-yellow-500"}
+                        text = {"paragraph": f"\n\nyt Master Youtube Summary Set:\n{masterYTSummary}", "color": "text-yellow-500"}
                         yield f"data: {json.dumps(text)}\n\n"
                     except KeyNotFoundError:
                         pass
@@ -411,7 +400,7 @@ def getThoughtProcess():
                         webPageURLs = [webPage["webpage_url"] for webPage in webPageData if "webpage_url" in webPage]
                         for wpSummary, webPageURL in zip(wpSummaries, webPageURLs):
                             # print(f"\n\n\nSummary for {webPageURL}:\n{wpSummary}")
-                            text = {"paragraph": "\n\n\nSummary for: "+webPageURL+":\n\n"+wpSummary, "color": "text-purple-500"}
+                            text = {"paragraph": "\n\n\nwp Summary for: "+webPageURL+":\n\n"+wpSummary, "color": "text-purple-500"}
                             yield f"data: {json.dumps(text)}\n\n"
                 except KeyNotFoundError:
                     pass
@@ -420,7 +409,6 @@ def getThoughtProcess():
 
                 if not wpSummariesOnDB:
                     try:
-
                         webPageData = wpAgent.getWebPageData()
                         print("\n\nwpSummaries not set\n\n")
                         webPageURLs = [webPage["webpage_url"] for webPage in webPageData if "webpage_url" in webPage]
@@ -432,7 +420,7 @@ def getThoughtProcess():
                             wpSummary = scriptAgent.generateSummaryFromRawData(rawContent[0:20000])
                             scriptAgent.setWebPageSummary(wpSummary)
                             # print(f"\n\n\nSummary for {webPageURL}:\n{wpSummary}")
-                            text = {"paragraph": "\n\n\nSummary for: "+webPageURL+":\n\n"+wpSummary, "color": "text-purple-500"}
+                            text = {"paragraph": "\n\n\nwp Summary for: "+webPageURL+":\n\n"+wpSummary, "color": "text-purple-500"}
                             yield f"data: {json.dumps(text)}\n\n"
 
                     except KeyNotFoundError:
@@ -446,7 +434,7 @@ def getThoughtProcess():
                     if masterWPSummary:
                         masterWPSummaryOnDB = True
                         # print(f"\n\nMasterWPSummary set\n\nMaster Web Page Summary:\n{masterWPSummary}")
-                        text = {"paragraph": f"\n\nMaster Webpage Summary:\n{masterWPSummary}", "color": "text-yellow-500"}
+                        text = {"paragraph": f"\n\nwp Master Webpage Summary:\n{masterWPSummary}", "color": "text-yellow-500"}
                         yield f"data: {json.dumps(text)}\n\n"
                 except KeyNotFoundError:
                     pass
@@ -460,7 +448,7 @@ def getThoughtProcess():
                         masterWPSummary = scriptAgent.generateSummaryFromSummaries(wpSummaries)
                         scriptAgent.setMasterWebPageSummary(masterWPSummary)
                         # print(f"\n\nMaster WebPage Summary:\n{masterWPSummary}")
-                        text = {"paragraph": f"\n\nSet Master Webpage Summary:\n{masterYTSummary}", "color": "text-yellow-500"}
+                        text = {"paragraph": f"\n\nwp Master Webpage Summary Set:\n{masterYTSummary}", "color": "text-yellow-500"}
                         yield f"data: {json.dumps(text)}\n\n"
                     except KeyNotFoundError:
                         pass
@@ -476,10 +464,10 @@ def getThoughtProcess():
                         rpSummariesOnDB = True
                         print("\n\nrpSummaries set\n\n")
                         researchPaperData = rpAgent.getResearchPaperUrlsAndMetadata()
-                        researchPaperURLs = [researchPaper["research_paper_url"] for researchPaper in researchPaperData if "research_paper_url" in researchPaper]
+                        researchPaperURLs = [researchPaper["paper_url"] for researchPaper in researchPaperData if "paper_url" in researchPaper]
                         for rpSummary, researchPaperURL in zip(rpSummaries, researchPaperURLs):
                             # print(f"\n\n\nSummary for {researchPaperURL}:\n{rpSummary}")
-                            text = {"paragraph": "\n\n\nSummary for: "+researchPaperURL+":\n\n"+rpSummary, "color": "text-blue-500"}
+                            text = {"paragraph": "\n\n\nrp Summary for: "+researchPaperURL+":\n\n"+rpSummary, "color": "text-blue-500"}
                             yield f"data: {json.dumps(text)}\n\n"
                 except KeyNotFoundError:
                     pass
@@ -488,10 +476,9 @@ def getThoughtProcess():
 
                 if not rpSummariesOnDB:
                     try:
-
                         researchPaperData = rpAgent.getResearchPaperUrlsAndMetadata()
                         print("\n\nrpSummaries not set\n\n")
-                        researchPaperURLs = [researchPaper["research_paper_url"] for researchPaper in researchPaperData if "research_paper_url" in researchPaper]
+                        researchPaperURLs = [researchPaper["paper_url"] for researchPaper in researchPaperData if "paper_url" in researchPaper]
                         rpSummaries = []
                         for researchPaperURL in researchPaperURLs:
                             print(f"\n\n\nFetching raw content for {researchPaperURL}")
@@ -500,7 +487,7 @@ def getThoughtProcess():
                             rpSummary = scriptAgent.generateSummaryFromRawData(rawContent[0:20000])
                             scriptAgent.setResearchPaperSummary(rpSummary)
                             # print(f"\n\n\nSummary for {researchPaperURL}:\n{rpSummary}")
-                            text = {"paragraph": "\n\n\nSummary for: "+researchPaperURL+":\n\n"+rpSummary, "color": "text-blue-500"}
+                            text = {"paragraph": "\n\n\nrp Summary for: "+researchPaperURL+":\n\n"+rpSummary, "color": "text-blue-500"}
                             yield f"data: {json.dumps(text)}\n\n"
                     except KeyNotFoundError:
                         pass
@@ -513,7 +500,7 @@ def getThoughtProcess():
                     if masterRPSummary:
                         masterRPSummaryOnDB = True
                         # print(f"\n\nMaster Research Paper Summary:\n{masterRPSummary}")
-                        text = {"paragraph": f"\n\nMaster Research Paper Summary:\n{masterRPSummary}", "color": "text-yellow-500"}
+                        text = {"paragraph": f"\n\nrp Master Research Paper Summary:\n{masterRPSummary}", "color": "text-yellow-500"}
                         yield f"data: {json.dumps(text)}\n\n"
                 except KeyNotFoundError:
                     pass
@@ -527,7 +514,7 @@ def getThoughtProcess():
                         masterRPSummary = scriptAgent.generateSummaryFromSummaries(rpSummaries)
                         scriptAgent.setMasterResearchPaperSummary(masterRPSummary)
                         # print(f"\n\n\nMaster Research Paper Summary:\n{masterRPSummary}")
-                        text = {"paragraph": f"\n\nSet Master Research Paper Summary:\n{masterRPSummary}", "color": "text-yellow-500"}
+                        text = {"paragraph": f"\n\nrp Master Research Paper Summary Set:\n{masterRPSummary}", "color": "text-yellow-500"}
                         yield f"data: {json.dumps(text)}\n\n"
                     except KeyNotFoundError:
                         pass
@@ -544,7 +531,7 @@ def getThoughtProcess():
                     if cdSummary:
                         cdSummaryOnDB = True
                         # print(f"\n\ncdSummary set\n\nCustom Data Summary:\n{cdSummary}")
-                        text = {"paragraph": f"\n\nCustom Data Summary:\n{cdSummary}", "color": "text-yellow-500"}
+                        text = {"paragraph": f"\n\ncd Custom Data Summary:\n{cdSummary}", "color": "text-yellow-500"}
                         yield f"data: {json.dumps(text)}\n\n"
                 except KeyNotFoundError:
                     pass
@@ -558,7 +545,7 @@ def getThoughtProcess():
                         cdSummary = scriptAgent.generateSummaryFromRawData(customData)
                         scriptAgent.setCustomDataSummary(cdSummary)
                         # print(f"\n\n\nCustom Data Summary:\n{cdSummary}")
-                        text = {"paragraph": f"\n\nSet Custom Data Summary:\n{cdSummary}", "color": "text-yellow-500"}
+                        text = {"paragraph": f"\n\ncd Custom Data Summary Set:\n{cdSummary}", "color": "text-yellow-500"}
                         yield f"data: {json.dumps(text)}\n\n"
                     except KeyNotFoundError:
                         pass
@@ -575,7 +562,7 @@ def getThoughtProcess():
                     if masterSummary:
                         masterSummaryOnDB = True
                         # print(f"\n\nmasterSummary set\n\nMaster Summary:\n{masterSummary}")
-                        text = {"paragraph": f"\n\nMaster Summary:\n{masterSummary}", "color": "text-green-500"}
+                        text = {"paragraph": f"\n\nms Master Summary:\n{masterSummary}", "color": "text-green-500"}
                         yield f"data: {json.dumps(text)}\n\n"
                 except KeyNotFoundError:
                     pass
@@ -608,7 +595,7 @@ def getThoughtProcess():
                         masterSummary = scriptAgent.generateSummaryFromSummaries(summaries)
                         scriptAgent.setMasterSummary(masterSummary)
                         # print(f"\n\n\nMaster Summary:\n{masterSummary}")
-                        text = {"paragraph": f"\n\nSet Master Summary:\n{masterSummary}", "color": "text-green-500"}
+                        text = {"paragraph": f"\n\nms Master Summary Set:\n{masterSummary}", "color": "text-green-500"}
                         yield f"data: {json.dumps(text)}\n\n"
                     except KeyNotFoundError:
                         pass
@@ -705,7 +692,7 @@ def getThoughtProcess():
 
 @scripts_old_blueprint.route('/getFinalScript', methods=['POST'])
 def getFinalScript():
-    time.sleep(5)  # Simulating API delay
+    time.sleep(2)  # Simulating API delay
 
     data = request.get_json()
     userEmail = data.get('userEmail')
