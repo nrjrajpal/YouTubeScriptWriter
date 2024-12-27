@@ -363,6 +363,7 @@ def getThoughtProcess():
                             print(f"Generating YT summary")
                             ytSummary = scriptAgent.generateSummaryFromRawData(transcript[0:20000])
                             scriptAgent.setYouTubeSummary(ytSummary)
+                            print(ytSummary)
                             # print(f"\n\nSummary for https://www.youtube.com/watch?v={videoID}:\n{ytSummary}")
                             text = {"paragraph": "\n\n\nSummary for https://www.youtube.com/watch?v="+videoID+":\n\n"+ytSummary, "color": "text-red-500"}
                             yield f"data: {json.dumps(text)}\n\n"
@@ -577,7 +578,9 @@ def getThoughtProcess():
                         # print(f"\n\nmasterSummary set\n\nMaster Summary:\n{masterSummary}")
                         text = {"paragraph": f"\n\nMaster Summary:\n{masterSummary}", "color": "text-green-500"}
                         yield f"data: {json.dumps(text)}\n\n"
-                except KeyNotFoundError:
+                except KeyNotFoundError as ke:
+                    print("Inside master summary except")
+                    print(ke)
                     pass
                 except:
                     raise
@@ -635,7 +638,7 @@ def getThoughtProcess():
                 if not introductionOnDB:
                     try:
                         print("\n\nIntroduction not set\n\nGenerating Introduction")
-                        introduction = scriptAgent.generateIntroduction(customData)
+                        introduction = scriptAgent.generateIntroduction()
                         scriptAgent.setIntroduction(introduction)
                         # print(f"\n\n\nIntroduction:\n{introduction}")
                         # text = {"paragraph": f"\n\nSet Introduction:\n{introduction}", "color": "text-green-500"}
