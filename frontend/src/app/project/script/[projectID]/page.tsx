@@ -239,7 +239,7 @@ export default function Component() {
     let visibleContent;
     if (accordionId === "final-script") {
       const scriptContent = (paragraphs[0] as React.ReactElement).props.children;
-      visibleContent = isExpanded ? scriptContent : scriptContent.slice(0, 1500);
+      visibleContent = isExpanded ? scriptContent : scriptContent.slice(0, 300);
     } else {
       visibleContent = isExpanded ? paragraphs : [paragraphs[0]];
     }
@@ -672,12 +672,12 @@ export default function Component() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {renderAccordionContent(
+                  {/* {renderAccordionContent( */}
                     <p className={`text-sm sm:text-[15px] font-script ${getVisibleColorClass("text-green-500")}`}>
                       {finalScript}
                     </p>,
-                    "final-script"
-                  )}
+                    {/* "final-script"
+                  )} */}
                 </div>
               )}
             </div>
