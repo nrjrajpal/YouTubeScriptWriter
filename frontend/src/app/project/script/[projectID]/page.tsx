@@ -101,8 +101,9 @@ export default function Component() {
     ThoughtProcessParagraph[]
   >([]);
   const [finalScript, setFinalScript] = useState<string>("");
-
-  useEffect(() => {
+  
+  
+  const fetchData = async (endpoint: string, key: keyof typeof loading) => {
     if (!isLoaded || !isSignedIn || !projectID) {
       return
     }
@@ -110,90 +111,93 @@ export default function Component() {
       userEmail: user?.primaryEmailAddress?.emailAddress,
       projectID: projectID
     }
-    const fetchData = async (endpoint: string, key: keyof typeof loading) => {
-      try {
-        if (key === "thoughtProcess") {
-          console.log(projectID)
-          const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-          });
-          const reader = response.body?.getReader();
-          const decoder = new TextDecoder("utf-8");
-          let previousText = "";
+    try {
+      if (key === "thoughtProcess") {
+        console.log(projectID)
+        const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let previousText = "";
 
-          if (reader) {
-            setLoading((prev) => ({ ...prev, [key]: false }));
-            let done = false;
-
-            while (!done) {
-              const { value, done: readerDone } = await reader.read();
-              done = readerDone;
-
-              const chunk = decoder.decode(value, { stream: true });
-              const combinedText = previousText + chunk;
-
-              const splitParagraphs = combinedText.split("\n\n");
-              previousText = splitParagraphs.pop() || "";
-
-              const newParagraphs = splitParagraphs
-                .filter((p) => p.trim() !== "")
-                .map((p) => {
-                  try {
-                    const parsed = JSON.parse(p.replace(/^data: /, ""));
-                    return parsed as ThoughtProcessParagraph;
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                  } catch (e) {
-                    return { paragraph: p, color: "text-white" };
-                  }
-                });
-
-              setThoughtProcess((prev) => [...prev, ...newParagraphs]);
-            }
-
-            if (previousText.trim()) {
-              try {
-                const parsed = JSON.parse(previousText.replace(/^data: /, ""));
-                setThoughtProcess((prev) => [
-                  ...prev,
-                  parsed as ThoughtProcessParagraph,
-                ]);
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              } catch (e) {
-                setThoughtProcess((prev) => [
-                  ...prev,
-                  { paragraph: previousText, color: "text-white" },
-                ]);
-              }
-            }
-          }
-        } else {
-          const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-          });
-          const data = await response.json();
-          if (key === "projectTitle") {
-            setProjectTitle(data.title);
-          } else if (key === "finalScript") {
-            setFinalScript(data);
-          } else {
-            setAccordionData((prev) => ({ ...prev, [key]: data }));
-          }
+        if (reader) {
           setLoading((prev) => ({ ...prev, [key]: false }));
+          let done = false;
+
+          while (!done) {
+            const { value, done: readerDone } = await reader.read();
+            done = readerDone;
+
+            const chunk = decoder.decode(value, { stream: true });
+            const combinedText = previousText + chunk;
+
+            const splitParagraphs = combinedText.split("\n\n");
+            previousText = splitParagraphs.pop() || "";
+
+            const newParagraphs = splitParagraphs
+              .filter((p) => p.trim() !== "")
+              .map((p) => {
+                try {
+                  const parsed = JSON.parse(p.replace(/^data: /, ""));
+                  return parsed as ThoughtProcessParagraph;
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                } catch (e) {
+                  return { paragraph: p, color: "text-white" };
+                }
+              });
+
+            setThoughtProcess((prev) => [...prev, ...newParagraphs]);
+          }
+
+          if (previousText.trim()) {
+            try {
+              const parsed = JSON.parse(previousText.replace(/^data: /, ""));
+              setThoughtProcess((prev) => [
+                ...prev,
+                parsed as ThoughtProcessParagraph,
+              ]);
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            } catch (e) {
+              setThoughtProcess((prev) => [
+                ...prev,
+                { paragraph: previousText, color: "text-white" },
+              ]);
+            }
+          }
         }
-      } catch (error) {
-        console.error(`Error fetching ${endpoint}:`, error);
+        setIsThoughtProcessDataLoaded(true);
+        
+      } else {
+        const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        if (key === "projectTitle") {
+          setProjectTitle(data.title);
+        } else if (key === "finalScript") {
+          setFinalScript(data);
+        } else {
+          setAccordionData((prev) => ({ ...prev, [key]: data }));
+        }
         setLoading((prev) => ({ ...prev, [key]: false }));
       }
-    };
+    } catch (error) {
+      console.error(`Error fetching ${endpoint}:`, error);
+      setLoading((prev) => ({ ...prev, [key]: false }));
+    }
+  };
 
+  const [isThoughtProcessDataLoaded, setIsThoughtProcessDataLoaded] = useState(false); 
+  useEffect(() => {
     fetchData("getVideoTitle", "projectTitle");
     fetchData("getIdeaDetails", "ideaDetails");
     fetchData("getSelectedQuestions", "selectedQuestions");
@@ -202,10 +206,15 @@ export default function Component() {
     fetchData("getResearchPapers", "researchPapers");
     fetchData("getCustomData", "customData");
     fetchData("getThoughtProcess", "thoughtProcess");
-    if(thoughtProcess.length > 0){
+    // fetchData("getFinalScript", "finalScript");
+  }, [isLoaded, isSignedIn, user, projectID]);
+
+  useEffect(() => {
+    // console.log(thoughtProcess.length)
+    if (isThoughtProcessDataLoaded) {
       fetchData("getFinalScript", "finalScript");
     }
-  }, [isLoaded, isSignedIn, user, projectID]);
+  }, [isThoughtProcessDataLoaded]);
 
   const getVisibleColorClass = (color: string) => {
     const colorMap: { [key: string]: string } = {
@@ -465,8 +474,8 @@ export default function Component() {
         <div className="rounded-2xl w-full lg:w-1/2 bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px] shadow-lg overflow-hidden">
           <div className="w-full h-full bg-black rounded-2xl py-4 px-2 sm:px-4 overflow-hidden p-4 sm:p-6">
             <div className=" my-2 flex rounded-full w-fit h-fit mx-auto bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px]">
-              <div className="bg-black h-full py-2 px-4 rounded-full">
-                <span className="mr-2 text-2xl">
+              <div className="bg-black h-full py-2 px-4 rounded-full font-script text-xl font-medium">
+                <span className="mr-2">
                   Thought Process
                 </span>
                 <Switch
@@ -475,7 +484,7 @@ export default function Component() {
                     setViewMode(checked ? "script" : "thought")
                   }
                 />
-                <span className="ml-2 text-2xl">Final Script</span>
+                <span className="ml-2">Final Script</span>
               </div>
             </div>
             <div className="overflow-y-auto flex-grow px-2 sm:px-4 pt-4">
