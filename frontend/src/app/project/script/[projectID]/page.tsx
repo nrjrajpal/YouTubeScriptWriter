@@ -11,14 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { useUser } from '@clerk/nextjs'
 import { useParams, useRouter } from 'next/navigation'
-import {
-  // Edit,
-  Lightbulb,
-  MessageSquare,
-  Globe,
-  FileText,
-  Pencil,
-} from "lucide-react";
+import { Lightbulb, MessageSquare, Globe, FileText, Pencil } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 
@@ -209,7 +202,9 @@ export default function Component() {
     fetchData("getResearchPapers", "researchPapers");
     fetchData("getCustomData", "customData");
     fetchData("getThoughtProcess", "thoughtProcess");
-    fetchData("getFinalScript", "finalScript");
+    if(thoughtProcess.length > 0){
+      fetchData("getFinalScript", "finalScript");
+    }
   }, [isLoaded, isSignedIn, user, projectID]);
 
   const getVisibleColorClass = (color: string) => {
@@ -251,17 +246,16 @@ export default function Component() {
       <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 flex-grow h-full lg:h-full overflow-hidden">
         <div className=" flex rounded-2xl w-full lg:w-1/2 bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px] shadow-lg overflow-hidden">
           <div className="w-full h-full bg-black rounded-2xl py-4 px-2 sm:px-4 overflow-hidden p-4 sm:p-6">
-            {/* <div className="w-full lg:w-1/2 bg-gray-900 rounded-lg p-4 sm:p-6 flex flex-col overflow-hidden"> */}
             <h2 className="text-2xl sm:text-4xl font-semibold mb-4 sm:mb-6 text-center">
               Details
             </h2>
             <div className="overflow-y-auto flex-grow w-full pr-2 sm:pr-4">
-              <Accordion type="multiple" className="w-full">
+              <Accordion type="multiple" className="w-full py-[17]">
                 <AccordionItem value="item-0">
                   <AccordionTrigger className="text-lg sm:text-xl justify-between hover:no-underline">
                     <div className="flex items-center">
-                      <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 text-yellow-400" />
-                      <span>Idea Details</span>
+                      <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 text-yellow-400 " />
+                      <span className="text-sm sm:text-[15px]" >Idea Details</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="text-sm sm:text-base">
@@ -272,11 +266,11 @@ export default function Component() {
                       </div>
                     ) : (
                       <>
-                        <h3 className="font-bold text-lg">Idea title:</h3>
+                        <h3 className="font-bold text-sm sm:text-[15px] font-script">Idea title:</h3>
                         <p className="mb-4">
                           {accordionData.ideaDetails?.title}
                         </p>
-                        <h3 className="font-bold text-lg">Idea description:</h3>
+                        <h3 className="font-bold text-sm sm:text-[15px] font-script">Idea description:</h3>
                         <p>{accordionData.ideaDetails?.description}</p>
                       </>
                     )}
@@ -286,7 +280,7 @@ export default function Component() {
                   <AccordionTrigger className="text-lg sm:text-xl justify-between hover:no-underline">
                     <div className="flex items-center">
                       <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 text-purple-400" />
-                      <span>Selected questions for video introduction</span>
+                      <span className="text-sm sm:text-[15px]"> Selected questions for video introduction</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="text-sm sm:text-base">
@@ -297,7 +291,7 @@ export default function Component() {
                         <Skeleton className="h-4 w-full" />
                       </div>
                     ) : (
-                      <ul className="list-disc pl-5">
+                      <ul className="list-disc pl-5 text-sm sm:text-[15px] font-script">
                         {accordionData.selectedQuestions?.map(
                           (question, index) => (
                             <li key={index} className="mb-2">
@@ -313,7 +307,7 @@ export default function Component() {
                   <AccordionTrigger className="text-lg sm:text-xl justify-between hover:no-underline">
                     <div className="flex items-center">
                       <YouTubeIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 text-red-500" />
-                      <span>YouTube videos that were used</span>
+                      <span className="text-sm sm:text-[15px]"> YouTube videos that were used</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="text-sm sm:text-base">
@@ -324,7 +318,7 @@ export default function Component() {
                         <Skeleton className="h-24 sm:h-28 w-full" />
                       </div>
                     ) : accordionData.youtubeVideos?.available ? (
-                      <div className="space-y-4 sm:space-y-6">
+                      <div className="space-y-4 sm:space-y-6 text-sm sm:text-[15px] font-script">
                         {accordionData.youtubeVideos.data?.map((video) => (
                           <div
                             key={video.id}
@@ -334,7 +328,7 @@ export default function Component() {
                               href={`https://www.youtube.com/watch?v=${video.id}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex-shrink-0"
+                              className="flex-shrink-0 "
                             >
                               <Image
                                 src={`https://img.youtube.com/vi/${video.id}/maxresdefault.jpg`}
@@ -353,8 +347,8 @@ export default function Component() {
                               >
                                 {video.title}
                               </a>
-                              <div className="text-xs sm:text-sm text-gray-400 mt-1">
-                                <span>{video.views}</span> •{" "}
+                              <div className="text-xs sm:text-sm text-gray-400 mt-1 ">
+                                <span >{video.views}</span> •{" "}
                                 <span>{video.duration}</span> •{" "}
                                 <span>{video.publishedTime}</span>
                               </div>
@@ -373,7 +367,7 @@ export default function Component() {
                   <AccordionTrigger className="text-lg sm:text-xl justify-between hover:no-underline">
                     <div className="flex items-center">
                       <Globe className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 text-blue-400" />
-                      <span>Webpages that were used</span>
+                      <span className="text-sm sm:text-[15px]">Webpages that were used</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="text-sm sm:text-base">
@@ -384,7 +378,7 @@ export default function Component() {
                         <Skeleton className="h-4 w-full" />
                       </div>
                     ) : accordionData.webpages?.available ? (
-                      <ul className="list-disc pl-5">
+                      <ul className="list-disc pl-5 text-sm sm:text-[15px] font-script">
                         {accordionData.webpages.data?.map((webpage, index) => (
                           <li key={index} className="mb-2">
                             <a
@@ -407,7 +401,7 @@ export default function Component() {
                   <AccordionTrigger className="text-lg sm:text-xl justify-between hover:no-underline">
                     <div className="flex items-center">
                       <FileText className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 text-green-400" />
-                      <span>Research Papers that were used</span>
+                      <span className="text-sm sm:text-[15px]">Research Papers that were used</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="text-sm sm:text-base">
@@ -418,7 +412,7 @@ export default function Component() {
                         <Skeleton className="h-10 sm:h-12 w-full" />
                       </div>
                     ) : accordionData.researchPapers?.available ? (
-                      <ul className="list-disc pl-5">
+                      <ul className="list-disc pl-5 text-sm sm:text-[15px] font-script">
                         {accordionData.researchPapers.data?.map(
                           (paper, index) => (
                             <li key={index} className="mb-4">
@@ -427,9 +421,6 @@ export default function Component() {
                                 className="text-blue-400  hover:underline"
                               >
                                 <p className="font-semibold">{paper.title}</p>
-                                {/* <p className="text-xs sm:text-sm">
-                                  by {paper.authors}
-                                </p> */}
                               </a>
                             </li>
                           )
@@ -446,7 +437,7 @@ export default function Component() {
                   <AccordionTrigger className="text-lg sm:text-xl justify-between hover:no-underline">
                     <div className="flex items-center">
                       <Pencil className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 text-amber-400" />
-                      <span>Custom Data that was used</span>
+                      <span className="text-sm sm:text-[15px]">Custom Data that was used</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="text-sm sm:text-base">
@@ -457,11 +448,11 @@ export default function Component() {
                         <Skeleton className="h-4 w-full" />
                       </div>
                     ) : accordionData.customData?.available ? (
-                      <div className="h-32 sm:h-40 overflow-y-auto pr-2 sm:pr-4">
+                      <div className="h-32 sm:h-40 overflow-y-auto pr-2 sm:pr-4 text-sm sm:text-[15px] font-script">
                         <p>{accordionData.customData.data}</p>
                       </div>
                     ) : (
-                      <p className="text-gray-400">
+                      <p className="text-gray-400 text-sm sm:text-[15px] font-script">
                         {accordionData.customData?.message}
                       </p>
                     )}
@@ -469,27 +460,10 @@ export default function Component() {
                 </AccordionItem>
               </Accordion>
             </div>
-
-            {/* <div className="mt-6 mx-auto relative group flex w-full sm:w-[80%] md:w-[70%] lg:w-[600px] justify-center h-fit ">
-              <div className="absolute inset-0 blur-xl rounded-full w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[2px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div className="relative flex rounded-full w-full h-fit bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px]">
-                <Button
-                  className="h-fit text-base sm:text-lg md:text-xl lg:text-2xl text-wrap"
-                  variant="gradient"
-                > */}
-                  {/* <Edit className="mr-2 h-5 w-5" /> */}
-                  {/* Update Details and Rerun Project
-                </Button>
-              </div>
-            </div> */}
           </div>
         </div>
         <div className="rounded-2xl w-full lg:w-1/2 bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px] shadow-lg overflow-hidden">
           <div className="w-full h-full bg-black rounded-2xl py-4 px-2 sm:px-4 overflow-hidden p-4 sm:p-6">
-            {/* <div className="w-full lg:w-1/2 bg-gray-900 rounded-lg p-4 sm:p-6 flex flex-col overflow-hidden"> */}
-            {/* <h2 className="text-2xl sm:text-4xl font-semibold mb-4 sm:mb-6 text-center">
-              {viewMode === "thought" ? "Thought Process" : "Final Script"}
-            </h2> */}
             <div className=" my-2 flex rounded-full w-fit h-fit mx-auto bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px]">
               <div className="bg-black h-full py-2 px-4 rounded-full">
                 <span className="mr-2 text-2xl">
@@ -506,28 +480,58 @@ export default function Component() {
             </div>
             <div className="overflow-y-auto flex-grow px-2 sm:px-4 pt-4">
               {viewMode === "thought" ? (
-                loading.thoughtProcess ? (
-                  <div className="space-y-4">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-full" />
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {thoughtProcess.map((paragraph, index) => (
-                      <p
-                        key={index}
-                        className={`text-sm sm:text-[15px] font-script py-3 ${getVisibleColorClass(
-                          paragraph.color
-                        )}`}
-                      >
-                        {paragraph.paragraph}
-                      </p>
-                    ))}
-                  </div>
-                )
+                <Accordion type="multiple" className="w-full" defaultValue={["item-1", "item-2", "item-3", "item-4", "item-5"]}>
+                  <AccordionItem value="item-1">
+                    <AccordionTrigger>YouTube Summary</AccordionTrigger>
+                    <AccordionContent>
+                      {thoughtProcess.slice(0, 4).map((paragraph, index) => (
+                        <p key={index} className={`text-sm sm:text-[15px] font-script py-3 ${getVisibleColorClass(paragraph.color)}`}>
+                          {paragraph.paragraph}
+                        </p>
+                      ))}
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="item-2">
+                    <AccordionTrigger> Webpage Summary </AccordionTrigger>
+                    <AccordionContent>
+                      {thoughtProcess.slice(4, 8).map((paragraph, index) => (
+                        <p key={index} className={`text-sm sm:text-[15px] font-script py-3 ${getVisibleColorClass(paragraph.color)}`}>
+                          {paragraph.paragraph}
+                        </p>
+                      ))}
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="item-3">
+                    <AccordionTrigger>Research Paper Summary</AccordionTrigger>
+                    <AccordionContent>
+                      {thoughtProcess.slice(8, 12).map((paragraph, index) => (
+                        <p key={index} className={`text-sm sm:text-[15px] font-script py-3 ${getVisibleColorClass(paragraph.color)}`}>
+                          {paragraph.paragraph}
+                        </p>
+                      ))}
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="item-4">
+                    <AccordionTrigger>Custom Data Summary</AccordionTrigger>
+                    <AccordionContent>
+                      {thoughtProcess[12] && (
+                        <p className={`text-sm sm:text-[15px] font-script py-3 ${getVisibleColorClass(thoughtProcess[12].color)}`}>
+                          {thoughtProcess[12].paragraph}
+                        </p>
+                      )}
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="item-5">
+                    <AccordionTrigger>Master Summary</AccordionTrigger>
+                    <AccordionContent>
+                      {thoughtProcess[13] && (
+                        <p className={`text-sm sm:text-[15px] font-script py-3 ${getVisibleColorClass(thoughtProcess[13].color)}`}>
+                          {thoughtProcess[13].paragraph}
+                        </p>
+                      )}
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               ) : loading.finalScript ? (
                 <div className="space-y-4">
                   <Skeleton className="h-4 w-full" />
@@ -537,7 +541,6 @@ export default function Component() {
                   <Skeleton className="h-4 w-full" />
                 </div>
               ) : (
-                // <p className="text-sm sm:text-lg">{finalScript}</p>
                 <div className="space-y-4">
                     <p className={`text-sm sm:text-[15px] font-script ${getVisibleColorClass("text-green-500")}`}>
                       {finalScript}
@@ -545,14 +548,10 @@ export default function Component() {
                 </div>
               )}
             </div>
-            {/* <div className="flex items-center justify-center mt-4 sm:mt-6 mx-auto bg-gray-800 w-fit p-2 rounded-full px-4"> */}
-            {/* <div className="mt-6 mx-auto relative group flex w-fit justify-center h-fit p-2 rounded-full px-4"> */}
-            
-            {/* </div> */}
           </div>
         </div>
-        {/* </div> */}
       </div>
     </div>
   );
 }
+
