@@ -74,6 +74,7 @@ const YouTubeIcon: React.FC<{ className?: string }> = ({ className }) => (
 
 export default function Component() {
   const { isLoaded, isSignedIn, user } = useUser()
+  const router = useRouter()
 
   const params = useParams();
   const projectID = params.projectID as string;
@@ -100,13 +101,14 @@ export default function Component() {
     researchPapers: null,
     customData: null,
   });
-  const [thoughtProcess, setThoughtProcess] = useState<
-    ThoughtProcessParagraph[]
-  >([]);
+  const [thoughtProcess, setThoughtProcess] = useState<ThoughtProcessParagraph[]> ([]);
   const [finalScript, setFinalScript] = useState<string>("");
   const [expandedAccordions, setExpandedAccordions] = useState<{ [key: string]: boolean }>({}); // Added state
 
-  
+  const getScriptFunc = async () => {
+    
+  }
+
   const fetchData = async (endpoint: string, key: keyof typeof loading) => {
     if (!isLoaded || !isSignedIn || !projectID) {
       return
@@ -202,6 +204,7 @@ export default function Component() {
 
   const [isThoughtProcessDataLoaded, setIsThoughtProcessDataLoaded] = useState(false); 
   useEffect(() => {
+    // router.refresh();
     fetchData("getVideoTitle", "projectTitle");
     fetchData("getIdeaDetails", "ideaDetails");
     fetchData("getSelectedQuestions", "selectedQuestions");
@@ -213,13 +216,12 @@ export default function Component() {
     // fetchData("getFinalScript", "finalScript");
   }, [isLoaded, isSignedIn, user, projectID]);
 
-  useEffect(() => {
-    // console.log(thoughtProcess.length)
-    if (isThoughtProcessDataLoaded) {
-      console.log(thoughtProcess);
-      fetchData("getFinalScript", "finalScript");
-    }
-  }, [isThoughtProcessDataLoaded]);
+  // useEffect(() => {
+  //   if (thoughtProcess.length > 0 && isThoughtProcessDataLoaded) {
+  //     console.log("Thought process fully loaded");
+  //     fetchData("getFinalScript", "finalScript");
+  //   }
+  // }, [thoughtProcess, isThoughtProcessDataLoaded]);
 
   const getVisibleColorClass = (color: string) => {
     const colorMap: { [key: string]: string } = {
@@ -646,6 +648,7 @@ export default function Component() {
                               if (firstOccurrenceIndex !== -1) {
                                 return paragraph.paragraph.slice(firstOccurrenceIndex + "ms".length);
                               }
+                              fetchData("getFinalScript", "finalScript");
                             })();
 
                             return (
@@ -675,7 +678,7 @@ export default function Component() {
                   {/* {renderAccordionContent( */}
                     <p className={`text-sm sm:text-[15px] font-script ${getVisibleColorClass("text-green-500")}`}>
                       {finalScript}
-                    </p>,
+                    </p>
                     {/* "final-script"
                   )} */}
                 </div>

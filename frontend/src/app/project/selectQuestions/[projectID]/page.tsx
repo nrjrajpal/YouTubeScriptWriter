@@ -173,10 +173,10 @@ export default function QuestionSelector() {
       <div className="rounded-2xl w-3/5 h-auto bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px] shadow-lg">
         <div className="bg-black rounded-2xl flex justify-center items-center py-4 px-4">
           <div className="w-full max-w-3xl py-4">
-            <h1 className="text-6xl mb-5 text-center">
+            <h1 className="text-4xl mb-5 font-semibold text-center font-script">
               Select Questions
             </h1>
-            <p className="text-2xl mb-8 text-center">
+            <p className="text-md mb-8 text-center font-script">
               Choose exactly 3 questions from the options below or create your own.
               The order of selection matters.
             </p>
@@ -190,7 +190,7 @@ export default function QuestionSelector() {
                     key={`preset-${index}`}
                     onClick={() => handleToggle(`preset-${index}`)}
                     disabled={isDisabled(`preset-${index}`) || isRegenerating}
-                    className={`w-full p-6 pr-12 text-left border border-gray-700 rounded-md text-2xl relative ${selectedItems.includes(`preset-${index}`)
+                    className={`w-full p-6 pr-12 text-left border border-gray-700 rounded-md text-md relative font-script ${selectedItems.includes(`preset-${index}`)
                       ? "bg-gray-800"
                       : "bg-black hover:bg-gray-900"
                       } ${isDisabled(`preset-${index}`) || isRegenerating ? "opacity-50 cursor-not-allowed" : ""}`}
@@ -206,7 +206,7 @@ export default function QuestionSelector() {
               {customQuestions.map((question, index) => (
                 <div
                   key={`custom-${index}`}
-                  className={`w-full px-6 pr-12 text-left border border-gray-700 rounded-md text-2xl relative ${selectedItems.includes(`custom-${index}`)
+                  className={`w-full px-6 pr-12 text-left border border-gray-700 rounded-md text-md relative ${selectedItems.includes(`custom-${index}`)
                     ? "bg-gray-800"
                     : "bg-black hover:bg-gray-900"
                     } ${isDisabled(`custom-${index}`) || isRegenerating ? "opacity-50 cursor-not-allowed" : ""}`}
@@ -217,11 +217,11 @@ export default function QuestionSelector() {
                     value={question}
                     onChange={(e) => handleCustomQuestionChange(index, e.target.value)}
                     disabled={isDisabled(`custom-${index}`) || isRegenerating}
-                    className="w-full bg-transparent border-r-2 border-none focus:ring-0 p-0 text-2xl"
+                    className="text-md w-full bg-transparent border-r-2 border-none focus:ring-0 p-0"
                     maxLength={400}
                   />
                   {selectedItems.includes(`custom-${index}`) && (
-                    <span className="absolute top-2 right-2 w-8 h-8 bg-white text-black rounded-full flex items-center justify-center text-lg font-bold">
+                    <span className="text-md absolute top-2 right-2 w-8 h-8 bg-white text-black rounded-full flex items-center justify-center text-lg font-bold">
                       {getSelectionOrder(`custom-${index}`)}
                     </span>
                   )}
@@ -241,7 +241,7 @@ export default function QuestionSelector() {
                         onClick={handleSubmit}
                         disabled={selectedItems.length !== 3 || isRegenerating}
                         variant="gradient"
-                        className={`h-auto pb-[10px] text-3xl font-medium ${selectedItems.length !== 3 || isRegenerating ? "cursor-not-allowed bg-gray-800 text-gray-400" : ""
+                        className={`font-script h-auto pb-[10px] text-xl font-medium ${selectedItems.length !== 3 || isRegenerating ? "cursor-not-allowed bg-gray-800 text-gray-400" : ""
                           }`}
                       >
                         Submit
@@ -257,7 +257,7 @@ export default function QuestionSelector() {
                         onClick={handleSubmit}
                         disabled={selectedItems.length !== 3 || isRegenerating}
                         variant="gradient"
-                        className={`h-auto pb-[10px] text-3xl font-medium ${selectedItems.length !== 3 || isRegenerating ? "cursor-not-allowed bg-gray-800 text-gray-400" : ""
+                        className={`font-script h-auto pb-[10px] text-xl font-medium ${selectedItems.length !== 3 || isRegenerating ? "cursor-not-allowed bg-gray-800 text-gray-400" : ""
                           }`}
                       >
                         Submit
@@ -275,7 +275,7 @@ export default function QuestionSelector() {
                         onClick={fetchQuestions}
                         disabled={isRegenerating}
                         variant="gradient"
-                        className={`h-auto pb-[10px] text-3xl font-medium ${isRegenerating ? "cursor-not-allowed bg-gray-800 text-gray-400" : ""
+                        className={`font-script h-auto pb-[10px] text-xl font-medium ${isRegenerating ? "cursor-not-allowed bg-gray-800 text-gray-400" : ""
                           }`}
                       >
                         Regenerate

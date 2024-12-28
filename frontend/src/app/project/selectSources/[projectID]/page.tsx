@@ -725,11 +725,13 @@ export default function DataInput() {
               onChange={handleSearchInputChange}
               disabled={isGeneratingQuery || isSearchQuerySet}
               ref={searchInputRef}
+              className="p-2 text-md h-12 border bg-gray-900 border-gray-500 rounded-lg focus:ring-blue-500 "
             />
             <Button 
               type="submit" 
               disabled={isGeneratingQuery || !searchQuery || isSearchQuerySet} 
               onClick={handleSearchSubmit}
+              className="border text-md h-12 w-auto px-6 rounded-lg bg-gray-900 text-white hover:bg-gray-800 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Set Query
             </Button>

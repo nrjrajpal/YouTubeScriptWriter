@@ -281,7 +281,7 @@ def getCustomData():
 
         return jsonify({"available": True, "data": customData}), 200
     except (KeyNotFoundError) as e:
-        return jsonify({"available": False, "message": "Research papers were not selected as a data source."})
+        return jsonify({"available": False, "message": "Custom Data was not selected as a data source."})
     except (UserNotFoundError, ProjectNotFoundError) as e: 
         return jsonify({"error": e, "success": False}), 404
     except Exception as e:
@@ -449,7 +449,7 @@ def getThoughtProcess():
                         masterWPSummary = scriptAgent.generateSummaryFromSummaries(wpSummaries)
                         scriptAgent.setMasterWebPageSummary(masterWPSummary)
                         # print(f"\n\nMaster WebPage Summary:\n{masterWPSummary}")
-                        text = {"paragraph": f"\n\nwp Master Webpage Summary Set:\n{masterYTSummary}", "color": "text-yellow-500"}
+                        text = {"paragraph": f"\n\nwp Master Webpage Summary Set:\n{masterWPSummary}", "color": "text-yellow-500"}
                         yield f"data: {json.dumps(text)}\n\n"
                     except KeyNotFoundError:
                         pass
@@ -552,7 +552,34 @@ def getThoughtProcess():
                         pass
                     except:
                         raise
-                
+            # --------------------------------------------------------
+
+
+                introductionOnDB = False
+                try:
+                    introduction = scriptAgent.getIntroduction()
+                    if introduction:
+                        introductionOnDB = True
+                        # print(f"\n\Introduction set\n\nIntroduction:\n{introduction}")
+                        # text = {"paragraph": f"\n\nIntroduction:\n{introduction}", "color": "text-green-500"}
+                        # yield f"data: {json.dumps(text)}\n\n"
+                except KeyNotFoundError:
+                    pass
+                except:
+                    raise
+
+                if not introductionOnDB:
+                    try:
+                        print("\n\nIntroduction not set\n\nGenerating Introduction")
+                        introduction = scriptAgent.generateIntroduction()
+                        scriptAgent.setIntroduction(introduction)
+                        # print(f"\n\n\nIntroduction:\n{introduction}")
+                        # text = {"paragraph": f"\n\nSet Introduction:\n{introduction}", "color": "text-green-500"}
+                        # yield f"data: {json.dumps(text)}\n\n"
+                    except KeyNotFoundError:
+                        pass
+                    except:
+                        raise
 
             # --------------------------------------------------------
 
@@ -595,41 +622,12 @@ def getThoughtProcess():
                         except:
                             raise
                         print("\n\nMaster Summary not set\n\nGenerating master summary")
+                        print(f"\n\n\nSummaries for master summary:\n{summaries}", type(summaries))
                         masterSummary = scriptAgent.generateSummaryFromSummaries(summaries)
                         scriptAgent.setMasterSummary(masterSummary)
-                        # print(f"\n\n\nMaster Summary:\n{masterSummary}")
+                        print(f"\n\n\nMaster Summary:\n{masterSummary}")
                         text = {"paragraph": f"\n\nms Master Summary Set:\n{masterSummary}", "color": "text-green-500"}
                         yield f"data: {json.dumps(text)}\n\n"
-                    except KeyNotFoundError:
-                        pass
-                    except:
-                        raise
-
-
-            # --------------------------------------------------------
-
-
-                introductionOnDB = False
-                try:
-                    introduction = scriptAgent.getIntroduction()
-                    if introduction:
-                        introductionOnDB = True
-                        # print(f"\n\Introduction set\n\nIntroduction:\n{introduction}")
-                        # text = {"paragraph": f"\n\nIntroduction:\n{introduction}", "color": "text-green-500"}
-                        # yield f"data: {json.dumps(text)}\n\n"
-                except KeyNotFoundError:
-                    pass
-                except:
-                    raise
-
-                if not introductionOnDB:
-                    try:
-                        print("\n\nIntroduction not set\n\nGenerating Introduction")
-                        introduction = scriptAgent.generateIntroduction()
-                        scriptAgent.setIntroduction(introduction)
-                        # print(f"\n\n\nIntroduction:\n{introduction}")
-                        # text = {"paragraph": f"\n\nSet Introduction:\n{introduction}", "color": "text-green-500"}
-                        # yield f"data: {json.dumps(text)}\n\n"
                     except KeyNotFoundError:
                         pass
                     except:

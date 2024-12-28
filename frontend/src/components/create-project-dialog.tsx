@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { useParams, useRouter } from "next/navigation"
 
 interface CreateProjectDialogProps {
     onProjectCreated: (projectID: string) => void
@@ -24,6 +25,7 @@ export function CreateProjectDialog({ onProjectCreated, userEmail }: CreateProje
     const [ideaDescription, setIdeaDescription] = React.useState("")
     const [isCreating, setIsCreating] = React.useState(false)
     const [message, setMessage] = React.useState<string | null>(null)
+    const router = useRouter()
 
     const handleCreate = async () => {
         setIsCreating(true)
@@ -47,6 +49,9 @@ export function CreateProjectDialog({ onProjectCreated, userEmail }: CreateProje
                     setIdeaDescription("")
                     setMessage(null)
                 }, 2000)
+
+                router.push(`/project/selectSources/${result.project.projectID}`)
+
             } else {
                 setMessage(result.error || "Failed to create project")
             }
@@ -61,7 +66,7 @@ export function CreateProjectDialog({ onProjectCreated, userEmail }: CreateProje
 
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline">Create Project</Button>
+                <Button className="border text-md h-12 w-auto px-6 rounded-xl bg-gray-900 text-white hover:bg-gray-800 font-medium">Create Project</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px] bg-black text-gray-100">
 

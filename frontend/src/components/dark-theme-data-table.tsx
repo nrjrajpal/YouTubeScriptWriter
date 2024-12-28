@@ -122,6 +122,7 @@ export default function DataTableDemo() {
             if (result.success) {
                 setData(prevData => prevData.filter(project => project.projectID !== projectID))
                 setError(null) // Clear any previous errors
+                router.push(`/project/dashboard/${projectID}`)
             } else {
                 setError(result.error || 'Failed to delete project')
             }
@@ -272,7 +273,7 @@ export default function DataTableDemo() {
                                 onChange={(event) =>
                                     table.getColumn("ideaTitle")?.setFilterValue(event.target.value)
                                 }
-                                className="max-w-sm text-lg bg-gray-800 text-gray-100 border-gray-700 w-full h-fit"
+                                className="max-w-sm text-md bg-gray-950 text-gray-100 border-gray-700 w-full h-1/2"
                             />
                             <CreateProjectDialog onProjectCreated={handleProjectCreated} userEmail={user.primaryEmailAddress?.emailAddress || ''} />
                         </div>
@@ -326,7 +327,7 @@ export default function DataTableDemo() {
                                                                                     </div>
                                                                                 </TooltipTrigger>
                                                                                 <TooltipContent>
-                                                                                    <p className="text-lg">{row.original.ideaDescription}</p>
+                                                                                    <p className="text-sm">{row.original.ideaDescription}</p>
                                                                                 </TooltipContent>
                                                                             </Tooltip>
                                                                         </TooltipProvider>
