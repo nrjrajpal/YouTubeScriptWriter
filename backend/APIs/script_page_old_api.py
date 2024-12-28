@@ -9,72 +9,72 @@ from PseudoAgents import SyntheticAgent, ScriptAgent, YouTubeAgent, WebpageAgent
 
 scripts_old_blueprint = Blueprint('scripts_old', __name__)
 
-def fetch_video_metadata(video_url):
-    ydl_opts = {
-        'quiet': True,
-        'skip_download': True,
-    }
+# def fetch_video_metadata(video_url):
+#     ydl_opts = {
+#         'quiet': True,
+#         'skip_download': True,
+#     }
 
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        try:
-            video_info = ydl.extract_info(video_url, download=False)
-            video_details = {}
-            # {
-            #     "id": "d5gf9dXbPi0",
-            #     "title": "Exploring the Future of AI: Innovations and Challenges in Artificial Intelligence",
-            #     "views": "1.2M views",
-            #     "duration": "15:32",
-            #     "publishedTime": "2 weeks ago"
-            # }
-            duration = ""
-            hours, remainder = divmod(video_info.get('duration'), 3600)
-            minutes, seconds = divmod(remainder, 60)
-            if hours > 0:
-                duration = f"{int(hours)}:{int(minutes):02}:{int(seconds):02}"
-            else:
-                duration = f"{int(minutes)}:{int(seconds):02}"
+#     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+#         try:
+#             video_info = ydl.extract_info(video_url, download=False)
+#             video_details = {}
+#             # {
+#             #     "id": "d5gf9dXbPi0",
+#             #     "title": "Exploring the Future of AI: Innovations and Challenges in Artificial Intelligence",
+#             #     "views": "1.2M views",
+#             #     "duration": "15:32",
+#             #     "publishedTime": "2 weeks ago"
+#             # }
+#             duration = ""
+#             hours, remainder = divmod(video_info.get('duration'), 3600)
+#             minutes, seconds = divmod(remainder, 60)
+#             if hours > 0:
+#                 duration = f"{int(hours)}:{int(minutes):02}:{int(seconds):02}"
+#             else:
+#                 duration = f"{int(minutes)}:{int(seconds):02}"
 
-            video_details["id"] = video_info.get('id')
-            video_details["title"] = video_info.get('title')
-            video_details["views"] = format_views(video_info.get('view_count')) + " views"
-            video_details["duration"] = duration
-            video_details["publishedTime"] = datetime.strptime(video_info.get('upload_date'), "%Y%m%d").strftime("%B %d, %Y")
-            # print("ID: ", video_info.get('id'))
-            # print("Title: ", video_info.get('title'))
-            # views = format_views(video_info.get('view_count'))
-            # print("Views: ", views)
-            # # print("Duration: ", video_info.get('duration'))
-            # hours, remainder = divmod(video_info.get('duration'), 3600)
-            # minutes, seconds = divmod(remainder, 60)
-            # duration = ""
-            # if hours > 0:
-            #     duration = f"{int(hours)}:{int(minutes):02}:{int(seconds):02}"
-            # else:
-            #     duration = f"{int(minutes)}:{int(seconds):02}"
-            # # print(f"Duration: {int(hours):02}:{int(minutes):02}:{int(seconds):02}")
-            # print("duration: ", duration)
+#             video_details["id"] = video_info.get('id')
+#             video_details["title"] = video_info.get('title')
+#             video_details["views"] = format_views(video_info.get('view_count')) + " views"
+#             video_details["duration"] = duration
+#             video_details["publishedTime"] = datetime.strptime(video_info.get('upload_date'), "%Y%m%d").strftime("%B %d, %Y")
+#             # print("ID: ", video_info.get('id'))
+#             # print("Title: ", video_info.get('title'))
+#             # views = format_views(video_info.get('view_count'))
+#             # print("Views: ", views)
+#             # # print("Duration: ", video_info.get('duration'))
+#             # hours, remainder = divmod(video_info.get('duration'), 3600)
+#             # minutes, seconds = divmod(remainder, 60)
+#             # duration = ""
+#             # if hours > 0:
+#             #     duration = f"{int(hours)}:{int(minutes):02}:{int(seconds):02}"
+#             # else:
+#             #     duration = f"{int(minutes)}:{int(seconds):02}"
+#             # # print(f"Duration: {int(hours):02}:{int(minutes):02}:{int(seconds):02}")
+#             # print("duration: ", duration)
 
-            # date = datetime.strptime(video_info.get('upload_date'), "%Y%m%d").strftime("%B %d, %Y")
-            # print("upload_date: ", date)
-            return video_details
-        except Exception as e:
-            print(f"Error: {e}")
-            return None
+#             # date = datetime.strptime(video_info.get('upload_date'), "%Y%m%d").strftime("%B %d, %Y")
+#             # print("upload_date: ", date)
+#             return video_details
+#         except Exception as e:
+#             print(f"Error: {e}")
+#             return None
 
-def format_views(view_count):
-    try:
-        num = int(view_count)
+# def format_views(view_count):
+#     try:
+#         num = int(view_count)
 
-        if num >= 1_000_000_000:
-            return f"{num / 1_000_000_000:.2f}B".rstrip('0').rstrip('.')
-        elif num >= 1_000_000:
-            return f"{num / 1_000_000:.2f}M".rstrip('0').rstrip('.')
-        elif num >= 1_000:
-            return f"{num / 1_000:.2f}K".rstrip('0').rstrip('.')
-        else:
-            return str(num)
-    except ValueError:
-        return "Invalid number"
+#         if num >= 1_000_000_000:
+#             return f"{num / 1_000_000_000:.2f}B".rstrip('0').rstrip('.')
+#         elif num >= 1_000_000:
+#             return f"{num / 1_000_000:.2f}M".rstrip('0').rstrip('.')
+#         elif num >= 1_000:
+#             return f"{num / 1_000:.2f}K".rstrip('0').rstrip('.')
+#         else:
+#             return str(num)
+#     except ValueError:
+#         return "Invalid number"
 
 @scripts_old_blueprint.route('/getVideoTitle', methods=['POST'])
 def getVideoTitle():
@@ -182,7 +182,7 @@ def getYoutubeVideos():
         yt_data = []
         data = []
         for link in yt_links:
-            data.append(fetch_video_metadata(link))
+            data.append(ytagent.fetchVideoMetadata(link))
 
         return jsonify({"available": True, "data" : data, "success": True, "message": "Successfully retrieved youtube video details"}), 200
     except (KeyNotFoundError) as e:
@@ -243,6 +243,7 @@ def getResearchPapers():
         formattedResearchPaperData = []
         for record in researchPaperData:
             formattedResearchPaperData.append({"title": record["paper_title"], "url": record["paper_url"]})
+            formattedResearchPaperData.append({"title": record["paper_title"], "url": record["paper_url"]})
 
         return jsonify({"available": True, "data" : formattedResearchPaperData, "success": True, "message": "Successfully retrieved webpages' details"}), 200
     except (KeyNotFoundError) as e:
@@ -263,7 +264,6 @@ def getResearchPapers():
 
 @scripts_old_blueprint.route('/getCustomData', methods=['POST'])
 def getCustomData():
-    time.sleep(2)  # Simulating API delay
 
     try:
         data = request.get_json()
@@ -352,6 +352,7 @@ def getThoughtProcess():
                             print(f"Generating YT summary")
                             ytSummary = scriptAgent.generateSummaryFromRawData(transcript[0:20000])
                             scriptAgent.setYouTubeSummary(ytSummary)
+                            print(ytSummary)
                             # print(f"\n\nSummary for https://www.youtube.com/watch?v={videoID}:\n{ytSummary}")
                             text = {"paragraph": "\n\n\nyt Summary for https://www.youtube.com/watch?v="+videoID+":\n\n"+ytSummary, "color": "text-red-500"}
                             yield f"data: {json.dumps(text)}\n\n"
@@ -564,7 +565,9 @@ def getThoughtProcess():
                         # print(f"\n\nmasterSummary set\n\nMaster Summary:\n{masterSummary}")
                         text = {"paragraph": f"\n\nms Master Summary:\n{masterSummary}", "color": "text-green-500"}
                         yield f"data: {json.dumps(text)}\n\n"
-                except KeyNotFoundError:
+                except KeyNotFoundError as ke:
+                    print("Inside master summary except")
+                    print(ke)
                     pass
                 except:
                     raise
@@ -622,7 +625,7 @@ def getThoughtProcess():
                 if not introductionOnDB:
                     try:
                         print("\n\nIntroduction not set\n\nGenerating Introduction")
-                        introduction = scriptAgent.generateIntroduction(customData)
+                        introduction = scriptAgent.generateIntroduction()
                         scriptAgent.setIntroduction(introduction)
                         # print(f"\n\n\nIntroduction:\n{introduction}")
                         # text = {"paragraph": f"\n\nSet Introduction:\n{introduction}", "color": "text-green-500"}
@@ -692,7 +695,6 @@ def getThoughtProcess():
 
 @scripts_old_blueprint.route('/getFinalScript', methods=['POST'])
 def getFinalScript():
-    time.sleep(2)  # Simulating API delay
 
     data = request.get_json()
     userEmail = data.get('userEmail')

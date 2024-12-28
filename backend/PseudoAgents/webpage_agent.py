@@ -25,6 +25,7 @@ class WebpageAgent(ResearcherAgent):
     # Getter for research paper URLs and metadata
     def fetchWebPagesFromWeb(self):
         try:
+            print("TAVILY API KEY: ",self.getTavilyAPIKey())
             tavily_client = TavilyClient(api_key=self.getTavilyAPIKey())
             query = self.getSearchQuery()
             website_formatted_content = []

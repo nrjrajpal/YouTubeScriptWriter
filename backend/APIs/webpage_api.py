@@ -24,7 +24,8 @@ def fetchWebPagesFromWeb():
     except (KeyNotFoundError,ProjectNotFoundError) as e:
         return jsonify({"error": e.message, "success": False}), 404
     except Exception as e:
-        return jsonify({"error": "An error occurred: " + e.message or e, "success": False}), 500
+        print("Error in fetchWebPagesFromWeb",e)
+        return jsonify({"error": f"An error occurred: {e}", "success": False}), 500
     
 @webpage_blueprint.route('/setWebPageData', methods=['POST'])
 def setWebpageData():
