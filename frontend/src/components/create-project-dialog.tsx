@@ -66,13 +66,13 @@ export function CreateProjectDialog({ onProjectCreated, userEmail }: CreateProje
 
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="border text-md h-12 w-auto px-6 rounded-xl bg-gray-900 text-white hover:bg-gray-800 font-medium">Create Project</Button>
+                <Button className="font-script border border-gray-500 text-sm h-10 w-auto px-6 rounded-xl bg-gray-900 text-white hover:bg-gray-800 font-medium">Create Project</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px] bg-black text-gray-100">
 
                 <DialogHeader>
-                    <DialogTitle>Create Project</DialogTitle>
-                    <DialogDescription className="text-gray-400">
+                    <DialogTitle className="font-script">Create Project</DialogTitle>
+                    <DialogDescription className="font-script text-gray-400">
                         Enter the details for your new project idea.
                     </DialogDescription>
                 </DialogHeader>
@@ -81,7 +81,7 @@ export function CreateProjectDialog({ onProjectCreated, userEmail }: CreateProje
                         id="ideaTitle"
                         value={ideaTitle}
                         onChange={(e) => setIdeaTitle(e.target.value.slice(0, 200))}
-                        className="col-span-3 bg-gray-700 text-gray-100 border-gray-600 w-full h-fit"
+                        className="font-script text-sm col-span-3 bg-gray-700 text-gray-100 border-gray-600 w-full h-fit rounded-lg"
                         maxLength={200}
                         required
                         placeholder="Enter idea title (max 200 characters)"
@@ -90,7 +90,7 @@ export function CreateProjectDialog({ onProjectCreated, userEmail }: CreateProje
                         id="ideaDescription"
                         value={ideaDescription}
                         onChange={(e) => setIdeaDescription(e.target.value.slice(0, 2000))}
-                        className="col-span-3 bg-gray-700 text-gray-100 border-gray-600 text-2xl h-[40vh]"
+                        className="font-script col-span-3 bg-gray-700 text-gray-100 border-gray-600 h-[40vh]"
                         maxLength={2000}
                         required
                         placeholder="Enter idea description (max 2000 characters)"
@@ -105,7 +105,7 @@ export function CreateProjectDialog({ onProjectCreated, userEmail }: CreateProje
                             onClick={handleCreate}
                             variant={"gradient"}
                             disabled={!ideaTitle || !ideaDescription || isCreating}
-                            className="w-full rounded-full bg-black h-full text-xl font-bold text-white"
+                            className="font-script w-full rounded-full bg-black h-full text-xl font-bold text-white"
                             >
                             {isCreating ? "Creating..." : "Create"}
                         </Button>

@@ -257,7 +257,7 @@ export default function DataTableDemo() {
     }
 
     return (
-        <div className="max-h-fit w-full bg-black text-gray-100 p-8 flex justify-center items-start">
+        <div className="max-h-fit w-full bg-black text-gray-100 p-8 flex justify-center items-start font-script">
             <div className="w-full max-w-4xl max-h-fit">
                 {data.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-fit">
@@ -273,19 +273,19 @@ export default function DataTableDemo() {
                                 onChange={(event) =>
                                     table.getColumn("ideaTitle")?.setFilterValue(event.target.value)
                                 }
-                                className="max-w-sm text-md bg-gray-950 text-gray-100 border-gray-700 w-full h-12"
+                                className="font-script max-w-sm text-md bg-gray-950 text-gray-100 border-gray-700 w-full h-12"
                             />
                             <CreateProjectDialog onProjectCreated={handleProjectCreated} userEmail={user.primaryEmailAddress?.emailAddress || ''} />
                         </div>
                         {error ? (
                             <div className="text-center text-red-500 mb-4">{error}</div>
                         ) : (
-                            <div className="rounded-2xl w-full h-auto bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px] shadow-lg">
+                            <div className="rounded-2xl w-full h-auto bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px] shadow-lg">
                                 <div className="bg-black rounded-2xl flex justify-center items-center">
                                     <div className="rounded-2xl overflow-hidden w-full">
 
                                         {/* <div><div> */}
-                                        <Table className="gap-96">
+                                        <Table className="gap-96 font-script">
                                             <TableHeader className="bg-gray-800">
                                                 {table.getHeaderGroups().map((headerGroup) => (
                                                     <TableRow key={headerGroup.id}>
@@ -314,10 +314,10 @@ export default function DataTableDemo() {
                                                             className="cursor-pointer hover:bg-gray-800"
                                                         >
                                                             {row.getVisibleCells().map((cell) => (
-                                                                <TableCell key={cell.id} className="pl-6 text-left">
+                                                                <TableCell key={cell.id} className="pl-6 text-left font-script">
                                                                     {cell.column.id !== "actions" ? (
                                                                         <TooltipProvider>
-                                                                            <Tooltip>
+                                                                            <Tooltip> {/* Added side prop here */}
                                                                                 <TooltipTrigger asChild>
                                                                                     <div>
                                                                                         {flexRender(
@@ -326,8 +326,8 @@ export default function DataTableDemo() {
                                                                                         )}
                                                                                     </div>
                                                                                 </TooltipTrigger>
-                                                                                <TooltipContent>
-                                                                                    <p className="text-sm">{row.original.ideaDescription}</p>
+                                                                                <TooltipContent className="bg-gray-800 text-gray-100 w-64 max-h-40 overflow-y-auto border border-gray-600 rounded-md"> {/* Updated TooltipContent here */}
+                                                                                    <p className="p-1 text-sm break-words">{row.original.ideaDescription}</p>
                                                                                 </TooltipContent>
                                                                             </Tooltip>
                                                                         </TooltipProvider>
@@ -357,7 +357,7 @@ export default function DataTableDemo() {
                                 </div>
                             </div>
                         )}
-                        <div className="flex items-center justify-end space-x-2 py-4">
+                        <div className="flex items-center justify-end space-x-2 py-4 font-script">
                             <div className="flex items-center space-x-2">
                                 <p className="text-lg font-medium">Rows per page</p>
                                 <select
@@ -378,7 +378,7 @@ export default function DataTableDemo() {
                                     size="sm"
                                     onClick={() => table.previousPage()}
                                     disabled={!table.getCanPreviousPage()}
-                                    className="text-lg bg-gray-800"
+                                    className="text-lg bg-gray-800 font-script"
                                 >
                                     Previous
                                 </Button>
@@ -387,7 +387,7 @@ export default function DataTableDemo() {
                                     size="sm"
                                     onClick={() => table.nextPage()}
                                     disabled={!table.getCanNextPage()}
-                                    className="text-lg bg-gray-800"
+                                    className="text-lg bg-gray-800 font-script"
                                 >
                                     Next
                                 </Button>
@@ -399,4 +399,3 @@ export default function DataTableDemo() {
         </div>
     )
 }
-
