@@ -66,7 +66,7 @@ export function CreateProjectDialog({ onProjectCreated, userEmail }: CreateProje
 
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="font-script border border-gray-500 text-sm h-10 w-auto px-6 rounded-xl bg-gray-900 text-white hover:bg-gray-800 font-medium">Create Project</Button>
+                <Button className="font-script border border-gray-600 text-sm h-10 w-auto px-6 rounded-xl bg-gray-900 text-white hover:bg-gray-800 font-medium">Create Project</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px] bg-black text-gray-100">
 
