@@ -317,8 +317,8 @@ export default function DataInput() {
       setIsComponentsDisabled(false);
       await Promise.all([
         fetchVideosFromYT(),
-      //   fetchResearchPaperFromWeb(),
-      //   fetchWebPagesFromWeb()
+        fetchResearchPaperFromWeb(),
+        fetchWebPagesFromWeb()
       ]);
     } catch (error) {
       console.error("Error submitting search query:", error);

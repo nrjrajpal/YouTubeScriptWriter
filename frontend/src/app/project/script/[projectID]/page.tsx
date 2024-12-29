@@ -283,15 +283,15 @@ export default function Component() {
       {loading.projectTitle ? (
         <Skeleton className="h-8 sm:h-10 w-3/4 mx-auto mb-4 sm:mb-8" />
       ) : (
-        <h1 className="text-2xl sm:text-3xl font-semibold mb-4 sm:mb-8 text-center font-script">
-          {projectTitle}
+        <h1 className="text-xl sm:text-2xl font-medium mb-4 sm:mb-8 text-center font-script">
+          Video Title: {projectTitle}
         </h1>
       )}
 
       <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 flex-grow h-full lg:h-full overflow-hidden">
         <div className=" flex rounded-2xl w-full lg:w-1/2 bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px] shadow-lg overflow-hidden">
           <div className="w-full h-full bg-black rounded-2xl py-4 px-2 sm:px-4 overflow-hidden p-4 sm:p-6">
-            <h2 className="text-2xl sm:text-3xl mb-4 sm:mb-6 text-center font-medium">
+            <h2 className="mt-2 text-xl font-script sm:text-2xl text-center font-medium">
               Details
             </h2>
             <div className="overflow-y-auto flex-grow w-full pr-2 sm:pr-4">
@@ -300,7 +300,7 @@ export default function Component() {
                   <AccordionTrigger className="text-lg sm:text-xl justify-between hover:no-underline">
                     <div className="flex items-center">
                       <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 text-yellow-400 " />
-                      <span className="text-sm sm:text-[15px]" >Idea Details</span>
+                      <span className="text-sm font-script sm:text-[15px]" >Idea Details</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="text-sm sm:text-base">
@@ -312,11 +312,11 @@ export default function Component() {
                     ) : (
                       <>
                         <h3 className="font-bold text-sm sm:text-[15px] font-script">Idea title:</h3>
-                        <p className="mb-4">
+                        <p className="mb-4 font-script text-sm">
                           {accordionData.ideaDetails?.title}
                         </p>
                         <h3 className="font-bold text-sm sm:text-[15px] font-script">Idea description:</h3>
-                        <p>{accordionData.ideaDetails?.description}</p>
+                        <p className="font-script text-sm">{accordionData.ideaDetails?.description}</p>
                       </>
                     )}
                   </AccordionContent>
@@ -325,7 +325,7 @@ export default function Component() {
                   <AccordionTrigger className="text-lg sm:text-xl justify-between hover:no-underline">
                     <div className="flex items-center">
                       <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 text-purple-400" />
-                      <span className="text-sm sm:text-[15px]"> Selected questions for video introduction</span>
+                      <span className="text-sm sm:text-[15px] font-script"> Selected questions for video introduction</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="text-sm sm:text-base">
@@ -352,7 +352,7 @@ export default function Component() {
                   <AccordionTrigger className="text-lg sm:text-xl justify-between hover:no-underline">
                     <div className="flex items-center">
                       <YouTubeIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 text-red-500" />
-                      <span className="text-sm sm:text-[15px]"> YouTube videos that were used</span>
+                      <span className="text-sm sm:text-[15px] font-script"> YouTube videos that were used</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="text-sm sm:text-base">
@@ -412,7 +412,7 @@ export default function Component() {
                   <AccordionTrigger className="text-lg sm:text-xl justify-between hover:no-underline">
                     <div className="flex items-center">
                       <Globe className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 text-blue-400" />
-                      <span className="text-sm sm:text-[15px]">Webpages that were used</span>
+                      <span className="text-sm sm:text-[15px] font-script">Webpages that were used</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="text-sm sm:text-base">
@@ -446,7 +446,7 @@ export default function Component() {
                   <AccordionTrigger className="text-lg sm:text-xl justify-between hover:no-underline">
                     <div className="flex items-center">
                       <FileText className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 text-green-400" />
-                      <span className="text-sm sm:text-[15px]">Research Papers that were used</span>
+                      <span className="text-sm sm:text-[15px] font-script">Research Papers that were used</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="text-sm sm:text-base">
@@ -482,7 +482,7 @@ export default function Component() {
                   <AccordionTrigger className="text-lg sm:text-xl justify-between hover:no-underline">
                     <div className="flex items-center">
                       <Pencil className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 text-amber-400" />
-                      <span className="text-sm sm:text-[15px]">Custom Data that was used</span>
+                      <span className="text-sm sm:text-[15px] font-script">Custom Data that was used</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="text-sm sm:text-base">
@@ -525,7 +525,7 @@ export default function Component() {
             </div>
             <div className="overflow-y-auto flex-grow px-2 sm:px-4 pt-4">
               {viewMode === "thought" ? (
-                <Accordion type="multiple" className="w-full" defaultValue={["item-1", "item-2", "item-3", "item-4", "item-5"]}>
+                <Accordion type="multiple" className="w-full font-script" defaultValue={["item-1", "item-2", "item-3", "item-4", "item-5"]}>
                   <AccordionItem value="item-1">
                     <AccordionTrigger>YouTube Summary</AccordionTrigger>
                     <AccordionContent>
