@@ -172,7 +172,7 @@ export default function QuestionSelector() {
     <div className="min-h-screen bg-black text-white p-8 flex flex-col justify-center items-center">
       <div className="rounded-2xl w-3/5 h-auto bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px] shadow-lg">
         <div className="bg-black rounded-2xl flex justify-center items-center py-4 px-4">
-          <div className="w-full max-w-3xl py-4">
+          <div className="w-full max-w-3xl py-4 px-8">
             <h1 className="text-4xl mb-5 font-semibold text-center font-script">
               Select Questions
             </h1>
@@ -190,14 +190,14 @@ export default function QuestionSelector() {
                     key={`preset-${index}`}
                     onClick={() => handleToggle(`preset-${index}`)}
                     disabled={isDisabled(`preset-${index}`) || isRegenerating}
-                    className={`w-full p-6 pr-12 text-left border border-gray-700 rounded-md text-md relative font-script ${selectedItems.includes(`preset-${index}`)
+                    className={`w-full p-6 pr-12 text-left border border-gray-700 rounded-2xl text-md relative font-script ${selectedItems.includes(`preset-${index}`)
                       ? "bg-gray-800"
                       : "bg-black hover:bg-gray-900"
                       } ${isDisabled(`preset-${index}`) || isRegenerating ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
                     {question}
                     {selectedItems.includes(`preset-${index}`) && (
-                      <span className="absolute top-2 right-2 w-8 h-8 bg-white text-black rounded-full flex items-center justify-center text-lg font-bold">
+                      <span className="absolute top-2 right-2 w-8 h-8 bg-white text-black rounded-2xl flex items-center justify-center text-lg font-bold">
                         {getSelectionOrder(`preset-${index}`)}
                       </span>
                     )}
@@ -206,7 +206,7 @@ export default function QuestionSelector() {
               {customQuestions.map((question, index) => (
                 <div
                   key={`custom-${index}`}
-                  className={`w-full px-6 pr-12 text-left border border-gray-700 rounded-md text-md relative ${selectedItems.includes(`custom-${index}`)
+                  className={`w-full px-6 pr-12 text-left border border-gray-700 rounded-2xl text-md relative ${selectedItems.includes(`custom-${index}`)
                     ? "bg-gray-800"
                     : "bg-black hover:bg-gray-900"
                     } ${isDisabled(`custom-${index}`) || isRegenerating ? "opacity-50 cursor-not-allowed" : ""}`}
@@ -221,47 +221,36 @@ export default function QuestionSelector() {
                     maxLength={400}
                   />
                   {selectedItems.includes(`custom-${index}`) && (
-                    <span className="text-md absolute top-2 right-2 w-8 h-8 bg-white text-black rounded-full flex items-center justify-center text-lg font-bold">
+                    <span className="text-md absolute top-2 right-2 w-8 h-8 bg-white text-black rounded-2xl flex items-center justify-center text-lg font-bold">
                       {getSelectionOrder(`custom-${index}`)}
                     </span>
                   )}
                 </div>
               ))}
             </div>
-            <p className="text-xl mt-4 text-gray-400 text-center">
+            <p className="text-sm mt-4 text-gray-400 text-center">
               Custom questions are automatically selected when you start typing.
             </p>
             <div className="my-8 flex flex-rows justify-center space-x-4">
               <div className="h-fit relative group flex w-full justify-center mx-auto">
                 {(selectedItems.length == 3 && !isRegenerating) && (
-                  <>
-                    <div className="absolute inset-0 blur-lg rounded-full w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div className="relative flex rounded-full w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px]">
-                      <Button
-                        onClick={handleSubmit}
-                        disabled={selectedItems.length !== 3 || isRegenerating}
-                        variant="gradient"
-                        className={`font-script h-auto pb-[10px] text-xl font-medium ${selectedItems.length !== 3 || isRegenerating ? "cursor-not-allowed bg-gray-800 text-gray-400" : ""
-                          }`}
-                      >
-                        Submit
-                      </Button>
+                  <div className="h-fit relative group flex w-full justify-center mx-auto">
+                    <div className="absolute inset-0 blur-lg rounded-2xl w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[2px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="relative flex rounded-2xl w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px]">
+                        <Button onClick={handleSubmit} disabled={selectedItems.length !== 3 || isRegenerating} type="submit" variant={"gradient"} className="font-script flex-1 h-full w-full rounded-2xl pb-[10px] text-xl font-medium">
+                            Submit
+                        </Button>
                     </div>
-                  </>
+                  </div>
                 )}
-
                 {(selectedItems.length !== 3 || isRegenerating) && (
                   <>
-                    <div className="relative flex rounded-full w-full h-full bg-gray-400 animate-gradient p-[3px]">
-                      <Button
-                        onClick={handleSubmit}
-                        disabled={selectedItems.length !== 3 || isRegenerating}
-                        variant="gradient"
-                        className={`font-script h-auto pb-[10px] text-xl font-medium ${selectedItems.length !== 3 || isRegenerating ? "cursor-not-allowed bg-gray-800 text-gray-400" : ""
-                          }`}
-                      >
-                        Submit
-                      </Button>
+                    <div className="relative flex rounded-2xl w-full h-full bg-gray-600 animate-gradient p-[2px]">
+                      <div className="h-fit relative group flex w-full justify-center mx-auto">
+                            <Button disabled={selectedItems.length !== 3 || isRegenerating} type="submit" variant={"gradient"} className="text-gray-500 font-script flex-1 h-full w-full rounded-2xl pb-[10px] text-xl font-medium">
+                                Submit
+                            </Button>
+                      </div>
                     </div>
                   </>
                 )}
@@ -269,32 +258,24 @@ export default function QuestionSelector() {
               <div className="h-fit relative group flex w-full justify-center mx-auto">
                 {(!isRegenerating) && (
                   <>
-                    <div className="absolute inset-0 blur-lg rounded-full w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div className="relative flex rounded-full w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px]">
-                      <Button
-                        onClick={fetchQuestions}
-                        disabled={isRegenerating}
-                        variant="gradient"
-                        className={`font-script h-auto pb-[10px] text-xl font-medium ${isRegenerating ? "cursor-not-allowed bg-gray-800 text-gray-400" : ""
-                          }`}
-                      >
-                        Regenerate
-                      </Button>
+                    <div className="h-fit relative group flex w-full justify-center mx-auto">
+                      <div className="absolute inset-0 blur-lg rounded-2xl w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[2px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <div className="relative flex rounded-2xl w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px]">
+                          <Button onClick={fetchQuestions} disabled={isRegenerating} type="submit" variant={"gradient"} className={`font-script flex-1 h-full w-full rounded-2xl pb-[10px] text-xl font-medium ${isRegenerating ? "cursor-not-allowed bg-gray-800 text-gray-400" : ""}`}>
+                            Regenerate
+                          </Button>
+                      </div>
                     </div>
                   </>
                 )}
                 {(isRegenerating) && (
                   <>
-                    <div className="relative flex rounded-full w-full h-full bg-gray-400 animate-gradient p-[3px]">
-                    <Button
-                        onClick={fetchQuestions}
-                        disabled={isRegenerating}
-                        variant="gradient"
-                        className={`h-auto pb-[10px] text-3xl font-medium ${isRegenerating ? "cursor-not-allowed bg-gray-800 text-gray-400" : ""
-                          }`}
-                      >
-                        Regenerate
-                      </Button>
+                    <div className="relative flex rounded-2xl w-full h-full bg-gray-600 animate-gradient p-[2px]">
+                      <div className="h-fit relative group flex w-full justify-center mx-auto">
+                            <Button disabled={isRegenerating} type="submit" variant={"gradient"} className="text-gray-500 font-script flex-1 h-full w-full rounded-2xl pb-[10px] text-xl font-medium">
+                                Regenerate
+                            </Button>
+                      </div>
                     </div>
                   </>
                 )}
