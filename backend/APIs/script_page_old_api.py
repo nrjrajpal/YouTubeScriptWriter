@@ -243,7 +243,6 @@ def getResearchPapers():
         formattedResearchPaperData = []
         for record in researchPaperData:
             formattedResearchPaperData.append({"title": record["paper_title"], "url": record["paper_url"]})
-            formattedResearchPaperData.append({"title": record["paper_title"], "url": record["paper_url"]})
 
         return jsonify({"available": True, "data" : formattedResearchPaperData, "success": True, "message": "Successfully retrieved webpages' details"}), 200
     except (KeyNotFoundError) as e:
@@ -306,8 +305,36 @@ def getThoughtProcess():
             wpAgent = WebpageAgent(projectID, userEmail)
             rpAgent = ResearchPaperAgent(projectID, userEmail)
             cdAgent = CustomDataAgent(projectID, userEmail)
+    
             try:
-                
+                introductionOnDB = False
+                try:
+                    introduction = scriptAgent.getIntroduction()
+                    if introduction:
+                        introductionOnDB = True
+                        # print(f"\n\Introduction set\n\nIntroduction:\n{introduction}")
+                        # text = {"paragraph": f"\n\nIntroduction:\n{introduction}", "color": "text-green-500"}
+                        # yield f"data: {json.dumps(text)}\n\n"
+                except KeyNotFoundError:
+                    pass
+                except:
+                    raise
+
+                if not introductionOnDB:
+                    try:
+                        print("\n\nIntroduction not set\n\nGenerating Introduction")
+                        introduction = scriptAgent.generateIntroduction()
+                        scriptAgent.setIntroduction(introduction)
+                        # print(f"\n\n\nIntroduction:\n{introduction}")
+                        # text = {"paragraph": f"\n\nSet Introduction:\n{introduction}", "color": "text-green-500"}
+                        # yield f"data: {json.dumps(text)}\n\n"
+                    except KeyNotFoundError:
+                        pass
+                    except:
+                        raise
+
+                # --------------------------------------------------------
+
                 ytSummariesOnDB = False
                 try:
                     ytSummaries = scriptAgent.getYouTubeSummaries()
@@ -324,14 +351,12 @@ def getThoughtProcess():
                             text = {"paragraph": "\n\n\nyt Summary for https://www.youtube.com/watch?v="+videoID+":\n\n"+ytSummary, "color": "text-blue-500"}
                             yield f"data: {json.dumps(text)}\n\n"
                             # yield f"data: {json.dumps(text)}"
-                    else:
-                        print("ELSE tryyy")
 
                 except KeyNotFoundError:
-                    print("KEY tryyy")
+                    print("YT Summaries KEY tryyy")
                     pass
                 except Exception as e:
-                    print("ERR tryyy")
+                    print("ERR")
                     print(e)
                     raise
 
@@ -345,12 +370,12 @@ def getThoughtProcess():
                             # videoTranscripts.append(ytAgent.fetchVideoTranscript(videoID))
                             # except TranscriptsDisabled as td:
                             #     videoTranscripts.append("Transcript is unavailable for this video")
-                            print(f"\n\n\nFetching transctpit for https://www.youtube.com/watch?v={videoID}")
+                            print(f"\n\n\nFetching transcript for https://www.youtube.com/watch?v={videoID}")
                             transcript = ytAgent.fetchVideoTranscript(videoID)
                             if transcript == "Transcript not available":
                                 continue
                             print(f"Generating YT summary")
-                            ytSummary = scriptAgent.generateSummaryFromRawData(transcript[0:20000])
+                            ytSummary = scriptAgent.generateSummaryFromRawData(transcript[0:19000])
                             scriptAgent.setYouTubeSummary(ytSummary)
                             print(ytSummary)
                             # print(f"\n\nSummary for https://www.youtube.com/watch?v={videoID}:\n{ytSummary}")
@@ -376,7 +401,6 @@ def getThoughtProcess():
                 
                 if not masterYTSummaryOnDB:
                     try:
-
                         ytSummaries = scriptAgent.getYouTubeSummaries()
                         print("\n\nMasterYTSummary not set\n\nGenerating master YT summary")
                         masterYTSummary = scriptAgent.generateSummaryFromSummaries(ytSummaries)
@@ -555,35 +579,6 @@ def getThoughtProcess():
             # --------------------------------------------------------
 
 
-                introductionOnDB = False
-                try:
-                    introduction = scriptAgent.getIntroduction()
-                    if introduction:
-                        introductionOnDB = True
-                        # print(f"\n\Introduction set\n\nIntroduction:\n{introduction}")
-                        # text = {"paragraph": f"\n\nIntroduction:\n{introduction}", "color": "text-green-500"}
-                        # yield f"data: {json.dumps(text)}\n\n"
-                except KeyNotFoundError:
-                    pass
-                except:
-                    raise
-
-                if not introductionOnDB:
-                    try:
-                        print("\n\nIntroduction not set\n\nGenerating Introduction")
-                        introduction = scriptAgent.generateIntroduction()
-                        scriptAgent.setIntroduction(introduction)
-                        # print(f"\n\n\nIntroduction:\n{introduction}")
-                        # text = {"paragraph": f"\n\nSet Introduction:\n{introduction}", "color": "text-green-500"}
-                        # yield f"data: {json.dumps(text)}\n\n"
-                    except KeyNotFoundError:
-                        pass
-                    except:
-                        raise
-
-            # --------------------------------------------------------
-
-
                 masterSummaryOnDB = False
                 try:
                     masterSummary = scriptAgent.getMasterSummary()
@@ -593,8 +588,7 @@ def getThoughtProcess():
                         text = {"paragraph": f"\n\nms Master Summary:\n{masterSummary}", "color": "text-green-500"}
                         yield f"data: {json.dumps(text)}\n\n"
                 except KeyNotFoundError as ke:
-                    print("Inside master summary except")
-                    print(ke)
+                    print("Did not find master  summary in db")
                     pass
                 except:
                     raise
@@ -604,30 +598,40 @@ def getThoughtProcess():
                         summaries = []
                         try:
                             try:
-                                summaries.append(scriptAgent.getMasterYouTubeSummary())
+                                print("Outside getMasterYoutubeSummary call")
+                                x = scriptAgent.getMasterYouTubeSummary()
+                                summaries.append(x)
+                                print("\nYt master summary get: ", x)
                             except KeyNotFoundError:
                                 pass
                             try:
-                                summaries.append(scriptAgent.getMasterWebPageSummary())
+                                y = scriptAgent.getMasterWebPageSummary()
+                                summaries.append(y)
+                                print("\nWb master summary get: ", y)
                             except KeyNotFoundError:
                                 pass
                             try:
-                                summaries.append(scriptAgent.getMasterResearchPaperSummary())
+                                z = scriptAgent.getMasterResearchPaperSummary()
+                                summaries.append(z)
+                                print("\nRp master summary get: ", z)
                             except KeyNotFoundError:
                                 pass
                             try:
-                                summaries.append(scriptAgent.getCustomDataSummary())
+                                a = scriptAgent.getCustomDataSummary()
+                                summaries.append(a)
+                                print("\nCd master summary get: ", a)
                             except KeyNotFoundError:
                                 pass
                         except:
                             raise
-                        print("\n\nMaster Summary not set\n\nGenerating master summary")
+                        print("\n\nMaster Summary not set\nGenerating master summary")
                         print(f"\n\n\nSummaries for master summary:\n{summaries}", type(summaries))
-                        masterSummary = scriptAgent.generateSummaryFromSummaries(summaries)
-                        scriptAgent.setMasterSummary(masterSummary)
-                        print(f"\n\n\nMaster Summary:\n{masterSummary}")
-                        text = {"paragraph": f"\n\nms Master Summary Set:\n{masterSummary}", "color": "text-green-500"}
-                        yield f"data: {json.dumps(text)}\n\n"
+                        if(len(summaries) > 0):
+                            masterSummary = scriptAgent.generateSummaryFromSummaries(summaries)
+                            print(f"\n\n\nmaster summary generated:\n{masterSummary}")
+                            scriptAgent.setMasterSummary(masterSummary)
+                            text = {"paragraph": f"\n\nms Master Summary Set:\n{masterSummary}", "color": "text-green-500"}
+                            yield f"data: {json.dumps(text)}\n\n"
                     except KeyNotFoundError:
                         pass
                     except:
@@ -641,6 +645,8 @@ def getThoughtProcess():
                     finalScript = scriptAgent.getScript()
                     if finalScript:
                         finalScriptOnDB = True
+                        text = {"paragraph": f"\n\nfs Final Script:\n{finalScript}", "color": "text-green-500"}
+                        yield f"data: {json.dumps(text)}\n\n"
                         # print(f"\n\Final Script set\n\nFinal Script:\n{finalScript}")
                         # text = {"paragraph": f"\n\nScript: \n{finalScript}", "color": "text-green-500"}
                         # yield f"data: {json.dumps(text)}\n\n"
@@ -651,9 +657,12 @@ def getThoughtProcess():
 
                 if not finalScriptOnDB:
                     try:
-                        print("\n\nFinal Script not set\n\nGenerating Final Scrip")
+                        print("\n\nFinal Script not set\nGenerating Final Script")
                         finalScript = scriptAgent.generateScript()
                         scriptAgent.setScript(finalScript)
+                        text = {"paragraph": f"\n\nfs Final Script Set:\n{finalScript}", "color": "text-green-500"}
+                        yield f"data: {json.dumps(text)}\n\n"
+                        print("\n\n\nSuccessfully Generated Final Script")
                         # print(f"\n\n\nFinal Script:\n{finalScript}")
                         # text = {"paragraph": f"\n\nSet Script: \n{finalScript}", "color": "text-green-500"}
                         # yield f"data: {json.dumps(text)}\n\n"

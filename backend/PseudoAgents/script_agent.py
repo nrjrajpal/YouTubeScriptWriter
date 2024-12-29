@@ -239,8 +239,6 @@ class ScriptAgent(SyntheticAgent):
         try:
             if not self.youTubeSummaries:
                 collection_ref = db.collection(PROJECT_COLLECTION_NAME)
-                print("projectIDprojectID", self.projectID)
-                print("userEmailuserEmail", self.userEmail)
                 docs = collection_ref.where("projectID", "==", self.projectID).get()
                 if not docs:
                     raise ProjectNotFoundError("No project found with this ID..")

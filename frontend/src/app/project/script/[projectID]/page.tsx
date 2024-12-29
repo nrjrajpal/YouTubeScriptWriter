@@ -102,12 +102,10 @@ export default function Component() {
     customData: null,
   });
   const [thoughtProcess, setThoughtProcess] = useState<ThoughtProcessParagraph[]> ([]);
-  const [finalScript, setFinalScript] = useState<string>("");
+  // const [isThoughtProcessDataLoaded, setIsThoughtProcessDataLoaded] = useState(false); 
+  // const [finalScript, setFinalScript] = useState<string>("");
   const [expandedAccordions, setExpandedAccordions] = useState<{ [key: string]: boolean }>({}); // Added state
 
-  const getScriptFunc = async () => {
-    
-  }
 
   const fetchData = async (endpoint: string, key: keyof typeof loading) => {
     if (!isLoaded || !isSignedIn || !projectID) {
@@ -177,7 +175,7 @@ export default function Component() {
             }
           }
         }
-        setIsThoughtProcessDataLoaded(true);
+        // setIsThoughtProcessDataLoaded(true);
       } else {
         const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
           method: "POST",
@@ -190,7 +188,7 @@ export default function Component() {
         if (key === "projectTitle") {
           setProjectTitle(data.title);
         } else if (key === "finalScript") {
-          setFinalScript(data);
+          // setFinalScript(data);
         } else {
           setAccordionData((prev) => ({ ...prev, [key]: data }));
         }
@@ -202,7 +200,7 @@ export default function Component() {
     }
   };
 
-  const [isThoughtProcessDataLoaded, setIsThoughtProcessDataLoaded] = useState(false); 
+
   useEffect(() => {
     // router.refresh();
     fetchData("getVideoTitle", "projectTitle");
@@ -212,7 +210,7 @@ export default function Component() {
     fetchData("getWebPages", "webpages");
     fetchData("getResearchPapers", "researchPapers");
     fetchData("getCustomData", "customData");
-    fetchData("getThoughtProcess", "thoughtProcess");
+    fetchData("getThoughtProcess", "thoughtProcess");     // scrit is generated in thought process
     // fetchData("getFinalScript", "finalScript");
   }, [isLoaded, isSignedIn, user, projectID]);
 
@@ -648,7 +646,6 @@ export default function Component() {
                               if (firstOccurrenceIndex !== -1) {
                                 return paragraph.paragraph.slice(firstOccurrenceIndex + "ms".length);
                               }
-                              fetchData("getFinalScript", "finalScript");
                             })();
 
                             return (
@@ -665,7 +662,7 @@ export default function Component() {
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
-              ) : loading.finalScript ? (
+              ) : loading.thoughtProcess ? (
                 <div className="space-y-4">
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-full" />
@@ -675,12 +672,28 @@ export default function Component() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {/* {renderAccordionContent( */}
-                    <p className={`text-sm sm:text-[15px] font-script ${getVisibleColorClass("text-green-500")}`}>
+                    {/* <p className={`text-sm sm:text-[15px] font-script ${getVisibleColorClass("text-green-500")}`}>
                       {finalScript}
-                    </p>
-                    {/* "final-script"
-                  )} */}
+                    </p> */}
+                    {thoughtProcess
+                      .filter((paragraph) => paragraph.paragraph.includes("Final Script"))
+                      .map((paragraph, index) => {
+                        const updatedParagraph = (() => {
+                          const firstOccurrenceIndex = paragraph.paragraph.indexOf("fs");
+                          if (firstOccurrenceIndex !== -1) {
+                            return paragraph.paragraph.slice(firstOccurrenceIndex + "fs".length);
+                          }
+                        })();
+                        return (
+                          <p
+                            key={index}
+                            className={`text-sm sm:text-[15px] font-script py-3 ${getVisibleColorClass(paragraph.color)}`}
+                          >
+                            {updatedParagraph}
+                          </p>
+                        );
+                      })
+                    }
                 </div>
               )}
             </div>
