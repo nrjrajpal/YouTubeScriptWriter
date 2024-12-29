@@ -152,14 +152,14 @@ export default function DataTableDemo() {
                     <Button
                         variant="ghost"
                         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        className="text-lg font-bold"
+                        className="text-sm font-bold"
                     >
                         Idea Title
                         <ArrowUpDown className="ml-2 h-5 w-5" />
                     </Button>
                 )
             },
-            cell: ({ row }) => <div className="text-lg">{row.getValue("ideaTitle")}</div>,
+            cell: ({ row }) => <div className="text-md">{row.getValue("ideaTitle")}</div>,
         },
         {
             accessorKey: "dateCreated",
@@ -168,14 +168,14 @@ export default function DataTableDemo() {
                     <Button
                         variant="ghost"
                         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        className="text-lg font-bold"
+                        className="text-sm font-bold"
                     >
                         Date Created
                         <ArrowUpDown className="ml-2 h-5 w-5" />
                     </Button>
                 )
             },
-            cell: ({ row }) => <div className="text-lg">{row.getValue("dateCreated")}</div>,
+            cell: ({ row }) => <div className="text-md">{row.getValue("dateCreated")}</div>,
         },
         {
             id: "actions",
@@ -273,7 +273,7 @@ export default function DataTableDemo() {
                                 onChange={(event) =>
                                     table.getColumn("ideaTitle")?.setFilterValue(event.target.value)
                                 }
-                                className="font-script max-w-sm text-md bg-gray-950 text-gray-100 border-gray-700 w-full h-12"
+                                className="font-script max-w-sm text-sm bg-gray-950 text-gray-100 border-gray-700 w-full h-12"
                             />
                             <CreateProjectDialog onProjectCreated={handleProjectCreated} userEmail={user.primaryEmailAddress?.emailAddress || ''} />
                         </div>
@@ -285,7 +285,7 @@ export default function DataTableDemo() {
                                     <div className="rounded-2xl overflow-hidden w-full">
 
                                         {/* <div><div> */}
-                                        <Table className="gap-96 font-script">
+                                        <Table className="gap-96 font-script text-sm">
                                             <TableHeader className="bg-gray-800">
                                                 {table.getHeaderGroups().map((headerGroup) => (
                                                     <TableRow key={headerGroup.id}>
@@ -314,7 +314,7 @@ export default function DataTableDemo() {
                                                             className="cursor-pointer hover:bg-gray-800"
                                                         >
                                                             {row.getVisibleCells().map((cell) => (
-                                                                <TableCell key={cell.id} className="pl-6 text-left font-script">
+                                                                <TableCell key={cell.id} className="pl-6 text-left font-script text-sm">
                                                                     {cell.column.id !== "actions" ? (
                                                                         <TooltipProvider>
                                                                             <Tooltip> {/* Added side prop here */}
@@ -326,7 +326,7 @@ export default function DataTableDemo() {
                                                                                         )}
                                                                                     </div>
                                                                                 </TooltipTrigger>
-                                                                                <TooltipContent className="bg-gray-800 text-gray-100 w-64 max-h-40 overflow-y-auto border border-gray-600 rounded-md"> {/* Updated TooltipContent here */}
+                                                                                <TooltipContent className="font-script bg-gray-800 text-gray-100 w-64 max-h-40 overflow-y-auto border border-gray-600 rounded-md"> {/* Updated TooltipContent here */}
                                                                                     <p className="p-1 text-sm break-words">{row.original.ideaDescription}</p>
                                                                                 </TooltipContent>
                                                                             </Tooltip>
@@ -359,9 +359,9 @@ export default function DataTableDemo() {
                         )}
                         <div className="flex items-center justify-end space-x-2 py-4 font-script">
                             <div className="flex items-center space-x-2">
-                                <p className="text-lg font-medium">Rows per page</p>
+                                <p className="text-sm font-medium">Rows per page</p>
                                 <select
-                                    className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md text-lg"
+                                    className="bg-gray-800 text-gray-100 border border-gray-700 rounded-md text-sm"
                                     value={table.getState().pagination.pageSize}
                                     onChange={(e) => {
                                         table.setPageSize(Number(e.target.value))
@@ -378,7 +378,7 @@ export default function DataTableDemo() {
                                     size="sm"
                                     onClick={() => table.previousPage()}
                                     disabled={!table.getCanPreviousPage()}
-                                    className="text-lg bg-gray-800 font-script"
+                                    className="text-sm bg-slate-700 font-script"
                                 >
                                     Previous
                                 </Button>
@@ -387,7 +387,7 @@ export default function DataTableDemo() {
                                     size="sm"
                                     onClick={() => table.nextPage()}
                                     disabled={!table.getCanNextPage()}
-                                    className="text-lg bg-gray-800 font-script"
+                                    className="text-sm bg-gray-800 font-script"
                                 >
                                     Next
                                 </Button>

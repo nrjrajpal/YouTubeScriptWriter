@@ -71,7 +71,7 @@ export function CreateProjectDialog({ onProjectCreated, userEmail }: CreateProje
             <DialogContent className="sm:max-w-[425px] bg-black text-gray-100">
 
                 <DialogHeader>
-                    <DialogTitle className="font-script">Create Project</DialogTitle>
+                    <DialogTitle className="text-xl font-script">Create Project</DialogTitle>
                     <DialogDescription className="font-script text-gray-400">
                         Enter the details for your new project idea.
                     </DialogDescription>
@@ -90,7 +90,7 @@ export function CreateProjectDialog({ onProjectCreated, userEmail }: CreateProje
                         id="ideaDescription"
                         value={ideaDescription}
                         onChange={(e) => setIdeaDescription(e.target.value.slice(0, 2000))}
-                        className="font-script col-span-3 bg-gray-700 text-gray-100 border-gray-600 h-[40vh]"
+                        className="font-script text-sm col-span-3 bg-gray-700 text-gray-100 border-gray-600 w-full h-[40vh] rounded-lg"
                         maxLength={2000}
                         required
                         placeholder="Enter idea description (max 2000 characters)"
@@ -98,14 +98,14 @@ export function CreateProjectDialog({ onProjectCreated, userEmail }: CreateProje
                 </div>
                 <DialogFooter>
                 <div className="my-8 relative group flex w-full justify-center mx-auto">
-                    <div className="absolute inset-0 blur-xl rounded-full w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div className="relative flex rounded-full w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px] hover:bg-transparent">
+                    <div className="absolute inset-0 blur-xl rounded-2xl w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[2px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="relative flex rounded-2xl w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px] hover:bg-transparent">
                         <Button
                             type="submit"
                             onClick={handleCreate}
                             variant={"gradient"}
                             disabled={!ideaTitle || !ideaDescription || isCreating}
-                            className="font-script w-full rounded-full bg-black h-full text-xl font-bold text-white"
+                            className="font-script w-full rounded-2xl bg-black h-full text-lg font-bold text-white"
                             >
                             {isCreating ? "Creating..." : "Create"}
                         </Button>

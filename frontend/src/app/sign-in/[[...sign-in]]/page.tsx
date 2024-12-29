@@ -80,7 +80,7 @@ export default function SignInForm() {
 
                     <Card className="w-full rounded-2xl text-gray-100">
                         <CardHeader>
-                            <CardTitle className="text-5xl font-bold text-center py-4">Sign in</CardTitle>
+                            <CardTitle className="text-5xl font-bold text-center py-4">Sign In</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-4">
@@ -95,7 +95,7 @@ export default function SignInForm() {
                                         name="email"
                                         type="email"
                                         required
-                                        className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 h-fit w-full text-lg py-4"
+                                        className="font-script text-md bg-gray-800 border-gray-700 text-white placeholder-gray-400 h-fit w-full py-4"
                                         placeholder="Enter your email"
                                         value={email}
                                     />
@@ -114,7 +114,7 @@ export default function SignInForm() {
                                             name="password"
                                             type={showPassword ? "text" : "password"}
                                             required
-                                            className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 pr-10 h-fit w-full text-lg py-4"
+                                            className="font-script text-md bg-gray-800 border-gray-700 text-white placeholder-gray-400 pr-10 h-fit w-full py-4"
                                             placeholder="Enter your password"
                                             value={password}
                                         />
@@ -134,8 +134,8 @@ export default function SignInForm() {
                                     </div>
                                 </div>
                                 <div className="h-fit relative group flex w-full justify-center mx-auto">
-                                    <div className="absolute inset-0 blur-lg rounded-full w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                    <div className="relative flex rounded-full w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px]">
+                                    <div className="absolute inset-0 blur-lg rounded-2xl w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                    <div className="relative flex rounded-2xl w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px]">
                                         {/* <Button
                                         type="submit"
                                         variant={"gradient"}
@@ -146,7 +146,7 @@ export default function SignInForm() {
                                             type="submit"
                                             disabled={!isEmailValid || !password}
                                             variant={"gradient"}
-                                            className="h-full w-full rounded-full pb-[10px] text-3xl font-medium disabled: bg-black ">
+                                            className="font-script h-full w-full rounded-2xl pb-[10px] text-2xl font-medium disabled: bg-black ">
                                             Sign in
                                         </Button>
                                     </div>
@@ -162,7 +162,7 @@ export default function SignInForm() {
                             )}
                         </CardContent>
                         <CardFooter className="flex justify-center">
-                            <p className="text-lg text-gray-300">
+                            <p className="text-sm font-script text-gray-300">
                                 <>
                                     Don't have an account?{' '}
                                     <Link href="/sign-up" className="text-blue-400 hover:underline">
