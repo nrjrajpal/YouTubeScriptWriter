@@ -2,7 +2,7 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
 
 const isOnboardingRoute = createRouteMatcher(['/onboarding'])
-const isPublicRoute = createRouteMatcher(['/sign-in', '/sign-up'])
+const isPublicRoute = createRouteMatcher(['/sign-in', '/sign-up', '/'])
 
 async function handleProjectMiddleware(request: Request, userEmail: string) {
   console.log("The project middleware")
