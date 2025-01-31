@@ -48,7 +48,7 @@ def getCustomData():
         customagent = CustomDataAgent(projectID, userEmail)
         customData = customagent.getCustomData()
 
-        return jsonify({"message":"Successfully retrieved custom Data", "Custom Data": customData, "success": True}), 200
+        return jsonify({"message":"Successfully retrieved custom Data", "customData": customData, "success": True}), 200
     
     except (KeyNotFoundError,ProjectNotFoundError) as e:
         return jsonify({"error": e.message, "success": False}), 404

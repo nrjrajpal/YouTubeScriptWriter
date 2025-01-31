@@ -2,7 +2,8 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
 
 const isOnboardingRoute = createRouteMatcher(['/onboarding'])
-const isPublicRoute = createRouteMatcher(['/sign-in', '/sign-up'])
+const isPublicRoute = createRouteMatcher(['/sign-in', '/sign-up', '/'])
+const isHomeRoute = createRouteMatcher(['/'])
 
 async function handleProjectMiddleware(request: Request, userEmail: string) {
   console.log("The project middleware")
@@ -96,7 +97,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     }
 
     // If the user is logged in and the route is protected, let them view.
-    else if (userId && !isPublicRoute(req)) {
+    else if (userId && !isPublicRoute(req) || userId && isHomeRoute(req)) {
       return NextResponse.next()
     }
 

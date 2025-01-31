@@ -127,12 +127,12 @@ export default function VideoTitleSelector() {
     return (
         // <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white">
         <div className="h-svh flex flex-row items-center justify-center bg-black ">
-            <div className="rounded-2xl h-fit w-3/5 bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px] shadow-lg">
+            <div className="-mt-12 rounded-2xl h-fit w-1/2 bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px] shadow-lg">
                 <div className="bg-black w-full h-full rounded-2xl flex flex-col justify-center items-center">
-                    <h1 className="text-5xl font-bold mt-8">Select Video Title</h1>
+                    <h1 className="text-3xl font-script font-bold mt-8">Select Video Title</h1>
                     <div className="p-8 rounded-lg shadow-md w-[32rem]">
                         <form onSubmit={handleSubmit} className="text-lg">
-                            <RadioGroup value={selectedTitle} onValueChange={setSelectedTitle} className="space-y-4">
+                            <RadioGroup value={selectedTitle} onValueChange={setSelectedTitle} className="font-script space-y-4">
                                 {isLoading ? (
                                     <>
                                         <Skeleton className="h-6 w-full" />
@@ -143,13 +143,13 @@ export default function VideoTitleSelector() {
                                     titles.map((title, index) => (
                                         <div key={index} className="flex items-center space-x-2">
                                             <RadioGroupItem value={title} id={`title-${index}`} />
-                                            <Label htmlFor={`title-${index}`} className="text-white  text-lg">{title}</Label>
+                                            <Label htmlFor={`title-${index}`} className="text-white font-medium text-sm">{title}</Label>
                                         </div>
                                     ))
                                 )}
                                 <div className="flex items-center space-x-2">
                                     <RadioGroupItem value="custom" id="custom-title" />
-                                    <Label htmlFor="custom-title" className="text-white text-lg">Custom Video Title</Label>
+                                    <Label htmlFor="custom-title" className="text-white text-sm">Custom Video Title</Label>
                                 </div>
                             </RadioGroup>
                             <Input
@@ -158,21 +158,21 @@ export default function VideoTitleSelector() {
                                 value={customTitle}
                                 onChange={(e) => setCustomTitle(e.target.value)}
                                 disabled={selectedTitle !== 'custom'}
-                                className="my-4 mb-6 bg-gray-700 text-white text-xl placeholder-gray-400 border-gray-600 focus:border-blue-500 w-full h-fit"
+                                className="font-script rounded-xl my-4 mb-6 bg-gray-700 text-white text-sm placeholder-gray-400 border-gray-600 focus:border-blue-500 w-full h-fit"
                             />
                             <div className="flex flex-col gap-4">
                                 <div className="h-fit relative group flex w-full justify-center mx-auto">
-                                    <div className="absolute inset-0 blur-lg rounded-full w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                    <div className="relative flex rounded-full w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px]">
-                                        <Button type="button" onClick={fetchVideoTitles} variant={"gradient"} className="flex-1 h-full w-full rounded-full pb-[10px] text-3xl font-medium">
+                                    <div className="absolute inset-0 blur-lg rounded-2xl w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[2px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                    <div className="relative flex rounded-2xl w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px]">
+                                        <Button type="button" onClick={fetchVideoTitles} variant={"gradient"} className="font-script flex-1 h-full w-full rounded-2xl pb-[10px] text-xl font-medium">
                                             Regenerate Titles
                                         </Button>
                                     </div>
                                 </div>
                                 <div className="h-fit relative group flex w-full justify-center mx-auto">
-                                    <div className="absolute inset-0 blur-lg rounded-full w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                    <div className="relative flex rounded-full w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px]">
-                                        <Button type="submit" variant={"gradient"} className="flex-1 h-full w-full rounded-full pb-[10px] text-3xl font-medium">
+                                    <div className="absolute inset-0 blur-lg rounded-2xl w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[2px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                    <div className="relative flex rounded-2xl w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px]">
+                                        <Button type="submit" variant={"gradient"} className="font-script flex-1 h-full w-full rounded-2xl pb-[10px] text-xl font-medium">
                                             Submit
                                         </Button>
                                     </div>

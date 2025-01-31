@@ -125,16 +125,15 @@ class YouTubeAgent(ResearcherAgent):
                 metadata = {
                     'id': result['id'],
                     'title': result['title'],
-                    'view_count': f"{(result['view_count'])}",
+                    'views': f"{(result['view_count'])}",
                     'duration': (result['duration']),
-                    'upload_date': datetime.strptime(result['upload_date'], "%Y%m%d").strftime("%B %d, %Y"),
+                    'publishedTime': datetime.strptime(result['upload_date'], "%Y%m%d").strftime("%B %d, %Y"),
                 }
                 
-            formatted_count = self.format_count(metadata["view_count"])
-            formatted_duration = self.format_duration(metadata["duration"])
+            formatted_count = self.format_count(metadata["views"])
             
-            metadata["formatted_view_count"] = formatted_count + " views"
-            metadata["formatted_duration"] = formatted_duration
+            metadata["views"] = formatted_count + " views"
+            metadata["duration"] = self.format_duration(metadata["duration"])
         except Exception as e:
             print(f"Error fetching metadata for {videoID}: {e}")
             # return jsonify({"message":"error"})

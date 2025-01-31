@@ -15,6 +15,7 @@ def generateSearchQuery():
         projectID = data.get('projectID')
 
         if not userEmail:
+            print("User email not found", userEmail)
             return jsonify({"error": "Missing required field: userEmail", "success": False}), 400
 
         if not projectID:
@@ -39,13 +40,17 @@ def setSearchQuery():
         projectID = data.get('projectID')
         searchQuery = data.get('searchQuery')
 
-        if not userEmail:
-            return jsonify({"error": "Missing required field: userEmail", "success": False}), 400
 
         if not projectID:
+            print("Project ID not found")
             return jsonify({"error": "Missing required field: projectID", "success": False}), 400
         
+        if not userEmail:
+            print("User email not found")
+            return jsonify({"error": "Missing required field: userEmail", "success": False}), 400
+        
         if not searchQuery:
+            print("Search Query not found")
             return jsonify({"error": "Query is not selected", "success": False}), 400
         
         ra=ResearcherAgent(projectID, userEmail)

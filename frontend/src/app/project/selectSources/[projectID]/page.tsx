@@ -1,9 +1,9 @@
 "use client";
 
-import { useUser } from '@clerk/nextjs'
-import { useParams, useRouter } from 'next/navigation'
+import { useUser } from "@clerk/nextjs";
+import { useParams, useRouter } from "next/navigation";
 import { useState, useCallback, useEffect, useRef } from "react";
-import { Globe, FileText, Pencil, Check } from 'lucide-react';
+import { Globe, FileText, Pencil, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -44,34 +44,48 @@ export default function DataInput() {
   } | null>(null);
   const [isHoveringButton, setIsHoveringButton] = useState(false);
   const { toast } = useToast();
-  const params = useParams()
-  const router = useRouter()
+  const params = useParams();
+  const router = useRouter();
 
-  const projectID = params.projectID as string
-  const { isLoaded, isSignedIn, user } = useUser()
+  const projectID = params.projectID as string;
+  const { isLoaded, isSignedIn, user } = useUser();
 
-  const [originalYouTubeLinks, setOriginalYouTubeLinks] = useState<string[]>([]);
-  const [latestValidYouTubeLinks, setLatestValidYouTubeLinks] = useState<string[]>([]);
+  const [originalYouTubeLinks, setOriginalYouTubeLinks] = useState<string[]>(
+    []
+  );
+  const [latestValidYouTubeLinks, setLatestValidYouTubeLinks] = useState<
+    string[]
+  >([]);
   const [isLoadingYouTubeVideos, setIsLoadingYouTubeVideos] = useState(true);
   const [isDialogSubmitDisabled, setIsDialogSubmitDisabled] = useState(false);
 
-  const [originalResearchPapers, setOriginalResearchPapers] = useState<any[]>([]);
-  const [latestValidResearchPapers, setLatestValidResearchPapers] = useState<any[]>([]);
+  const [originalResearchPapers, setOriginalResearchPapers] = useState<any[]>(
+    []
+  );
+  const [latestValidResearchPapers, setLatestValidResearchPapers] = useState<
+    any[]
+  >([]);
   const [isLoadingResearchPapers, setIsLoadingResearchPapers] = useState(true);
 
   const [originalWebPages, setOriginalWebPages] = useState<any[]>([]);
   const [latestValidWebPages, setLatestValidWebPages] = useState<any[]>([]);
   const [isLoadingWebPages, setIsLoadingWebPages] = useState(true);
 
+  const [isGeneratingQuery, setIsGeneratingQuery] = useState(false);
+  const [isComponentsDisabled, setIsComponentsDisabled] = useState(true);
+  const [isInputInUse, setIsInputInUse] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [isSearchQuerySet, setIsSearchQuerySet] = useState(false);
+
   const features = [
     {
       icon: YouTubeIcon,
       title: "YouTube Videos",
       color: "text-red-500",
-      buttonText: "Add Custom Links",
+      buttonText: "Customize sources",
       dialogTitle: "Add YouTube Video Links",
       subText:
-        "Enter up to 3 YouTube video links. Empty fields will be filled with automatically fetched videos later.",
+        "Enter up to 3 YouTube video links. Current fields are filled with automatically fetched videos for the query.",
       points: [
         "Uses transcripts of YouTube videos",
         "Fetches English transcripts for script information",
@@ -82,10 +96,10 @@ export default function DataInput() {
       icon: Globe,
       title: "Web Pages",
       color: "text-blue-400",
-      buttonText: "Add Custom Links",
+      buttonText: "Customize sources",
       dialogTitle: "Add Web Page Links",
       subText:
-        "Enter up to 3 web page URLs. Empty fields will be filled with automatically fetched web pages later.",
+        "Enter up to 3 web page URLs. Current fields are filled with automatically fetched webpages for the query.",
       points: [
         "Crawls web pages to gather detailed content",
         "Prioritizes reliable and relevant web sources",
@@ -95,10 +109,10 @@ export default function DataInput() {
       icon: FileText,
       title: "Research Papers",
       color: "text-green-400",
-      buttonText: "Add Custom Links",
+      buttonText: "Customize sources",
       dialogTitle: "Add Research Paper Links (Direct PDF Links)",
       subText:
-        "Enter up to 3 direct PDF links. Empty fields will be filled with automatically fetched research papers later.",
+        "Enter up to 3 direct PDF links. Current fields are filled with automatically fetched research paper links for the query.",
       points: [
         "Retrieves peer-reviewed research papers",
         "Extracts insights backed by data and evidence",
@@ -128,36 +142,48 @@ export default function DataInput() {
           if (link.startsWith("https://www.youtube.com/watch?v=")) {
             return link;
           } else {
-            return latestValidYouTubeLinks[index] || originalYouTubeLinks[index] || "";
+            return (
+              latestValidYouTubeLinks[index] ||
+              originalYouTubeLinks[index] ||
+              ""
+            );
           }
         });
-        setInputValues(prev => ({
+        setInputValues((prev) => ({
           ...prev,
-          [title]: updatedLinks
+          [title]: updatedLinks,
         }));
       } else if (title === "Research Papers") {
         const updatedLinks = inputValues[title].map((link, index) => {
           if (link.startsWith("http")) {
             return link;
           } else {
-            return latestValidResearchPapers[index]?.paper_url || originalResearchPapers[index]?.paper_url || "";
+            return (
+              latestValidResearchPapers[index]?.paper_url ||
+              originalResearchPapers[index]?.paper_url ||
+              ""
+            );
           }
         });
-        setInputValues(prev => ({
+        setInputValues((prev) => ({
           ...prev,
-          [title]: updatedLinks
+          [title]: updatedLinks,
         }));
       } else if (title === "Web Pages") {
         const updatedLinks = inputValues[title].map((link, index) => {
           if (link.startsWith("http")) {
             return link;
           } else {
-            return latestValidWebPages[index]?.webpage_url || originalWebPages[index]?.webpage_url || "";
+            return (
+              latestValidWebPages[index]?.webpage_url ||
+              originalWebPages[index]?.webpage_url ||
+              ""
+            );
           }
         });
-        setInputValues(prev => ({
+        setInputValues((prev) => ({
           ...prev,
-          [title]: updatedLinks
+          [title]: updatedLinks,
         }));
       } else if (title === "Custom") {
         console.log(`Submitted for ${title}:`, customText);
@@ -166,7 +192,16 @@ export default function DataInput() {
       }
       setOpenDialog(null);
     },
-    [inputValues, latestValidYouTubeLinks, originalYouTubeLinks, latestValidResearchPapers, originalResearchPapers, latestValidWebPages, originalWebPages, customText]
+    [
+      inputValues,
+      latestValidYouTubeLinks,
+      originalYouTubeLinks,
+      latestValidResearchPapers,
+      originalResearchPapers,
+      latestValidWebPages,
+      originalWebPages,
+      customText,
+    ]
   );
 
   const handleInputChange = useCallback(
@@ -177,7 +212,9 @@ export default function DataInput() {
       }));
 
       if (title === "YouTube Videos") {
-        const isValidYouTubeLink = value.startsWith("https://www.youtube.com/watch?v=");
+        const isValidYouTubeLink = value.startsWith(
+          "https://www.youtube.com/watch?v="
+        );
         setIsDialogSubmitDisabled(!isValidYouTubeLink);
         if (isValidYouTubeLink) {
           setLatestValidYouTubeLinks((prev) => {
@@ -198,7 +235,11 @@ export default function DataInput() {
           } else {
             setLatestValidWebPages((prev) => {
               const newPages = [...prev];
-              newPages[index] = { webpage_url: value, webpage_title: value, webpage_raw_content: "" };
+              newPages[index] = {
+                webpage_url: value,
+                webpage_title: value,
+                webpage_raw_content: "",
+              };
               return newPages;
             });
           }
@@ -235,17 +276,21 @@ export default function DataInput() {
   const searchQueryRef = useRef("");
 
   const generateSearchQuery = useCallback(async () => {
+    setIsGeneratingQuery(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/generateSearchQuery`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userEmail: user?.primaryEmailAddress?.emailAddress,
-          projectID: projectID
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/generateSearchQuery`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userEmail: user?.primaryEmailAddress?.emailAddress,
+            projectID: projectID,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -265,54 +310,93 @@ export default function DataInput() {
         description: "Failed to generate search query. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsGeneratingQuery(false);
     }
   }, [user, projectID, toast]);
 
-  const setSearchQueryAPI = useCallback(async () => {
+  const setSearchQueryAPI = useCallback(
+    async (query: string) => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/setSearchQuery`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userEmail: user?.primaryEmailAddress?.emailAddress,
+              projectID: projectID,
+              searchQuery: query,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (!data.success) {
+          throw new Error(data.error || "Failed to set search query");
+        }
+      } catch (error) {
+        console.error("Error setting search query:", error);
+        toast({
+          title: "Error",
+          description: "Failed to set search query. Please try again.",
+          variant: "destructive",
+        });
+      }
+    },
+    [user, projectID, toast]
+  );
+
+  const handleSearchSubmit = async () => {
+    setIsGeneratingQuery(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/setSearchQuery`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userEmail: user?.primaryEmailAddress?.emailAddress,
-          projectID: projectID,
-          searchQuery: searchQueryRef.current
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (!data.success) {
-        throw new Error(data.error || "Failed to set search query");
-      }
+      await setSearchQueryAPI(searchQuery);
+      setIsSearchQuerySet(true);
+      setIsComponentsDisabled(false);
+      await Promise.all([
+        fetchVideosFromYT(),
+        fetchResearchPaperFromWeb(),
+        fetchWebPagesFromWeb(),
+      ]);
     } catch (error) {
-      console.error("Error setting search query:", error);
+      console.error("Error submitting search query:", error);
       toast({
         title: "Error",
-        description: "Failed to set search query. Please try again.",
+        description: "Failed to submit search query. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsGeneratingQuery(false);
     }
-  }, [user, projectID, toast]);
+  };
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setIsSearchQuerySet(false);
+  };
 
   const fetchVideosFromYT = useCallback(async () => {
     setIsLoadingYouTubeVideos(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/fetchVideosFromYT`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userEmail: user?.primaryEmailAddress?.emailAddress,
-          projectID: projectID
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/fetchVideosFromYT`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userEmail: user?.primaryEmailAddress?.emailAddress,
+            projectID: projectID,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -321,9 +405,9 @@ export default function DataInput() {
       const data = await response.json();
       if (data.success) {
         const videoUrls = data.video_urls.slice(0, 3);
-        setInputValues(prev => ({
+        setInputValues((prev) => ({
           ...prev,
-          "YouTube Videos": videoUrls
+          "YouTube Videos": videoUrls,
         }));
         setOriginalYouTubeLinks(videoUrls);
         setLatestValidYouTubeLinks(videoUrls);
@@ -345,16 +429,19 @@ export default function DataInput() {
   const fetchResearchPaperFromWeb = useCallback(async () => {
     setIsLoadingResearchPapers(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/fetchResearchPaperFromWeb`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userEmail: user?.primaryEmailAddress?.emailAddress,
-          projectID: projectID
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/fetchResearchPaperFromWeb`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userEmail: user?.primaryEmailAddress?.emailAddress,
+            projectID: projectID,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -363,9 +450,9 @@ export default function DataInput() {
       const data = await response.json();
       if (data.success) {
         const papers = data["research papers"].slice(0, 3);
-        setInputValues(prev => ({
+        setInputValues((prev) => ({
           ...prev,
-          "Research Papers": papers.map((paper: any) => paper.paper_url)
+          "Research Papers": papers.map((paper: any) => paper.paper_url),
         }));
         setOriginalResearchPapers(papers);
         setLatestValidResearchPapers(papers);
@@ -387,16 +474,19 @@ export default function DataInput() {
   const fetchWebPagesFromWeb = useCallback(async () => {
     setIsLoadingWebPages(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/fetchWebPagesFromWeb`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userEmail: user?.primaryEmailAddress?.emailAddress,
-          projectID: projectID
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/fetchWebPagesFromWeb`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userEmail: user?.primaryEmailAddress?.emailAddress,
+            projectID: projectID,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -405,9 +495,9 @@ export default function DataInput() {
       const data = await response.json();
       if (data.success) {
         const webpages = data["webpage content"].slice(0, 3);
-        setInputValues(prev => ({
+        setInputValues((prev) => ({
           ...prev,
-          "Web Pages": webpages.map((webpage: any) => webpage.webpage_url)
+          "Web Pages": webpages.map((webpage: any) => webpage.webpage_url),
         }));
         setOriginalWebPages(webpages);
         setLatestValidWebPages(webpages);
@@ -438,7 +528,7 @@ export default function DataInput() {
     }
 
     const selectedData: any = {};
-    selectedFeatures.forEach(feature => {
+    selectedFeatures.forEach((feature) => {
       if (feature === "Custom") {
         selectedData[feature] = customText;
       } else {
@@ -450,31 +540,34 @@ export default function DataInput() {
 
     const payload = {
       "YouTube Videos_selected": selectedFeatures.includes("YouTube Videos"),
-      "YouTube Videos_links": selectedFeatures.includes("YouTube Videos") ? inputValues["YouTube Videos"].filter(
-        (link) => link.trim() !== ""
-      ) : [],
+      "YouTube Videos_links": selectedFeatures.includes("YouTube Videos")
+        ? inputValues["YouTube Videos"].filter((link) => link.trim() !== "")
+        : [],
       "Web Pages_selected": selectedFeatures.includes("Web Pages"),
-      "Web Pages_links": selectedFeatures.includes("Web Pages") ? inputValues["Web Pages"].filter(
-        (link) => link.trim() !== ""
-      ) : [],
+      "Web Pages_links": selectedFeatures.includes("Web Pages")
+        ? inputValues["Web Pages"].filter((link) => link.trim() !== "")
+        : [],
       "Research Papers_selected": selectedFeatures.includes("Research Papers"),
-      "Research Papers_links": selectedFeatures.includes("Research Papers") ? inputValues["Research Papers"].filter(
-        (link) => link.trim() !== ""
-      ) : [],
+      "Research Papers_links": selectedFeatures.includes("Research Papers")
+        ? inputValues["Research Papers"].filter((link) => link.trim() !== "")
+        : [],
       Custom_selected: selectedFeatures.includes("Custom"),
       Custom_text: selectedFeatures.includes("Custom") ? customText : "",
       userEmail: user?.primaryEmailAddress?.emailAddress,
-      projectID: projectID
+      projectID: projectID,
     };
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/submitSources`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/submitSources`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -484,17 +577,20 @@ export default function DataInput() {
       console.log("API response:", data);
 
       if (selectedFeatures.includes("YouTube Videos")) {
-        const videoIDsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/setVideoIDs`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userEmail: user?.primaryEmailAddress?.emailAddress,
-            projectID: projectID,
-            video_urls: inputValues["YouTube Videos"]
-          }),
-        });
+        const videoIDsResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/setVideoIDs`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userEmail: user?.primaryEmailAddress?.emailAddress,
+              projectID: projectID,
+              video_urls: inputValues["YouTube Videos"],
+            }),
+          }
+        );
 
         if (!videoIDsResponse.ok) {
           throw new Error(`HTTP error! status: ${videoIDsResponse.status}`);
@@ -505,28 +601,38 @@ export default function DataInput() {
       }
 
       if (selectedFeatures.includes("Research Papers")) {
-        const researchPaperData = inputValues["Research Papers"].map((url, index) => {
-          const originalPaper = originalResearchPapers[index];
-          return {
-            paper_url: url,
-            paper_title: url !== originalPaper.paper_url ? url : originalPaper.paper_title,
-          };
-        });
+        const researchPaperData = inputValues["Research Papers"].map(
+          (url, index) => {
+            const originalPaper = originalResearchPapers[index];
+            return {
+              paper_url: url,
+              paper_title:
+                url !== originalPaper.paper_url
+                  ? url
+                  : originalPaper.paper_title,
+            };
+          }
+        );
 
-        const researchPaperResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/setResearchPaperData`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userEmail: user?.primaryEmailAddress?.emailAddress,
-            projectID: projectID,
-            researchPaperData: researchPaperData
-          }),
-        });
+        const researchPaperResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/setResearchPaperData`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userEmail: user?.primaryEmailAddress?.emailAddress,
+              projectID: projectID,
+              researchPaperData: researchPaperData,
+            }),
+          }
+        );
 
         if (!researchPaperResponse.ok) {
-          throw new Error(`HTTP error! status: ${researchPaperResponse.status}`);
+          throw new Error(
+            `HTTP error! status: ${researchPaperResponse.status}`
+          );
         }
 
         const researchPaperResult = await researchPaperResponse.json();
@@ -538,22 +644,31 @@ export default function DataInput() {
           const originalWebPage = originalWebPages[index];
           return {
             webpage_url: url,
-            webpage_title: url !== originalWebPage.webpage_url ? url : originalWebPage.webpage_title,
-            webpage_raw_content: url !== originalWebPage.webpage_url ? "N/A" : originalWebPage.webpage_raw_content,
+            webpage_title:
+              url !== originalWebPage.webpage_url
+                ? url
+                : originalWebPage.webpage_title,
+            webpage_raw_content:
+              url !== originalWebPage.webpage_url
+                ? "N/A"
+                : originalWebPage.webpage_raw_content,
           };
         });
 
-        const webPageResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/setWebPageData`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userEmail: user?.primaryEmailAddress?.emailAddress,
-            projectID: projectID,
-            webPageData: webPageData
-          }),
-        });
+        const webPageResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/setWebPageData`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userEmail: user?.primaryEmailAddress?.emailAddress,
+              projectID: projectID,
+              webPageData: webPageData,
+            }),
+          }
+        );
 
         if (!webPageResponse.ok) {
           throw new Error(`HTTP error! status: ${webPageResponse.status}`);
@@ -564,17 +679,20 @@ export default function DataInput() {
       }
 
       if (selectedFeatures.includes("Custom")) {
-        const customDataResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/setCustomData`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userEmail: user?.primaryEmailAddress?.emailAddress,
-            projectID: projectID,
-            customData: customText
-          }),
-        });
+        const customDataResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/setCustomData`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userEmail: user?.primaryEmailAddress?.emailAddress,
+              projectID: projectID,
+              customData: customText,
+            }),
+          }
+        );
 
         if (!customDataResponse.ok) {
           throw new Error(`HTTP error! status: ${customDataResponse.status}`);
@@ -590,7 +708,6 @@ export default function DataInput() {
       });
 
       router.push(`/project/selectQuestions/${projectID}`);
-
     } catch (error) {
       console.error("Error submitting data:", error);
       toast({
@@ -600,7 +717,17 @@ export default function DataInput() {
         variant: "destructive",
       });
     }
-  }, [inputValues, customText, selectedFeatures, toast, router, projectID, user, originalResearchPapers, originalWebPages]);
+  }, [
+    inputValues,
+    customText,
+    selectedFeatures,
+    toast,
+    router,
+    projectID,
+    user,
+    originalResearchPapers,
+    originalWebPages,
+  ]);
 
   const toggleFeatureSelection = useCallback((title: string) => {
     setSelectedFeatures((prev) => {
@@ -640,19 +767,16 @@ export default function DataInput() {
     const fetchData = async () => {
       if (user?.primaryEmailAddress?.emailAddress && projectID) {
         await generateSearchQuery();
-        await setSearchQueryAPI();
-        await fetchVideosFromYT();
-        await fetchResearchPaperFromWeb();
-        await fetchWebPagesFromWeb();
+        setIsSearchQuerySet(false);
       }
     };
 
     fetchData();
-  }, [user, projectID, generateSearchQuery, setSearchQueryAPI, fetchVideosFromYT, fetchResearchPaperFromWeb, fetchWebPagesFromWeb]);
+  }, [user, projectID, generateSearchQuery]);
 
   const ToggleButton = ({ title }: { title: string }) => (
     <button
-      className={`absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full transition-colors ${
+      className={`absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-2xl transition-colors ${
         selectedFeatures.includes(title)
           ? "bg-green-500 text-white"
           : "bg-transparent"
@@ -680,18 +804,44 @@ export default function DataInput() {
     <div className="flex items-center justify-center flex-col min-h-screen p-4 sm:p-6 lg:p-8 text-base sm:text-lg">
       <div className="rounded-2xl w-full max-w-[1380px] sm:w-5/6 lg:w-4/5 xl:w-3/4 h-auto bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px] shadow-lg">
         <div className="bg-black rounded-2xl justify-center items-center py-4 px-4">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-6 text-center">
+          <h1 className="pt-5 text-4xl font-medium font-script text-center">
             Select Information Sources
           </h1>
-          <p className="text-center text-gray-400 mb-4">
-            Click to select or deselect a source. Sources with content will be
-            automatically selected, but you can unselect them.
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 sm:gap-6 lg:gap-8">
+          <div className="pt-10 flex w-full justify-center items-center space-x-2 mb-4 mx-auto">
+            <Input
+              type="text"
+              placeholder="Search query"
+              value={searchQuery}
+              onChange={handleSearchInputChange}
+              disabled={isGeneratingQuery || isSearchQuerySet}
+              ref={searchInputRef}
+              className="p-2 text-md h-12 border bg-gray-900 border-gray-600 rounded-lg focus:ring-blue-500 "
+            />
+            <Button
+              type="submit"
+              disabled={isGeneratingQuery || !searchQuery || isSearchQuerySet}
+              onClick={handleSearchSubmit}
+              className="border border-gray-600 text-md h-12 w-auto px-6 rounded-lg bg-gray-900 text-white hover:bg-gray-800 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Set Query
+            </Button>
+          </div>
+          <div className="flex w-full justify-center">
+            <p className="text-center text-lg text-gray-400 mb-4 w-[60%]">
+              After setting the search query, click to select or deselect a
+              source. Sources with content will be automatically selected, but
+              you can unselect them.
+            </p>
+          </div>
+          <div
+            className={`grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 sm:gap-6 lg:gap-8 ${
+              !isSearchQuerySet ? "opacity-50 pointer-events-none" : ""
+            }`}
+          >
             {features.map((feature, index) => (
               <div
                 key={index}
-                className={`bg-gray-900 rounded-lg px-6 sm:px-6 lg:px-8 pb-6 sm:pb-6 lg:pb-8 pt-4 sm:pt-4 lg:pt-6 flex flex-col relative cursor-pointer ${
+                className={`bg-gray-900 rounded-2xl px-6 sm:px-6 lg:px-8 pb-6 sm:pb-6 lg:pb-8 pt-4 sm:pt-4 lg:pt-6 flex flex-col relative cursor-pointer ${
                   selectedFeatures.includes(feature.title)
                     ? "ring-2 ring-green-500"
                     : ""
@@ -703,24 +853,26 @@ export default function DataInput() {
                 <ToggleButton title={feature.title} />
                 <div className="flex items-center mb-3 sm:mb-4">
                   <feature.icon
-                    className={`w-8 h-8 sm:w-10 sm:h-10 mr-3 sm:mr-4 ${feature.color}`}
+                    className={`w-7 h-7 mr-3 sm:mr-4 ${feature.color}`}
                   />
-                  <h2 className="text-xl sm:text-2xl font-semibold text-white">
+                  <h2 className="font-script text-lg sm:text-2xl font-semibold text-white">
                     {feature.title}
                   </h2>
                 </div>
-                <ul className="list-disc list-inside space-y-1 sm:space-y-1 text-gray-300 flex-grow text-sm sm:text-base lg:text-lg">
+                <ul className="font-script font-medium list-disc list-inside space-y-1 sm:space-y-1 text-gray-300 flex-grow text-sm">
                   {feature.points.map((point, pointIndex) => (
                     <li key={pointIndex}>{point}</li>
                   ))}
                 </ul>
-                {((feature.title === "YouTube Videos" && isLoadingYouTubeVideos) ||
-                (feature.title === "Research Papers" && isLoadingResearchPapers) ||
-                (feature.title === "Web Pages" && isLoadingWebPages)) ? (
+                {(feature.title === "YouTube Videos" &&
+                  isLoadingYouTubeVideos) ||
+                (feature.title === "Research Papers" &&
+                  isLoadingResearchPapers) ||
+                (feature.title === "Web Pages" && isLoadingWebPages) ? (
                   <div className="space-y-2">
-                    <Skeleton className="h-4 w-[250px]" />
+                    <br />
                     <Skeleton className="h-4 w-[200px]" />
-                    <Skeleton className="h-4 w-[150px]" />
+                    {/* <Skeleton className="h-4 w-[280px]" /> */}
                   </div>
                 ) : (
                   <Dialog
@@ -735,7 +887,7 @@ export default function DataInput() {
                     <DialogTrigger asChild>
                       <Button
                         variant="default"
-                        className="rounded-full bg-gray-950 text-white mt-4 sm:mt-6 text-sm sm:text-base lg:text-lg hover:bg-indigo-950 transition-all border-gray-700 border-2 py-4 sm:py-6"
+                        className="rounded-2xl bg-gray-950 text-white mt-4 sm:mt-6 text-sm sm:text-base lg:text-lg hover:bg-indigo-950 transition-all border-gray-700 border-2 py-4 sm:py-6"
                         onClick={(e) => {
                           e.stopPropagation();
                           setOpenDialog(feature.title);
@@ -747,23 +899,24 @@ export default function DataInput() {
                       </Button>
                     </DialogTrigger>
                     <DialogContent
-                      className="sm:max-w-[90vw] md:max-w-[750px] bg-gray-950 text-white border border-gray-800 w-11/12 p-4 sm:p-6 lg:p-8 rounded-2xl"
+                      className="sm:max-w-[50vw] md:max-w-[40vw] bg-zinc-950 text-white border border-gray-800 w-11/12 p-4 sm:p-6 lg:p-8 rounded-xl"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <DialogHeader>
-                        <DialogTitle className="text-xl sm:text-2xl lg:text-3xl">
+                        <DialogTitle className="font-script text-xl sm:text-2xl lg:text-2xl">
                           {feature.dialogTitle}
                         </DialogTitle>
                       </DialogHeader>
-                      <p className="text-sm sm:text-base lg:text-lg text-gray-400 mb-2">
+                      <p className="font-script text-sm text-gray-400 mb-2">
                         {feature.subText}
                       </p>
                       {feature.title === "YouTube Videos" && (
-                        <p className="text-sm text-gray-400 mb-2">
-                          Example of a valid URL format: https://www.youtube.com/watch?v= &lt;desired youtube video's ID&gt;
+                        <p className="font-script text-sm text-gray-400 mb-2">
+                          Example of a valid URL format: <br />{" "}
+                          https://www.youtube.com/watch?v=&lt;videoID&gt;
                         </p>
                       )}
-                      <div className="grid gap-3 sm:gap-4 py-3 sm:py-4">
+                      <div className="font-script grid gap-3 sm:gap-4 py-3 sm:py-4">
                         {feature.title === "Custom" ? (
                           <Textarea
                             placeholder="Enter your custom information here"
@@ -772,7 +925,7 @@ export default function DataInput() {
                               handleCustomTextChange(e.target.value)
                             }
                             maxLength={20000}
-                            className="h-40 sm:h-60 bg-gray-900 text-white text-base sm:text-lg lg:text-xl p-3 sm:p-4"
+                            className="font-script h-40 sm:h-60 bg-gray-900 text-white text-sm sm:text-lg lg:text-lg p-3 sm:p-4"
                           />
                         ) : (
                           inputValues[feature.title].map((value, i) => (
@@ -787,7 +940,7 @@ export default function DataInput() {
                                   e.target.value
                                 )
                               }
-                              className="bg-gray-900 text-white text-base sm:text-lg lg:text-xl p-3 sm:p-4 h-10 sm:h-12 lg:h-14 w-full"
+                              className="font-script bg-gray-900 text-white text-sm h-12 w-full"
                             />
                           ))
                         )}
@@ -795,10 +948,13 @@ export default function DataInput() {
                       <Button
                         onClick={() => handleSubmit(feature.title)}
                         variant="default"
-                        className="rounded-full bg-white text-black hover:bg-slate-200 transition-all border-slate-400 hover:border-[3px] w-full text-base sm:text-lg lg:text-xl h-10 sm:h-12  lg:h-14"
-                        disabled={feature.title === "YouTube Videos" && isDialogSubmitDisabled}
+                        className="font-script border border-gray-700 rounded-2xl bg-gray-900 text-white hover:bg-slate-800 transition-all hover:border-[3px] w-full text-base sm:text-lg lg:text-xl h-10 sm:h-12  lg:h-14"
+                        disabled={
+                          feature.title === "YouTube Videos" &&
+                          isDialogSubmitDisabled
+                        }
                       >
-                        Submit
+                        Set
                       </Button>
                     </DialogContent>
                   </Dialog>
@@ -807,15 +963,19 @@ export default function DataInput() {
             ))}
           </div>
           <div className="my-4 relative group flex w-full sm:w-[80%] md:w-[70%] lg:w-[600px] justify-center mx-auto">
-            <div className="absolute inset-0 blur-xl rounded-full w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[3px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div className="relative flex rounded-full w-full h-full  bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[3px]">
-              <Button
-                onClick={handleMainSubmit}
-                variant="gradient"
-                className="h-auto py-2 sm:py-3 md:py-4 lg:pb-[18px] text-base sm:text-lg md:text-xl lg:text-2xl"
-              >
-                Submit
-              </Button>
+            <div className="h-fit relative group flex w-full justify-center mx-auto">
+              <div className="absolute inset-0 blur-lg rounded-2xl w-auto h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradientbg ease-out p-[2px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="relative flex rounded-2xl w-full h-full bg-[linear-gradient(45deg,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF,#2998ff,#FB923C,#8F00FF)] bg-[length:800%_auto] animate-gradient p-[2px]">
+                <Button
+                  onClick={handleMainSubmit}
+                  disabled={!isSearchQuerySet}
+                  type="submit"
+                  variant={"gradient"}
+                  className={`font-script flex-1 h-full w-full rounded-2xl pb-[10px] text-xl font-medium`}
+                >
+                  Submit
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -834,4 +994,3 @@ export default function DataInput() {
     </div>
   );
 }
-
