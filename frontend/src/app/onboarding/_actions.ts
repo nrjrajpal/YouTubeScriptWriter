@@ -1,6 +1,7 @@
 'use server'
 
 import { auth, clerkClient } from '@clerk/nextjs/server'
+export const runtime = "edge";
 
 export const completeOnboarding = async (formData: FormData) => {
     const { userId } = await auth()

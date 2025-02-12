@@ -6,6 +6,7 @@
 //       </div>
 //     );
 //   }
+'use client'
 
 import DataTableDemo from "@/components/dark-theme-data-table";
 
