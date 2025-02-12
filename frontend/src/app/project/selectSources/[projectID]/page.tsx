@@ -48,7 +48,7 @@ export default function DataInput() {
   const router = useRouter();
 
   const projectID = params.projectID as string;
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { user } = useUser();
 
   const [originalYouTubeLinks, setOriginalYouTubeLinks] = useState<string[]>(
     []
@@ -58,22 +58,23 @@ export default function DataInput() {
   >([]);
   const [isLoadingYouTubeVideos, setIsLoadingYouTubeVideos] = useState(true);
   const [isDialogSubmitDisabled, setIsDialogSubmitDisabled] = useState(false);
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [originalResearchPapers, setOriginalResearchPapers] = useState<any[]>(
     []
   );
-  const [latestValidResearchPapers, setLatestValidResearchPapers] = useState<
-    any[]
-  >([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [latestValidResearchPapers, setLatestValidResearchPapers] = useState<any[]>([]);
   const [isLoadingResearchPapers, setIsLoadingResearchPapers] = useState(true);
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [originalWebPages, setOriginalWebPages] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [latestValidWebPages, setLatestValidWebPages] = useState<any[]>([]);
   const [isLoadingWebPages, setIsLoadingWebPages] = useState(true);
 
   const [isGeneratingQuery, setIsGeneratingQuery] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isComponentsDisabled, setIsComponentsDisabled] = useState(true);
-  const [isInputInUse, setIsInputInUse] = useState(false);
+  // const [isInputInUse, setIsInputInUse] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [isSearchQuerySet, setIsSearchQuerySet] = useState(false);
 
@@ -450,10 +451,12 @@ export default function DataInput() {
       const data = await response.json();
       if (data.success) {
         const papers = data["research papers"].slice(0, 3);
+        /* eslint-disable @typescript-eslint/no-explicit-any */
         setInputValues((prev) => ({
           ...prev,
           "Research Papers": papers.map((paper: any) => paper.paper_url),
         }));
+        /* eslint-enable @typescript-eslint/no-explicit-any */
         setOriginalResearchPapers(papers);
         setLatestValidResearchPapers(papers);
       } else {
@@ -495,10 +498,12 @@ export default function DataInput() {
       const data = await response.json();
       if (data.success) {
         const webpages = data["webpage content"].slice(0, 3);
+        /* eslint-disable @typescript-eslint/no-explicit-any */
         setInputValues((prev) => ({
           ...prev,
           "Web Pages": webpages.map((webpage: any) => webpage.webpage_url),
         }));
+        /* eslint-enable @typescript-eslint/no-explicit-any */
         setOriginalWebPages(webpages);
         setLatestValidWebPages(webpages);
       } else {
@@ -526,7 +531,7 @@ export default function DataInput() {
       });
       return;
     }
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const selectedData: any = {};
     selectedFeatures.forEach((feature) => {
       if (feature === "Custom") {

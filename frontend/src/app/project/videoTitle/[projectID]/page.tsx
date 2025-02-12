@@ -56,6 +56,7 @@ export default function VideoTitleSelector() {
             } else {
                 setError(data.error || 'Failed to fetch video titles')
             }
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
             setError('An error occurred while fetching video titles')
         } finally {
@@ -95,6 +96,7 @@ export default function VideoTitleSelector() {
             } else {
                 setError(data.error || 'Failed to set video title')
             }
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
             setError('An error occurred while setting the video title')
         } finally {

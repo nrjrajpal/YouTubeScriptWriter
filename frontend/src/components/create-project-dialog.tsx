@@ -59,6 +59,7 @@ export function CreateProjectDialog({
       } else {
         setMessage(result.error || "Failed to create project");
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       setMessage("An error occurred while creating the project");
     } finally {

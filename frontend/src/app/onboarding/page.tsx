@@ -5,11 +5,10 @@ import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { completeOnboarding } from './_actions'
-import { TriangleAlert  as ExclamationTriangle, Eye, EyeOff } from 'lucide-react'
+import { TriangleAlert  as ExclamationTriangle, } from 'lucide-react'
 
 export default function OnboardingComponent() {
     const [error, setError] = React.useState('')
@@ -74,6 +73,7 @@ export default function OnboardingComponent() {
             } else {
                 setError(result.error || 'Failed to set API keys')
             }
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (err) {
             setError('An error occurred while setting API keys')
         }

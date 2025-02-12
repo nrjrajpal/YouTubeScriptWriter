@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation'
 import { isClerkAPIResponseError } from '@clerk/nextjs/errors'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { TriangleAlert  as ExclamationTriangle, Eye, EyeOff } from 'lucide-react'
@@ -164,7 +163,7 @@ export default function SignInForm() {
                         <CardFooter className="flex justify-center">
                             <p className="text-sm font-script text-gray-300">
                                 <>
-                                    Don't have an account?{' '}
+                                    Don&apos;t have an account?&nbsp;
                                     <Link href="/sign-up" className="text-blue-400 hover:underline">
                                         Sign up
                                     </Link>

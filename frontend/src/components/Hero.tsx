@@ -1,6 +1,6 @@
 'use client'
 
-import { Anton, Maven_Pro, Montserrat } from 'next/font/google'
+import { Anton, Montserrat } from 'next/font/google'
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
@@ -10,16 +10,13 @@ const anton = Anton({
   subsets: ['latin'],
 })
 
-const mavenPro = Maven_Pro({
-  weight: '500',
-  subsets: ['latin'],
-})
-
 const montserrat300 = Montserrat({
   weight: '300',
+  subsets: ['latin'],
 })
 const montserrat600 = Montserrat({
   weight: '600',
+  subsets: ['latin'],
 })
 
 // FAQ data as a constant object

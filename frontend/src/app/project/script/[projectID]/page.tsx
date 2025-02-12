@@ -11,11 +11,10 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { useUser } from '@clerk/nextjs'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { Lightbulb, MessageSquare, Globe, FileText, Pencil } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
-import { useState as useState2 } from "react"; // Added import
 
 
 interface VideoDetails {
@@ -74,12 +73,12 @@ const YouTubeIcon: React.FC<{ className?: string }> = ({ className }) => (
 
 export default function Component() {
   const { isLoaded, isSignedIn, user } = useUser()
-  const router = useRouter()
+  // const router = useRouter()
 
   const params = useParams();
   const projectID = params.projectID as string;
   
-  const [payload, setPayload] = useState<{userEmail: string | null; projectID: string; } | null> (null);
+  // const [payload, setPayload] = useState<{userEmail: string | null; projectID: string; } | null> (null);
   const [viewMode, setViewMode] = useState<"thought" | "script">("thought");
   const [loading, setLoading] = useState({
     projectTitle: true,
@@ -516,7 +515,7 @@ export default function Component() {
                 </span>
                 <Switch
                   checked={viewMode === "script"}
-                  onCheckedChange={(checked: any) =>
+                  onCheckedChange={(checked: boolean) =>
                     setViewMode(checked ? "script" : "thought")
                   }
                 />
