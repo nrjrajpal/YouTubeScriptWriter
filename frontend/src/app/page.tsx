@@ -1,6 +1,6 @@
 'use client'
 import Hero from '@/components/Hero'
-
+export const runtime = "edge";
 export default function Home() {
   return (
     <div>

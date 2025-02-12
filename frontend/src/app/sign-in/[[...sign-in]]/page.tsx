@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { TriangleAlert  as ExclamationTriangle, Eye, EyeOff } from 'lucide-react'
 import Link from 'next/link'
+export const runtime = "edge";
 
 export default function SignInForm() {
     const { isLoaded, signIn, setActive } = useSignIn()

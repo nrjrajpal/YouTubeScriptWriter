@@ -1,5 +1,4 @@
 'use client'
-
 import * as React from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
@@ -10,6 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { completeOnboarding } from './_actions'
 import { TriangleAlert  as ExclamationTriangle, } from 'lucide-react'
 
+export const runtime = "edge";
 export default function OnboardingComponent() {
     const [error, setError] = React.useState('')
     const [groqKey, setGroqKey] = React.useState('')

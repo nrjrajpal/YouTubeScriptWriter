@@ -7,8 +7,8 @@
 //     );
 //   }
 'use client'
-
 import DataTableDemo from "@/components/dark-theme-data-table";
+export const runtime = "edge";
 
 export default function Home() {
   return (

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Loader2 } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Skeleton } from "@/components/ui/skeleton"
+export const runtime = "edge";
 
 export default function VideoTitleSelector() {
     const [titles, setTitles] = useState<string[]>([])

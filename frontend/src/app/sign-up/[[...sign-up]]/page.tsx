@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { TriangleIcon as ExclamationTriangle, Eye, EyeOff } from 'lucide-react'
 import Link from 'next/link'
 import { OTPInput } from '@/components/OTPInput'
-
+export const runtime = "edge";
 export default function SignUpForm() {
     const { isLoaded, signUp, setActive } = useSignUp()
     const [emailAddress, setEmailAddress] = React.useState('')

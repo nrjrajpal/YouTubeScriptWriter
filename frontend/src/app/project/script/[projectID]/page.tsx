@@ -15,7 +15,7 @@ import { useParams } from 'next/navigation'
 import { Lightbulb, MessageSquare, Globe, FileText, Pencil } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
-
+export const runtime = "edge";
 
 interface VideoDetails {
   id: string;

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
+export const runtime = "edge";
 
 export default function QuestionSelector() {
   const [selectedItems, setSelectedItems] = useState<string[]>([])
