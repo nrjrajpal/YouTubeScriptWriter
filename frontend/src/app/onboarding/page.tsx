@@ -74,7 +74,8 @@ export default function OnboardingComponent() {
             } else {
                 setError(result.error || 'Failed to set API keys')
             }
-        } catch (err) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (err) { 
             setError('An error occurred while setting API keys')
         }
     }

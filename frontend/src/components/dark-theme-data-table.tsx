@@ -100,6 +100,7 @@ export default function DataTableDemo() {
             } else {
                 setError(result.error || 'Failed to fetch projects')
             }
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (err) {
             setError('An error occurred while fetching projects')
         } finally {
@@ -125,6 +126,7 @@ export default function DataTableDemo() {
             } else {
                 setError(result.error || 'Failed to delete project')
             }
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (err) {
             setError('An error occurred while deleting the project')
         } finally {
@@ -199,7 +201,7 @@ export default function DataTableDemo() {
                                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                                 <AlertDialogDescription className="text-gray-400">
                                     This action cannot be undone. This will permanently delete the
-                                    project "{project.ideaTitle}" and remove the data from our servers.
+                                    project &quot;{project.ideaTitle}&quot; and remove the data from our servers.
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -242,7 +244,7 @@ export default function DataTableDemo() {
             columnVisibility,
         },
     })
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleProjectCreated = (projectId: string) => {
         fetchProjects()
     }
@@ -260,7 +262,7 @@ export default function DataTableDemo() {
             <div className="w-full max-w-4xl max-h-fit">
                 {data.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-fit">
-                        <div className="text-center text-gray-400 mb-4">You don't have any projects yet. Create your first project to get started!</div>
+                        <div className="text-center text-gray-400 mb-4">You don&apos;t have any projects yet. Create your first project to get started!</div>
                         <CreateProjectDialog onProjectCreated={handleProjectCreated} userEmail={user.primaryEmailAddress?.emailAddress || ''} />
                     </div>
                 ) : (

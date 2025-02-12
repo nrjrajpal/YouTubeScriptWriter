@@ -18,4 +18,4 @@ CORS(app)
 api_blueprints(app)
 
 if __name__ == "__main__":
-    app.run(debug=app.config['DEBUG'],port=4040)  # Reads from config
+    app.run(debug=app.config['DEBUG'])  # Reads from config

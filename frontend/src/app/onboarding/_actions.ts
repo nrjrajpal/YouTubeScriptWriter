@@ -20,7 +20,8 @@ export const completeOnboarding = async (formData: FormData) => {
             },
         })
         return { message: res.publicMetadata }
-    } catch (err) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) { 
         return { error: 'There was an error updating the user metadata.' }
     }
 }

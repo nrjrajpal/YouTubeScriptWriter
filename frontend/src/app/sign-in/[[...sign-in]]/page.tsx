@@ -149,7 +149,7 @@ export default function SignInForm() {
                 <CardFooter className="flex justify-center">
                     <p className="text-sm text-gray-400">
                         <>
-                            Don't have an account?{' '}
+                            Don&apos;t have an account?&nbsp;
                             <Link href="/sign-up" className="text-blue-400 hover:underline">
                                 Sign up
                             </Link>
